@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Codes d'invitation · Lacache & Naomie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0A1628;--navy:#152642;--gold:#BF8A30;--gold2:#D4A84B;--gold3:#EDD38A;
+  --ivory:#FAF7F0;--cream:#F0EAD6;
+}
+body{background:var(--ink);color:var(--ivory);font-family:'Cinzel',serif;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.2rem;color:var(--ivory);margin-bottom:.3rem;text-align:center}
+.sub{font-size:.48rem;letter-spacing:.4em;color:var(--gold3);text-align:center;margin-bottom:2rem}
+.divider{height:1px;background:linear-gradient(to right,transparent,rgba(191,138,48,.4),transparent);margin:1.5rem 0}
+
+/* Login */
+#login-box{max-width:360px;margin:4rem auto;background:rgba(255,255,255,.04);border:1px solid rgba(191,138,48,.25);padding:2rem;text-align:center}
+#login-box h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;margin-bottom:1.5rem;color:var(--gold3)}
+input[type=password],input[type=text],input[type=number]{
+  width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(191,138,48,.3);
+  color:var(--ivory);padding:.8rem 1rem;font-family:'Cinzel',serif;font-size:.7rem;
+  letter-spacing:.1em;outline:none;transition:border-color .25s;margin-bottom:.8rem;display:block;
+}
+input:focus{border-color:var(--gold2)}
+button{
+  background:var(--gold);border:none;color:var(--ink);font-family:'Cinzel',serif;
+  font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:.8rem 1.5rem;
+  cursor:pointer;transition:background .2s;
+}
+button:hover{background:var(--gold2)}
+button.secondary{background:transparent;border:1px solid rgba(191,138,48,.4);color:var(--gold3)}
+button.secondary:hover{background:rgba(191,138,48,.1)}
+button.danger{background:transparent;border:1px solid rgba(248,113,113,.4);color:#f87171}
+button.danger:hover{background:rgba(248,113,113,.1)}
+.err{color:#f87171;font-size:.6rem;margin-top:.5rem;font-family:'Cormorant Garamond',serif;font-style:italic}
+
+/* Dashboard */
+#dashboard{display:none}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.stat{background:rgba(255,255,255,.04);border:1px solid rgba(191,138,48,.2);padding:1.2rem;text-align:center}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--gold2)}
+.stat-l{font-size:.42rem;letter-spacing:.2em;color:rgba(255,255,255,.35);margin-top:.3rem}
+
+/* Génération */
+.gen-box{background:rgba(255,255,255,.03);border:1px solid rgba(191,138,48,.2);padding:1.5rem;margin-bottom:1.5rem}
+.gen-box h3{font-size:.55rem;letter-spacing:.3em;color:var(--gold3);margin-bottom:1.2rem}
+.gen-row{display:flex;gap:.8rem;align-items:flex-end;flex-wrap:wrap}
+.gen-row label{font-size:.45rem;letter-spacing:.2em;color:rgba(255,255,255,.4);display:block;margin-bottom:.4rem}
+.gen-row input{margin-bottom:0;width:auto;flex:1;min-width:160px}
+.gen-row input[type=number]{width:80px;flex:none}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.7rem}
+th{font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);padding:.7rem .8rem;border-bottom:1px solid rgba(191,138,48,.3);text-align:left}
+td{padding:.7rem .8rem;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.65)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.code-chip{
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;
+  background:rgba(191,138,48,.12);border:1px solid rgba(191,138,48,.25);
+  padding:.25rem .6rem;display:inline-block;
+}
+.badge{font-size:.4rem;letter-spacing:.1em;padding:.2rem .5rem;border:1px solid;display:inline-block}
+.badge.used{color:#f87171;border-color:rgba(248,113,113,.3)}
+.badge.free{color:#4ade80;border-color:rgba(74,222,128,.3)}
+.copy-btn{background:transparent;border:1px solid rgba(191,138,48,.2);color:var(--gold3);font-size:.38rem;padding:.2rem .5rem;cursor:pointer;letter-spacing:.1em}
+.copy-btn:hover{background:rgba(191,138,48,.1)}
+.action-row{display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+.search-input{width:240px;margin-bottom:0;flex:none}
+
+/* Export */
+.export-area{background:rgba(255,255,255,.04);border:1px solid rgba(191,138,48,.15);padding:1rem;margin-top:1rem;font-size:.65rem;color:rgba(255,255,255,.5);font-family:monospace;white-space:pre;overflow-x:auto;max-height:200px;overflow-y:auto;display:none}
+
+@media(max-width:600px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .gen-row{flex-direction:column}
+  .gen-row input[type=number]{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Lacache & Naomie</h1>
+  <p class="sub">Gestion des codes d'invitation · 25 · 07 · 2026</p>
+
+  <!-- Login -->
+  <div id="login-box">
+    <h2>🔐 Espace mariés</h2>
+    <input type="password" id="admin-pwd" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()" style="width:100%">Se connecter</button>
+    <p class="err" id="login-err" style="display:none">Mot de passe incorrect.</p>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n" id="s-total">—</div><div class="stat-l">Codes créés</div></div>
+      <div class="stat"><div class="stat-n" id="s-used" style="color:#f87171">—</div><div class="stat-l">Utilisés</div></div>
+      <div class="stat"><div class="stat-n" id="s-free" style="color:#4ade80">—</div><div class="stat-l">Disponibles</div></div>
+    </div>
+
+    <!-- Générer des codes -->
+    <div class="gen-box">
+      <h3>✦ Créer un code pour un invité</h3>
+      <div class="gen-row">
+        <div>
+          <label>Prénom & Nom de l'invité</label>
+          <input type="text" id="gen-nom" placeholder="Ex: Marie Dupont">
+        </div>
+        <div>
+          <label>Nb de codes (si famille)</label>
+          <input type="number" id="gen-nb" value="1" min="1" max="10">
+        </div>
+        <button onclick="genCodes()">Générer le code</button>
+      </div>
+      <p class="err" id="gen-err" style="display:none;margin-top:.8rem"></p>
+      <div id="gen-result" style="margin-top:1rem;display:none"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+      <input type="text" class="search-input" id="search" placeholder="Rechercher…" oninput="filterTable()">
+      <button class="secondary" onclick="loadCodes()">↻ Actualiser</button>
+      <button class="secondary" onclick="exportCSV()">⬇ Exporter CSV</button>
+    </div>
+
+    <!-- Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Invité</th>
+          <th>Statut</th>
+          <th>Utilisé le</th>
+          <th>Créé le</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="codes-tbody"></tbody>
+    </table>
+
+    <div class="export-area" id="export-area"></div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://mbtnqiotfbaagunpsvex.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
+const ADMIN_PWD = 'lacache2026';
+
+let allCodes = [];
+
+async function sb(path, method='GET', body=null){
+  const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'}};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(SB_URL+'/rest/v1'+path,opts);
+  if(r.status===204||r.status===200&&method==='DELETE') return null;
+  return r.json();
+}
+
+function login(){
+  const pwd = document.getElementById('admin-pwd').value;
+  if(pwd === ADMIN_PWD){
+    document.getElementById('login-box').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadCodes();
+  } else {
+    document.getElementById('login-err').style.display='block';
+  }
+}
+
+function genCode(){
+  // code lisible type "ROSE-7429"
+  const words=['ROSE','LUNE','ÉTOILE','PLUIE','SOLEIL','FLEUR','VENT','NUAGE','AUBE','CIEL','MER','RIVIÈRE','JARDIN','NUIT'];
+  const w = words[Math.floor(Math.random()*words.length)];
+  const n = String(Math.floor(1000+Math.random()*9000));
+  return (w+'-'+n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+async function genCodes(){
+  const nom = document.getElementById('gen-nom').value.trim();
+  const nb  = parseInt(document.getElementById('gen-nb').value)||1;
+  const err = document.getElementById('gen-err');
+  const res = document.getElementById('gen-result');
+  err.style.display='none'; res.style.display='none';
+
+  if(!nom){ err.textContent='Entrez le nom de l\'invité.'; err.style.display='block'; return; }
+
+  const rows = [];
+  const newCodes = [];
+  for(let i=0;i<nb;i++){
+    const code = genCode();
+    newCodes.push(code);
+    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), used:false, created_at:new Date().toISOString() });
+  }
+
+  try {
+    await sb('/invite_codes','POST', rows.length===1 ? rows[0] : rows);
+    res.style.display='block';
+    res.innerHTML = `<p style="color:var(--gold3);font-size:.55rem;letter-spacing:.2em;margin-bottom:.8rem">✓ Code(s) créé(s) pour <strong>${nom}</strong> — à envoyer par SMS/email :</p>`
+      + newCodes.map(c=>`<div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem">
+          <span class="code-chip">${c.toUpperCase()}</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('${c}').then(()=>this.textContent='✓ Copié!')">Copier</button>
+        </div>`).join('');
+    document.getElementById('gen-nom').value='';
+    loadCodes();
+  } catch(e){
+    err.textContent='Erreur : '+e.message;
+    err.style.display='block';
+  }
+}
+
+async function loadCodes(){
+  try {
+    const data = await sb('/invite_codes?order=created_at.desc');
+    allCodes = data||[];
+    updateStats();
+    renderTable(allCodes);
+  } catch(e){ console.error(e); }
+}
+
+function updateStats(){
+  const used  = allCodes.filter(c=>c.used).length;
+  const free  = allCodes.filter(c=>!c.used).length;
+  document.getElementById('s-total').textContent = allCodes.length;
+  document.getElementById('s-used').textContent  = used;
+  document.getElementById('s-free').textContent  = free;
+}
+
+function renderTable(codes){
+  const tb = document.getElementById('codes-tbody');
+  if(!codes.length){
+    tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.3);padding:2rem;font-style:italic">Aucun code pour l\'instant.</td></tr>';
+    return;
+  }
+  tb.innerHTML = codes.map(c=>{
+    const usedAt = c.used_at ? new Date(c.used_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    const createdAt = c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) : '—';
+    const badge = c.used
+      ? '<span class="badge used">✗ Utilisé</span>'
+      : '<span class="badge free">✓ Libre</span>';
+    return `<tr>
+      <td><span class="code-chip">${c.code.toUpperCase()}</span>
+          <button class="copy-btn" style="margin-left:.4rem" onclick="navigator.clipboard.writeText('${c.code}').then(()=>this.textContent='✓')">Copier</button></td>
+      <td>${c.nom||'—'}</td>
+      <td>${badge}</td>
+      <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${usedAt}</td>
+      <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${createdAt}</td>
+      <td><button class="danger" style="font-size:.38rem;padding:.2rem .5rem" onclick="deleteCode('${c.code}')">Suppr.</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(){
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = q ? allCodes.filter(c=>(c.code+c.nom).toLowerCase().includes(q)) : allCodes;
+  renderTable(filtered);
+}
+
+async function deleteCode(code){
+  if(!confirm('Supprimer le code '+code.toUpperCase()+' ?')) return;
+  await sb('/invite_codes?code=eq.'+encodeURIComponent(code),'DELETE');
+  loadCodes();
+}
+
+function exportCSV(){
+  if(!allCodes.length){ alert('Aucun code.'); return; }
+  const headers=['Code','Invité','Utilisé','Date utilisation','Date création'];
+  const rows = allCodes.map(c=>{
+    const ua = c.used_at?new Date(c.used_at).toLocaleDateString('fr-FR'):'';
+    const ca = c.created_at?new Date(c.created_at).toLocaleDateString('fr-FR'):'';
+    return [c.code,c.nom,c.used?'Oui':'Non',ua,ca].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',');
+  });
+  const csv = [headers.join(','),...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download = 'codes-invitation-lacache-naomie.csv';
+  a.click();
+}
+
+document.getElementById('admin-pwd').focus();
+</script>
+</body>
+</html>
