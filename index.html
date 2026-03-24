@@ -596,6 +596,13 @@ tick();setInterval(tick,1000);
 // FAQ
 function toggleFaq(el){el.parentElement.classList.toggle('open');}
 
+const gateInput=document.getElementById('gate-input');
+if(gateInput){
+  gateInput.addEventListener('keypress',function(e){
+    if(e.key==='Enter') checkGate();
+  });
+}
+
 // SUPABASE
 const SB_URL='https://mbtnqiotfbaagunpsvex.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
@@ -603,8 +610,13 @@ async function sbFetch(path,method='GET',body=null){
   const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'}};
   if(body)opts.body=JSON.stringify(body);
   const res=await fetch(SB_URL+'/rest/v1'+path,opts);
-  if(res.status===204)return null;
-  return res.json();
+  if(res.status===204) return null;
+  const data = await res.json().catch(()=>null);
+  if(!res.ok){
+    const msg = data && (data.message || data.error_description || data.error) ? (data.message || data.error_description || data.error) : 'Erreur Supabase';
+    throw new Error(msg);
+  }
+  return data;
 }
 
 // EMAILJS
@@ -624,9 +636,9 @@ async function checkGate(){
   btn.disabled=true;btn.textContent='Vérification…';errEl.style.display='none';okEl.style.display='none';
   try{
     const rows=await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code)+'&limit=1');
-    if(!rows||rows.length===0){errEl.textContent='Code inconnu. Contactez Lacache & Naomie.';errEl.style.display='block';btn.disabled=false;btn.textContent='Accéder à l'invitation';return;}
+    if(!rows||rows.length===0){errEl.textContent='Code inconnu. Contactez Lacache & Naomie.';errEl.style.display='block';btn.disabled=false;btn.textContent="Accéder à l'invitation";return;}
     const invite=rows[0];
-    if(invite.used){errEl.textContent='Ce code a déjà été utilisé.';errEl.style.display='block';btn.disabled=false;btn.textContent='Accéder à l'invitation';return;}
+    if(invite.used){errEl.textContent='Ce code a déjà été utilisé.';errEl.style.display='block';btn.disabled=false;btn.textContent="Accéder à l'invitation";return;}
     guestNom=invite.nom||'';
     guestCode=invite.code||code;
     okEl.style.display='block';
@@ -647,7 +659,7 @@ async function checkGate(){
       sessionStorage.setItem('gate_nom',guestNom);
       sessionStorage.setItem('gate_code',guestCode);
     },800);
-  }catch(e){errEl.textContent='Erreur réseau. Réessayez.';errEl.style.display='block';btn.disabled=false;btn.textContent='Accéder à l'invitation';}
+  }catch(e){errEl.textContent='Erreur réseau. Réessayez.';errEl.style.display='block';btn.disabled=false;btn.textContent="Accéder à l'invitation";}
 }
 
 function toggleForgot(){
