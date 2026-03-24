@@ -112,6 +112,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <input type="text" id="gen-nom" placeholder="Ex: Marie Dupont">
         </div>
         <div>
+          </div>
+        <div>
+          <label>Email de l'invité (pour "code oublié")</label>
+          <input type="email" id="gen-email" placeholder="email@exemple.com">
+        </div>
+        <div>
           <label>Nb de codes (si famille)</label>
           <input type="number" id="gen-nb" value="1" min="1" max="10">
         </div>
@@ -133,7 +139,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <thead>
         <tr>
           <th>Code</th>
-          <th>Invité</th>
+          <th>Invité</th><th>Email</th>
           <th>Statut</th>
           <th>Utilisé le</th>
           <th>Créé le</th>
@@ -183,6 +189,7 @@ function genCode(){
 
 async function genCodes(){
   const nom = document.getElementById('gen-nom').value.trim();
+  const email = document.getElementById('gen-email') ? document.getElementById('gen-email').value.trim() : '';
   const nb  = parseInt(document.getElementById('gen-nb').value)||1;
   const err = document.getElementById('gen-err');
   const res = document.getElementById('gen-result');
@@ -195,7 +202,7 @@ async function genCodes(){
   for(let i=0;i<nb;i++){
     const code = genCode();
     newCodes.push(code);
-    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), used:false, created_at:new Date().toISOString() });
+    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), email:email||null, used:false, created_at:new Date().toISOString() });
   }
 
   try {
