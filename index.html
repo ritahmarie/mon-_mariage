@@ -587,12 +587,12 @@ body.unlocked #access-gate{display:none}
 </footer>
 
 <script>
-// ANTI-CAPTURE
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('keydown', e => {
-  if((e.ctrlKey||e.metaKey) && ['s','p','u'].includes(e.key.toLowerCase())) e.preventDefault();
-  if(e.key==='PrintScreen') { e.preventDefault(); document.body.style.filter='blur(10px)'; setTimeout(()=>document.body.style.filter='',300); }
-});
+body{-webkit-user-select:text;user-select:text}
+.hero-photo img,.photo-polaroid img,.theme-bouquet img{
+  pointer-events:none;
+  -webkit-user-drag:none;
+  user-drag:none;
+}
 
 // STARS
 const sc=document.getElementById('stars');
