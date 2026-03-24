@@ -328,16 +328,18 @@ body.unlocked #access-gate{display:none}
 
 <!-- NAV -->
 <nav>
-  <a href="https://notre-grand-jour.vercel.app/#story">Histoire</a>
-  <a href="https://notre-grand-jour.vercel.app/#countdown">Compte à rebours</a>
-  <a href="https://notre-grand-jour.vercel.app/#programme">Programme</a>
-  <a href="https://notre-grand-jour.vercel.app/#lieu">Lieux</a>
-  <a href="https://notre-grand-jour.vercel.app/#theme">Thème</a>
-  <a href="https://notre-grand-jour.vercel.app/#infos">Infos</a>
-  <a href="https://notre-grand-jour.vercel.app/#qr-sec">QR &amp; Invitation</a>
-  <a href="https://notre-grand-jour.vercel.app/#rsvp">RSVP</a>
-  <a href="https://notre-grand-jour.vercel.app/#admin-panel" style="color:rgba(191,138,48,.5)">⚙ Admin</a>
+  <a href="#story">Histoire</a>
+  <a href="#countdown">Compte à rebours</a>
+  <a href="#programme">Programme</a>
+  <a href="#lieu">Lieux</a>
+  <a href="#theme">Thème</a>
+  <a href="#infos">Infos</a>
+  <a href="#acces">Plan d'accès</a>
+  <a href="#faq">FAQ</a>
+  <a href="#qr-sec">Invitation</a>
+  <a href="#rsvp">RSVP</a>
 </nav>
+
 
 <!-- HISTOIRE -->
 <section id="story" class="sec">
@@ -484,28 +486,54 @@ body.unlocked #access-gate{display:none}
   </div>
 </section>
 
-<!-- QR -->
-<section id="qr-sec">
-  <div class="sw reveal" style="text-align:center;max-width:600px">
-    <span class="stag">Invitation &amp; Accès</span>
-    <h2>QR Code d'invitation</h2>
-    <div class="dv" style="justify-content:center"><div class="dvl"></div><div class="dvd"></div><div class="dvl"></div></div>
-    
-    <div class="qr-outer">
-      <div class="qr-white">
-        <div id="qrcode" title="https://notre-grand-jour.vercel.app/"><canvas width="200" height="200" style="display: none;"></canvas><img src="data:image/png;base64,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" style="display: block;"></div>
-        <div class="qr-name">Lacache &amp; Naomie</div>
-        <div class="qr-dt">25 · 07 · 2026 · Lille</div>
+
+<!-- PLAN D'ACCÈS -->
+<section id="acces" class="sec">
+  <div class="sw wide reveal">
+    <span class="stag">Comment venir</span>
+    <h2>Plan d'accès</h2>
+    <div class="dv"><div class="dvl"></div><div class="dvd"></div><div class="dvl"></div></div>
+    <div class="maps-grid">
+      <div class="map-card">
+        <h3>🏛️ Cérémonie civile — 10h00</h3>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2530.5!2d3.0635!3d50.6365!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c2d58b17dca3e9%3A0x5e6157bfe6be4a8!2sMairie%20de%20Lille!5e0!3m2!1sfr!2sfr!4v1" allowfullscreen="" loading="lazy"></iframe>
+        <p>📍 Place du Général de Gaulle, 59000 Lille<br>🚇 Métro Ligne 2 — Station Mairie de Lille</p>
+      </div>
+      <div class="map-card">
+        <h3>🎶 Dîner &amp; Soirée — 19h00</h3>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2530!2d3.058!3d50.632!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTDCsDM3JzU1LjIiTiAzwrAwMycyOC44Ikk!5e0!3m2!1sfr!2sfr!4v1" allowfullscreen="" loading="lazy"></iframe>
+        <p>📍 Latin Dance Lille<br>🚗 Parking disponible sur place</p>
       </div>
     </div>
-    <p class="qr-hint">📱 Scannez avec l'appareil photo de votre téléphone</p>
-    <div class="scan-info">
-      <p><strong>⚠️ Invitation nominative</strong><br>
-      Chaque invitation est strictement personnelle.<br>
-      <strong>Une invitation = une personne.</strong><br>
-      Les invités confirmés seront vérifiés à l'entrée le jour J.</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="sec">
+  <div class="sw reveal">
+    <span class="stag">Vos questions</span>
+    <h2>Questions fréquentes</h2>
+    <div class="dv"><div class="dvl"></div><div class="dvd"></div><div class="dvl"></div></div>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Les enfants sont-ils invités ?</div><div class="faq-a">Le mariage est une soirée adulte. Nous vous invitons à prévoir une garde pour vos enfants afin de profiter pleinement de la fête.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Y a-t-il un parking sur place ?</div><div class="faq-a">Oui, un parking est disponible à proximité de la Mairie de Lille et de Latin Dance. Vous pouvez également venir en métro (Ligne 2, station Mairie de Lille).</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Puis-je venir avec un accompagnant non invité ?</div><div class="faq-a">Les invitations sont strictement nominatives. Chaque invité doit posséder son propre code d'accès. Si vous souhaitez inviter quelqu'un, contactez-nous directement.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Quelle tenue porter ?</div><div class="faq-a">Tenue de soirée élégante souhaitée dans les couleurs du thème : bleu marine, bleu ardoise, or, champagne ou blanc. Évitez la tenue entièrement blanche par respect pour la mariée.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Quand dois-je confirmer ma présence ?</div><div class="faq-a">Merci de confirmer votre présence avant le 1er juin 2026 via le formulaire RSVP sur ce site.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Comment offrir un cadeau ?</div><div class="faq-a">Vous pouvez apporter votre cadeau le jour J. Nous serons touchés par votre geste, quelle que soit sa forme — votre présence est déjà le plus beau des présents.</div></div>
     </div>
-    <div class="url-box" id="site-url">🔗 https://notre-grand-jour.vercel.app/</div>
+  </div>
+</section>
+
+<!-- INVITATION / QR -->
+<section id="qr-sec">
+  <div class="sw reveal" style="text-align:center;max-width:600px">
+    <span class="stag">Votre invitation</span>
+    <h2>Téléchargez votre invitation</h2>
+    <div class="dv" style="justify-content:center"><div class="dvl"></div><div class="dvd"></div><div class="dvl"></div></div>
+    <p class="qr-text">Votre invitation personnalisée est prête. Téléchargez-la pour l'avoir sur votre téléphone ou l'imprimer.</p>
+    <button class="inv-btn" onclick="downloadInvitation()">💌 Télécharger mon invitation</button>
+    <p class="qr-hint" style="margin-top:1.5rem">Votre nom sera inscrit sur l'invitation · Valable uniquement pour vous</p>
   </div>
 </section>
 
@@ -518,12 +546,12 @@ body.unlocked #access-gate{display:none}
     <p class="rsvp-note">Merci de confirmer votre présence avant le <strong>1er juin 2026</strong>.<br>Une invitation par personne — merci de répondre individuellement.</p>
     <form id="rsvp-form" onsubmit="submitRSVP(event)">
       <div class="frow">
-        <div class="ff"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Votre prénom" required=""></div>
-        <div class="ff"><label>Nom *</label><input type="text" id="f-nom" placeholder="Votre nom" required=""></div>
-        <div class="ff"><label>Email *</label><input type="email" id="f-email" placeholder="votre@email.com" required=""></div>
+        <div class="ff"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Votre prénom" required></div>
+        <div class="ff"><label>Nom *</label><input type="text" id="f-nom" placeholder="Votre nom" required></div>
+        <div class="ff"><label>Email *</label><input type="email" id="f-email" placeholder="votre@email.com" required></div>
         <div class="ff"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+33 6 00 00 00 00"></div>
         <div class="ff"><label>Présence *</label>
-          <select id="f-presence" required="">
+          <select id="f-presence" required>
             <option value="">— Sélectionner —</option>
             <option value="oui">✓ Oui, j'y serai avec joie !</option>
             <option value="non">✗ Je ne pourrai pas venir</option>
@@ -550,8 +578,6 @@ body.unlocked #access-gate{display:none}
   </div>
 </section>
 
-
-
 <!-- FOOTER -->
 <footer>
   <div class="footer-names">Lacache &amp; Naomie</div>
@@ -561,114 +587,126 @@ body.unlocked #access-gate{display:none}
 </footer>
 
 <script>
+// ANTI-CAPTURE
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey||e.metaKey) && ['s','p','u'].includes(e.key.toLowerCase())) e.preventDefault();
+  if(e.key==='PrintScreen') { e.preventDefault(); document.body.style.filter='blur(10px)'; setTimeout(()=>document.body.style.filter='',300); }
+});
 
-// ===== ACCESS GATE =====
-// La table Supabase "invite_codes" doit avoir :
-//   code TEXT PRIMARY KEY
-//   nom TEXT
-//   used BOOLEAN DEFAULT false
-//   used_at TIMESTAMPTZ
-
-async function checkGate(){
-  const raw = document.getElementById('gate-input').value.trim();
-  const code = raw.toLowerCase().replace(/\s+/g,'');
-  const btn = document.getElementById('gate-btn');
-  const errEl = document.getElementById('gate-err');
-  const okEl  = document.getElementById('gate-ok-msg');
-
-  if(!code){ errEl.style.display='block'; errEl.textContent='Veuillez entrer votre code.'; return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Vérification…';
-  errEl.style.display = 'none';
-
-  try {
-    // 1. Chercher le code dans la table
-    const rows = await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code)+'&limit=1');
-
-    if(!rows || rows.length === 0){
-      errEl.textContent = 'Code inconnu. Vérifiez avec Lacache & Naomie.';
-      errEl.style.display = 'block';
-      btn.disabled = false; btn.textContent = 'Accéder à l\'invitation';
-      return;
-    }
-
-    const invite = rows[0];
-
-    if(invite.used){
-      errEl.textContent = 'Ce code a déjà été utilisé.';
-      errEl.style.display = 'block';
-      btn.disabled = false; btn.textContent = 'Accéder à l\'invitation';
-      return;
-    }
-
-    // 2. Marquer comme utilisé
-    await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code), 'PATCH', {
-      used: true,
-      used_at: new Date().toISOString()
-    });
-
-    // 3. Accès accordé — pré-remplir le prénom dans le RSVP
-    okEl.style.display = 'block';
-    if(invite.nom){
-      const prenomEl = document.getElementById('f-prenom');
-      const nomParts = invite.nom.split(' ');
-      if(prenomEl && nomParts.length >= 1) prenomEl.value = nomParts[0];
-      const nomEl = document.getElementById('f-nom');
-      if(nomEl && nomParts.length >= 2) nomEl.value = nomParts.slice(1).join(' ');
-    }
-
-    setTimeout(()=>{
-      document.body.classList.add('unlocked');
-      sessionStorage.setItem('gate_ok','1');
-      sessionStorage.setItem('gate_nom', invite.nom||'');
-    }, 800);
-
-  } catch(e){
-    errEl.textContent = 'Erreur réseau. Réessayez.';
-    errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Accéder à l\'invitation';
-  }
-}
-
-// Si déjà déverrouillé dans cette session (navigation interne)
-if(sessionStorage.getItem('gate_ok')==='1'){
-  document.body.classList.add('unlocked');
-}
-
-
-// ===== STARS =====
+// STARS
 const sc=document.getElementById('stars');
 for(let i=0;i<70;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+.4;s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*3+2).toFixed(1)}s;--dl:${(Math.random()*4).toFixed(1)}s;`;sc.appendChild(s);}
 
-// ===== COUNTDOWN =====
+// COUNTDOWN
 function tick(){const t=new Date('2026-07-25T10:00:00'),n=new Date(),d=t-n;if(d<=0)return;const p=x=>String(Math.floor(x)).padStart(2,'0');document.getElementById('cdJ').textContent=p(d/864e5);document.getElementById('cdH').textContent=p((d%864e5)/36e5);document.getElementById('cdM').textContent=p((d%36e5)/6e4);document.getElementById('cdS').textContent=p((d%6e4)/1000);}
 tick();setInterval(tick,1000);
 
-// ===== QR CODE =====
-const url=window.location.href;
-document.getElementById('site-url').textContent='🔗 '+url;
-new QRCode(document.getElementById('qrcode'),{text:url,width:200,height:200,colorDark:'#0A1628',colorLight:'#FFFFFF',correctLevel:QRCode.CorrectLevel.H});
+// FAQ
+function toggleFaq(el){el.parentElement.classList.toggle('open');}
 
-// ===== SUPABASE CONFIG =====
-// ⚠️ REMPLACE CES VALEURS PAR LES TIENNES
-const SB_URL = 'https://mbtnqiotfbaagunpsvex.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
-
-async function sbFetch(path, method='GET', body=null){
-  const opts={method,headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'}};
-  if(body) opts.body=JSON.stringify(body);
-  const res=await fetch(`${SB_URL}/rest/v1${path}`,opts);
-  if(res.status===204) return null;
-  return res.json();
+const gateInput=document.getElementById('gate-input');
+if(gateInput){
+  gateInput.addEventListener('keypress',function(e){
+    if(e.key==='Enter') checkGate();
+  });
 }
 
-// ===== RSVP SUBMIT =====
+// SUPABASE
+const SB_URL='https://mbtnqiotfbaagunpsvex.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
+async function sbFetch(path,method='GET',body=null){
+  const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(SB_URL+'/rest/v1'+path,opts);
+  if(res.status===204) return null;
+  const data = await res.json().catch(()=>null);
+  if(!res.ok){
+    const msg = data && (data.message || data.error_description || data.error) ? (data.message || data.error_description || data.error) : 'Erreur Supabase';
+    throw new Error(msg);
+  }
+  return data;
+}
+
+// EMAILJS
+emailjs.init('WqZvQ1reFTM1ISd3E');
+
+// ACCESS GATE
+let guestNom = '';
+let guestCode = '';
+
+async function checkGate(){
+  const raw=document.getElementById('gate-input').value.trim();
+  const code=raw.toLowerCase().replace(/\s+/g,'');
+  const btn=document.getElementById('gate-btn');
+  const errEl=document.getElementById('gate-err');
+  const okEl=document.getElementById('gate-ok-msg');
+  if(!code){errEl.textContent='Veuillez entrer votre code.';errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Vérification…';errEl.style.display='none';okEl.style.display='none';
+  try{
+    const rows=await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code)+'&limit=1');
+    if(!rows||rows.length===0){errEl.textContent='Code inconnu. Contactez Lacache & Naomie.';errEl.style.display='block';btn.disabled=false;btn.textContent="Accéder à l'invitation";return;}
+    const invite=rows[0];
+    if(invite.used){errEl.textContent='Ce code a déjà été utilisé.';errEl.style.display='block';btn.disabled=false;btn.textContent="Accéder à l'invitation";return;}
+    guestNom=invite.nom||'';
+    guestCode=invite.code||code;
+    okEl.style.display='block';
+    if(invite.nom){
+      const parts=invite.nom.split(' ');
+      const p=document.getElementById('f-prenom');
+      const n=document.getElementById('f-nom');
+      if(p&&parts.length>=1)p.value=parts[0];
+      if(n&&parts.length>=2)n.value=parts.slice(1).join(' ');
+    }
+    if(invite.email){
+      const e=document.getElementById('f-email');
+      if(e)e.value=invite.email;
+    }
+    setTimeout(()=>{
+      document.body.classList.add('unlocked');
+      sessionStorage.setItem('gate_ok','1');
+      sessionStorage.setItem('gate_nom',guestNom);
+      sessionStorage.setItem('gate_code',guestCode);
+    },800);
+  }catch(e){errEl.textContent='Erreur réseau. Réessayez.';errEl.style.display='block';btn.disabled=false;btn.textContent="Accéder à l'invitation";}
+}
+
+function toggleForgot(){
+  const f=document.getElementById('gate-forgot-form');
+  f.style.display=f.style.display==='block'?'none':'block';
+}
+
+async function sendForgotCode(){
+  const email=document.getElementById('gate-forgot-email').value.trim();
+  const err=document.getElementById('forgot-err');
+  const ok=document.getElementById('forgot-ok');
+  err.style.display='none';ok.style.display='none';
+  if(!email){err.textContent='Entrez votre email.';err.style.display='block';return;}
+  try{
+    const rows=await sbFetch('/invite_codes?email=eq.'+encodeURIComponent(email.toLowerCase().trim())+'&limit=1');
+    if(!rows||rows.length===0){err.textContent='Email non trouvé. Contactez Lacache & Naomie.';err.style.display='block';return;}
+    const invite=rows[0];
+    await emailjs.send('service_9cilotm','template_4n9w6sv',{
+      to_email:email,
+      to_name:invite.nom||'',
+      invite_code:invite.code.toUpperCase(),
+      wedding_url:'https://notre-grand-jour.online'
+    });
+    ok.style.display='block';
+  }catch(e){err.textContent='Erreur envoi email. Réessayez.';err.style.display='block';}
+}
+
+if(sessionStorage.getItem('gate_ok')==='1'){
+  document.body.classList.add('unlocked');
+  guestNom=sessionStorage.getItem('gate_nom')||'';
+  guestCode=sessionStorage.getItem('gate_code')||'';
+}
+
+// RSVP
 async function submitRSVP(e){
   e.preventDefault();
   const btn=document.querySelector('#rsvp-form .btn-submit');
   btn.textContent='Envoi en cours…';btn.disabled=true;
-
   const prenom=document.getElementById('f-prenom').value.trim();
   const nom=document.getElementById('f-nom').value.trim();
   const email=document.getElementById('f-email').value.trim();
@@ -677,38 +715,87 @@ async function submitRSVP(e){
   const nb=document.getElementById('f-nb').value;
   const allergie=document.getElementById('f-allergie').value.trim();
   const msg=document.getElementById('f-msg').value.trim();
-
-  // Vérifier doublon email
-  try {
-    const existing=await sbFetch(`/rsvp?email=eq.${encodeURIComponent(email)}&limit=1`);
-    if(existing && existing.length>0){
-      alert('⚠️ Cette adresse email a déjà été utilisée pour confirmer une présence.');
-      btn.textContent='Confirmer ma présence';btn.disabled=false;
-      return;
+  try{
+    const ex=await sbFetch('/rsvp?email=eq.'+encodeURIComponent(email)+'&limit=1');
+    if(ex&&ex.length>0){alert('⚠️ Cette adresse email a déjà été utilisée.');btn.textContent='Confirmer ma présence';btn.disabled=false;return;}
+  }catch(err){}
+  try{
+    await sbFetch('/rsvp','POST',{prenom,nom,email,tel:tel||null,presence,nb,allergie:allergie||null,message:msg||null,code_invitation:guestCode||null});
+    if(guestCode){
+      await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(guestCode.toLowerCase()),'PATCH',{used:true,used_at:new Date().toISOString()});
     }
-  } catch(err){ console.error(err); }
-
-  const payload={prenom,nom,email,tel:tel||null,presence,nb,allergie:allergie||null,message:msg||null};
-
-  try {
-    await sbFetch('/rsvp','POST',payload);
+    sessionStorage.removeItem('gate_ok');
+    sessionStorage.removeItem('gate_nom');
+    sessionStorage.removeItem('gate_code');
     document.getElementById('rsvp-form').style.display='none';
-    const sp=document.getElementById('success-panel');
-    sp.style.display='block';
-    if(presence==='oui'){
-      document.getElementById('success-msg').innerHTML='Lacache &amp; Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille. 🥂';
-    } else {
-      document.getElementById('success-msg').innerHTML='Votre réponse a bien été enregistrée. Vous serez présents dans nos pensées ce jour-là. 💛';
-    }
-  } catch(err){
-    alert('Une erreur est survenue. Merci de réessayer.');
-    btn.textContent='Confirmer ma présence';btn.disabled=false;
-  }
+    const sp=document.getElementById('success-panel');sp.style.display='block';
+    document.getElementById('success-msg').innerHTML=presence==='oui'?'Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille. 🥂':'Votre réponse a bien été enregistrée. Vous serez présents dans nos pensées ce jour-là. 💛';
+  }catch(err){alert('Une erreur est survenue.');btn.textContent='Confirmer ma présence';btn.disabled=false;}
 }
 
-// ===== REVEAL =====
+// TÉLÉCHARGEMENT INVITATION PDF
+function downloadInvitation(){
+  const nom = guestNom || sessionStorage.getItem('gate_nom') || 'Invité(e)';
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{width:210mm;min-height:297mm;background:#0A1628;color:#FAF7F0;font-family:'Cormorant Garamond',serif;display:flex;align-items:center;justify-content:center;padding:2rem}
+    .inv{max-width:580px;width:100%;text-align:center;border:1px solid rgba(191,138,48,.3);padding:3rem 2.5rem;position:relative;background:linear-gradient(135deg,#0A1628 0%,#152642 100%)}
+    .corner{position:absolute;width:24px;height:24px;border-color:#D4A84B;border-style:solid}
+    .c-tl{top:12px;left:12px;border-width:2px 0 0 2px}
+    .c-tr{top:12px;right:12px;border-width:2px 2px 0 0}
+    .c-bl{bottom:12px;left:12px;border-width:0 0 2px 2px}
+    .c-br{bottom:12px;right:12px;border-width:0 2px 2px 0}
+    .eyebrow{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.4em;text-transform:uppercase;color:#EDD38A;margin-bottom:1.5rem}
+    .names{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:3.5rem;line-height:.9;color:#FAF7F0;margin-bottom:.5rem}
+    .amp{color:#D4A84B;font-size:2.8rem}
+    .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem auto;max-width:300px}
+    .dvl{flex:1;height:1px;background:linear-gradient(to right,transparent,#D4A84B)}
+    .dvr{flex:1;height:1px;background:linear-gradient(to left,transparent,#D4A84B)}
+    .gem{width:6px;height:6px;background:#D4A84B;transform:rotate(45deg)}
+    .guest-label{font-family:'Cinzel',serif;font-size:.45rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.5rem}
+    .guest-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.8rem;color:#EDD38A;margin-bottom:2rem}
+    .date{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.35em;color:#D4A84B;margin-bottom:.4rem}
+    .lieu{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(255,255,255,.55);margin-bottom:2rem}
+    .prog-title{font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:1rem}
+    .prog{display:flex;flex-direction:column;gap:.6rem;text-align:left;margin:0 auto;max-width:360px}
+    .prog-row{display:flex;gap:1rem;align-items:baseline}
+    .prog-t{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:#D4A84B;min-width:60px}
+    .prog-n{font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.12em;text-transform:uppercase;color:#FAF7F0}
+    .prog-d{font-size:.82rem;color:rgba(255,255,255,.4);margin-left:auto;font-family:'Cormorant Garamond',serif;font-style:italic}
+    .footer-inv{margin-top:2rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.88rem;color:rgba(255,255,255,.3);line-height:1.8}
+    .theme-badge{display:inline-block;margin-top:1.5rem;font-family:'Cinzel',serif;font-size:.4rem;letter-spacing:.2em;text-transform:uppercase;color:#0A1628;background:#EDD38A;padding:.3rem .9rem}
+  </style>
+  </head><body>
+  <div class="inv">
+    <div class="corner c-tl"></div><div class="corner c-tr"></div>
+    <div class="corner c-bl"></div><div class="corner c-br"></div>
+    <p class="eyebrow">Invitation personnelle</p>
+    <div class="names">Lacache<br><span class="amp">&amp;</span><br>Naomie</div>
+    <div class="divider"><div class="dvl"></div><div class="gem"></div><div class="dvr"></div></div>
+    <p class="guest-label">Cette invitation est adressée à</p>
+    <p class="guest-name">${nom}</p>
+    <p class="date">Samedi · 25 Juillet 2026</p>
+    <p class="lieu">Mairie de Lille · Latin Dance · Lille</p>
+    <div class="divider"><div class="dvl"></div><div class="gem"></div><div class="dvr"></div></div>
+    <p class="prog-title">Programme de la journée</p>
+    <div class="prog">
+      <div class="prog-row"><span class="prog-t">10h00</span><span class="prog-n">Cérémonie civile</span><span class="prog-d">Mairie de Lille</span></div>
+      <div class="prog-row"><span class="prog-t">13h30</span><span class="prog-n">Vin d'honneur</span><span class="prog-d">Cocktail &amp; retrouvailles</span></div>
+      <div class="prog-row"><span class="prog-t">19h00</span><span class="prog-n">Dîner &amp; Soirée</span><span class="prog-d">Latin Dance Lille</span></div>
+    </div>
+    <div class="theme-badge">Thème · Bleu Marine · Or · Champagne · Blanc</div>
+    <p class="footer-inv">Tenue de soirée élégante souhaitée<br>Confirmation avant le 1er juin 2026 · notre-grand-jour.online</p>
+  </div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// REVEAL
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});},{threshold:.07});
 document.querySelectorAll('.reveal,.reveal2').forEach(el=>obs.observe(el));
 </script>
-
 </body></html>
