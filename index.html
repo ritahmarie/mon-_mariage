@@ -623,11 +623,11 @@ async function checkGate(){
   if(!code){errEl.textContent='Veuillez entrer votre code.';errEl.style.display='block';return;}
   btn.disabled=true;btn.textContent='Vérification…';errEl.style.display='none';
   try{
-    const rows=await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code)+'&limit=1');
+    const rows=await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code.toLowerCase())+'&limit=1');
     if(!rows||rows.length===0){errEl.textContent='Code inconnu. Contactez Lacache & Naomie.';errEl.style.display='block';btn.disabled=false;btn.textContent='Accéder à l'invitation';return;}
     const invite=rows[0];
     if(invite.used){errEl.textContent='Ce code a déjà été utilisé.';errEl.style.display='block';btn.disabled=false;btn.textContent='Accéder à l'invitation';return;}
-    await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code),'PATCH',{used:true,used_at:new Date().toISOString()});
+    await sbFetch('/invite_codes?code=eq.'+encodeURIComponent(code.toLowerCase()),'PATCH',{used:true,used_at:new Date().toISOString()});
     guestNom=invite.nom||'';
     guestCode=code;
     okEl.style.display='block';
@@ -654,7 +654,7 @@ async function sendForgotCode(){
   err.style.display='none';ok.style.display='none';
   if(!email){err.textContent='Entrez votre email.';err.style.display='block';return;}
   try{
-    const rows=await sbFetch('/invite_codes?email=eq.'+encodeURIComponent(email)+'&limit=1');
+    const rows=await sbFetch('/invite_codes?email=eq.'+encodeURIComponent(email.toLowerCase().trim())+'&limit=1');
     if(!rows||rows.length===0){err.textContent='Email non trouvé. Contactez Lacache & Naomie.';err.style.display='block';return;}
     const invite=rows[0];
     await emailjs.send('service_9cilotm','template_4n9w6sv',{
