@@ -774,8 +774,27 @@ async function submitRSVP(e){
     const sp=document.getElementById('success-panel');
     sp.style.display='block';
     document.getElementById('success-msg').innerHTML=presence==='oui'
-      ?'Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille. 🥂'
+      ?'Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille. 🥂<br><small style="color:#888;font-size:.85rem">Un email de confirmation vous a été envoyé.</small>'
       :'Votre réponse a bien été enregistrée. Vous serez présents dans nos pensées ce jour-là. 💛';
+    // Envoyer email de confirmation
+    if(email){
+      const code = guestCode || sessionStorage.getItem('gate_code') || '';
+      const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(code)+'&color=0A1628&bgcolor=FAF7F0';
+      try{
+        await emailjs.send('service_9cilotm','template_4n9w6sv',{
+          to_email: email,
+          to_name: prenom+' '+nom,
+          invite_code: code.toUpperCase(),
+          wedding_url: 'https://notre-grand-jour.online',
+          qr_url: qrUrl,
+          presence_label: presence==='oui' ? 'Présent(e) ✓' : 'Absent(e)',
+          nb_personnes: nb
+        });
+        console.log('Email envoyé à', email);
+      }catch(emailErr){
+        console.warn('Email non envoyé:', emailErr);
+      }
+    }
   }catch(err){
     console.error('RSVP error:',err);
     alert('Erreur : '+err.message);
@@ -789,46 +808,42 @@ function downloadInvitation(){
   const nom = guestNom || sessionStorage.getItem('gate_nom') || 'Invité(e)';
   const code = guestCode || sessionStorage.getItem('gate_code') || '';
   const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(code)+'&color=0A1628&bgcolor=FAF7F0';
+  
   const invHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{width:210mm;height:297mm;background:#0A1628}
-    body{display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif}
-    .inv{width:170mm;text-align:center;border:1px solid rgba(191,138,48,.4);padding:12mm 10mm;position:relative;background:linear-gradient(135deg,#0A1628 0%,#152642 100%)}
+    html,body{width:210mm;background:#0A1628;font-family:'Cormorant Garamond',serif}
+    .page{width:190mm;margin:10mm auto;text-align:center;border:1px solid rgba(191,138,48,.4);padding:12mm 10mm;position:relative;background:linear-gradient(135deg,#0A1628 0%,#152642 100%)}
     .corner{position:absolute;width:20px;height:20px;border-color:#D4A84B;border-style:solid}
     .c-tl{top:10px;left:10px;border-width:2px 0 0 2px}
     .c-tr{top:10px;right:10px;border-width:2px 2px 0 0}
     .c-bl{bottom:10px;left:10px;border-width:0 0 2px 2px}
     .c-br{bottom:10px;right:10px;border-width:0 2px 2px 0}
     .eyebrow{font-family:'Cinzel',serif;font-size:7pt;letter-spacing:5pt;text-transform:uppercase;color:#EDD38A;margin-bottom:8mm}
-    .names{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:38pt;line-height:.9;color:#FAF7F0;margin-bottom:3mm}
+    .names{font-style:italic;font-size:38pt;line-height:.9;color:#FAF7F0;margin-bottom:3mm}
     .amp{color:#D4A84B;font-size:30pt}
     .divider{display:flex;align-items:center;gap:8px;margin:5mm auto;max-width:60mm}
     .dvl{flex:1;height:1px;background:linear-gradient(to right,transparent,#D4A84B)}
     .dvr{flex:1;height:1px;background:linear-gradient(to left,transparent,#D4A84B)}
     .gem{width:5px;height:5px;background:#D4A84B;transform:rotate(45deg)}
     .guest-label{font-family:'Cinzel',serif;font-size:6pt;letter-spacing:3pt;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3mm}
-    .guest-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22pt;color:#EDD38A;margin-bottom:6mm}
+    .guest-name{font-style:italic;font-size:22pt;color:#EDD38A;margin-bottom:6mm}
     .date{font-family:'Cinzel',serif;font-size:8pt;letter-spacing:4pt;color:#D4A84B;margin-bottom:2mm}
-    .lieu{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11pt;color:rgba(255,255,255,.55);margin-bottom:6mm}
+    .lieu{font-style:italic;font-size:11pt;color:rgba(255,255,255,.55);margin-bottom:6mm}
     .prog-title{font-family:'Cinzel',serif;font-size:6pt;letter-spacing:3pt;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4mm}
     .prog{display:flex;flex-direction:column;gap:3mm;text-align:left;margin:0 auto 6mm;max-width:90mm}
     .prog-row{display:flex;gap:8px;align-items:baseline;border-bottom:1px solid rgba(191,138,48,.1);padding-bottom:2mm}
     .prog-t{font-style:italic;font-size:13pt;color:#D4A84B;min-width:15mm}
     .prog-n{font-family:'Cinzel',serif;font-size:6pt;letter-spacing:1pt;text-transform:uppercase;color:#FAF7F0;flex:1}
     .prog-d{font-size:8pt;color:rgba(255,255,255,.35);font-style:italic}
-    .qr-section{margin:4mm 0}
     .qr-label{font-family:'Cinzel',serif;font-size:6pt;letter-spacing:2pt;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3mm}
-    .qr-img{background:#FAF7F0;padding:8px;display:inline-block}
+    .qr-img{background:#FAF7F0;padding:8px;display:inline-block;margin-bottom:4mm}
     .theme{display:inline-block;margin-top:5mm;font-family:'Cinzel',serif;font-size:5pt;letter-spacing:2pt;text-transform:uppercase;color:#0A1628;background:#EDD38A;padding:3px 8px}
     .footer{margin-top:4mm;font-style:italic;font-size:8pt;color:rgba(255,255,255,.3);line-height:1.8}
-    @media print{
-      html,body{width:210mm;height:297mm}
-      @page{size:A4;margin:0}
-    }
+    @media print{html,body{width:210mm}@page{size:A4;margin:0}}
   </style></head><body>
-  <div class="inv">
+  <div class="page">
     <div class="corner c-tl"></div><div class="corner c-tr"></div>
     <div class="corner c-bl"></div><div class="corner c-br"></div>
     <p class="eyebrow">Invitation personnelle</p>
@@ -846,28 +861,35 @@ function downloadInvitation(){
       <div class="prog-row"><span class="prog-t">19h00</span><span class="prog-n">Dîner &amp; Soirée</span><span class="prog-d">Latin Dance Lille</span></div>
     </div>
     <div class="divider"><div class="dvl"></div><div class="gem"></div><div class="dvr"></div></div>
-    <div class="qr-section">
-      <p class="qr-label">Votre QR code d'entrée le jour J</p>
-      <div class="qr-img"><img src="${qrUrl}" width="120" height="120" alt="QR Code"></div>
-    </div>
+    <p class="qr-label">Votre QR code d'entrée le jour J</p>
+    <div class="qr-img"><img src="${qrUrl}" width="130" height="130" alt="QR Code"></div>
     <div class="theme">Thème · Bleu Marine · Or · Champagne · Blanc</div>
     <p class="footer">Tenue de soirée élégante · Confirmation avant le 1er juin 2026<br>notre-grand-jour.online</p>
   </div>
   <script>
-  // Auto-download as PDF on mobile, print on desktop
-  window.onload = function(){
-    setTimeout(()=>{
-      window.print();
-    }, 500);
-  };
+    window.onload = function(){
+      // Try to trigger save as PDF dialog
+      document.title = 'Invitation-Lacache-Naomie-${nom.replace(/ /g,"-")}';
+      setTimeout(() => { window.print(); }, 600);
+    };
   <\/script>
   </body></html>`;
+
+  const blob = new Blob([invHtml], {type: 'text/html'});
+  const url = URL.createObjectURL(blob);
   
-  // Open in new window for print/save
-  const w = window.open('', '_blank', 'width=800,height=1000');
-  w.document.write(invHtml);
-  w.document.close();
+  // On mobile: open in new tab (user can save as PDF via browser menu)
+  // On desktop: open print dialog with Save as PDF option
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  if(isMobile){
+    // Open in same tab for mobile browsers that support PDF save
+    window.location.href = url;
+  } else {
+    const w = window.open(url, '_blank');
+    if(!w){ window.location.href = url; }
+  }
 }
+
 // REVEAL
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});},{threshold:.07});
 document.querySelectorAll('.reveal,.reveal2').forEach(el=>obs.observe(el));
