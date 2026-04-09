@@ -781,14 +781,12 @@ async function submitRSVP(e){
       const code = guestCode || sessionStorage.getItem('gate_code') || '';
       const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(code)+'&color=0A1628&bgcolor=FAF7F0';
       try{
-        await emailjs.send('service_9cilotm','template_4n9w6sv',{
+        await emailjs.send('service_9cilotm','template_qepoc28',{
           to_email: email,
           to_name: prenom+' '+nom,
-          invite_code: code.toUpperCase(),
-          wedding_url: 'https://notre-grand-jour.online',
-          qr_url: qrUrl,
           presence_label: presence==='oui' ? 'Présent(e) ✓' : 'Absent(e)',
-          nb_personnes: nb
+          nb_personnes: nb,
+          invitation_url: 'https://notre-grand-jour.online'
         });
         console.log('Email envoyé à', email);
       }catch(emailErr){
