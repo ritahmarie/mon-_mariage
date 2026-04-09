@@ -875,17 +875,13 @@ function downloadInvitation(){
 
   const blob = new Blob([invHtml], {type: 'text/html'});
   const url = URL.createObjectURL(blob);
-  
-  // On mobile: open in new tab (user can save as PDF via browser menu)
-  // On desktop: open print dialog with Save as PDF option
-  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-  if(isMobile){
-    // Open in same tab for mobile browsers that support PDF save
-    window.location.href = url;
-  } else {
-    const w = window.open(url, '_blank');
-    if(!w){ window.location.href = url; }
-  }
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'Invitation-Lacache-Naomie-'+nom.replace(/ /g,'-')+'.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
 }
 
 // REVEAL
