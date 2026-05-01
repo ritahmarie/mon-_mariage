@@ -34,7 +34,7 @@ nav a{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18rem;text-tra
 #infos{background:var(--ivory)}.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem}.card{background:var(--white);border-left:3px solid var(--gold2);padding:1.5rem;box-shadow:0 8px 28px rgba(10,22,40,.06)}.card h3{font-family:'Cinzel';letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-size:.72rem;margin-bottom:.7rem}.card p{line-height:1.7;color:#45566f}#faq{background:var(--cream)}.faq-item{background:var(--white);margin:1rem 0;border-left:3px solid var(--gold2)}.faq-q{padding:1.15rem 1.5rem;font-family:'Cinzel';font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between}.faq-a{display:none;padding:0 1.5rem 1.2rem;color:#45566f;line-height:1.7}.faq-item.open .faq-a{display:block}
 /* RSVP */
 #rsvp{background:var(--ivory)}.rsvp-box{max-width:760px;margin:auto;background:white;padding:clamp(2rem,5vw,3.5rem);border:1px solid rgba(191,138,48,.25);box-shadow:0 12px 50px rgba(10,22,40,.08)}.rsvp-box h2{text-align:center;font-size:3.2rem}.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}label{font-family:'Cinzel';font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block;margin:.9rem 0 .35rem}input,select,textarea{width:100%;padding:.9rem 1rem;border:1px solid rgba(191,138,48,.28);background:var(--ivory);font-family:'Lato';outline:none}textarea{min-height:95px;resize:vertical}.full{grid-column:1/-1}.btn{border:none;background:var(--navy);color:var(--ivory);font-family:'Cinzel';letter-spacing:.2em;text-transform:uppercase;padding:1rem 1.4rem;cursor:pointer;margin-top:1rem}.btn.gold{background:var(--gold2);color:var(--navy)}#downloadPanel{display:none;text-align:center;margin-top:1.6rem;padding:1.3rem;background:var(--ivory);border:1px solid rgba(191,138,48,.25)}
-#printInvitation,#printQrPdf{position:absolute;left:-9999px;top:0;width:794px;background:#FAF7F0;color:#0A1628;padding:38px;font-family:'Cormorant Garamond'}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#BF8A30;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.6}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:24px auto}
+#printInvitation,#printQrPdf{position:absolute;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond'}#printProgrammePdf{position:absolute;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond'}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center;min-height:1030px}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#D4A84B;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.55}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:22px auto}.pdf-small-title{font-family:'Cinzel';letter-spacing:.28em;text-transform:uppercase;color:#9aa8bb;font-size:13px;margin-top:18px}.pdf-guest-name{font-size:30px!important;font-style:italic;color:#EDD38A}.pdf-program-row{display:grid;grid-template-columns:90px 1fr 210px;gap:10px;border-bottom:1px solid rgba(212,168,75,.22);padding:10px 0;text-align:left}.pdf-program-row b{color:#D4A84B;font-size:20px}.pdf-program-row span{font-family:'Cinzel';font-size:12px;letter-spacing:.12em;text-transform:uppercase}.pdf-note{font-size:14px!important;color:#9aa8bb;margin-top:18px}.pdf-theme{display:inline-block;margin-top:18px;background:#EDD38A;color:#0A1628;font-family:'Cinzel';letter-spacing:.22em;text-transform:uppercase;font-size:10px;padding:8px 14px}#printQr,#printQrOnly{margin:18px auto 0;display:flex;justify-content:center}
 @media(max-width:850px){nav{position:static}#hero{grid-template-columns:1fr;padding:2rem 1rem}.hero-img{height:auto;max-height:none}#lieux{grid-template-columns:1fr}.lieux-img{min-height:360px}.frow{grid-template-columns:1fr}.prog-item{grid-template-columns:80px 24px 1fr}}
 @media print{nav,.btn,#downloadPanel{display:none!important}body{background:white}}
 
@@ -89,7 +89,7 @@ body:not(.gate-locked) #access-gate{display:none}
 .drink-radio,.drink-pill{display:flex!important;align-items:center;gap:.55rem;border:1px solid #d6c7a8;background:#fffdf8;padding:.85rem 1rem;color:var(--navy)!important;font-family:'Lato',sans-serif!important;font-size:.92rem!important;letter-spacing:0!important;text-transform:none!important;margin:0!important;cursor:pointer}
 .drink-radio input,.drink-pill input{width:auto!important;margin:0!important;padding:0!important}
 .drink-options{display:none;margin-top:.8rem}.drink-options.show{display:block}.drink-pills{display:flex;flex-wrap:wrap;gap:.7rem}.drink-pill{display:inline-flex!important}.drink-summary{margin-top:.75rem;font-size:.9rem;color:#536176;line-height:1.6}
-#qrBox{margin:1.4rem auto 0;display:none;justify-content:center}#printQr{margin:18px auto 0;display:flex;justify-content:center}.email-status{margin-top:.8rem;font-size:.92rem;color:#536176}#mailLink{display:none;margin-top:1rem;color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
+#qrBox{margin:1.4rem auto 0;display:none;justify-content:center}
 @media(max-width:620px){.drink-choice-row{grid-template-columns:1fr}}
 
 </style>
@@ -187,13 +187,10 @@ body:not(.gate-locked) #access-gate{display:none}
       <div class="success-icon">💌</div>
       <h3>Merci !</h3>
       <p>Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille 🥂<br>Votre confirmation a bien été prise en compte.</p>
-      <p class="rsvp-download-label">Téléchargez votre invitation personnalisée :</p>
+      <p class="rsvp-download-label">Téléchargez vos documents personnalisés :</p>
       <div id="qrBox"></div>
-      <p id="emailStatus" class="email-status"></p>
-      <a id="mailLink" href="#" target="_blank" rel="noopener">Ouvrir le mail pré-rempli</a>
-      <button class="btn gold" onclick="downloadPDF()">⬇ Télécharger la carte d’invitation PDF</button>
+      <button class="btn gold" onclick="downloadPDF()">⬇ Télécharger l’invitation PDF + QR code</button>
       <button class="btn" onclick="downloadProgrammePDF()">⬇ Télécharger le programme PDF</button>
-      <button class="btn" onclick="downloadQRCodePDF()">⬇ Télécharger le QR code PDF</button>
     </div>
   </div>
 </section>
@@ -203,8 +200,41 @@ body:not(.gate-locked) #access-gate{display:none}
   <div class="footer-line"></div>
   <p class="footer-quote">« Du virtuel jusqu’à l’autel -<br>nous avons traversé la distance, le doute et le temps.<br>Ce jour est notre récompense, et vous en êtes la lumière. »</p>
 </footer>
-<div id="printInvitation"><div class="pdf-card"><h1>Lacache & Naomie</h1><div class="pdf-date">25 · 07 · 2026</div><div class="pdf-line"></div><p>Invitation de mariage</p><p><b>Cérémonie civile :</b><br>Mairie de Lille - 10h00</p><p><b>Vin d’honneur, dîner & soirée :</b><br>124Bis Rue de l’Epideme, 59200 Tourcoing</p><p><b>Programme :</b><br>10h00 · Cérémonie civile<br>13h30 · Vin d’honneur<br>19h00 · Dîner & soirée dansante</p><div class="pdf-line"></div><p id="pdfGuest">Invité(e)</p><p id="pdfDrink">Boissons : à confirmer</p><div id="printQr"></div><p>Merci de présenter cette invitation avec QR code le jour J.</p></div></div>
+<div id="printInvitation"><div class="pdf-card">
+  <div class="pdf-small-title">Invitation personnelle</div>
+  <h1>Lacache<br>&<br>Naomie</h1>
+  <div class="pdf-date">Samedi · 25 Juillet 2026</div>
+  <div class="pdf-line"></div>
+  <p>Cette invitation est adressée à</p>
+  <p id="pdfGuest" class="pdf-guest-name">Invité(e)</p>
+  <p id="pdfCode">Code invité : —</p>
+  <div class="pdf-line"></div>
+  <div class="pdf-small-title">Programme de la journée</div>
+  <div class="pdf-program-row"><b>10h00</b><span>Cérémonie civile</span><em>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille</em></div>
+  <div class="pdf-program-row"><b>13h30</b><span>Vin d’honneur</span><em>Cocktail & retrouvailles</em></div>
+  <div class="pdf-program-row"><b>19h00</b><span>Dîner & soirée</span><em>124Bis Rue de l’Epideme<br>59200 Tourcoing</em></div>
+  <div class="pdf-line"></div>
+  <p id="pdfDrink">Boissons : à confirmer</p>
+  <p id="pdfDiet">Régime / allergies : non précisé</p>
+  <div class="pdf-small-title">QR code d’entrée le jour J</div>
+  <div id="printQr"></div>
+  <p class="pdf-note">À présenter à l’entrée avec une pièce d’identité correspondant au nom indiqué sur l’invitation.</p>
+  <div class="pdf-theme">Thème · Bleu marine · Or · Champagne · Blanc</div>
+</div></div>
 <div id="printQrPdf"><div class="pdf-card"><h1>QR code invitation</h1><div class="pdf-date">Lacache & Naomie · 25 · 07 · 2026</div><div class="pdf-line"></div><p id="qrPdfGuest">Invité(e)</p><div id="printQrOnly"></div><p>Ce QR code est personnel et lié à votre invitation.</p></div></div>
+
+<div id="printProgrammePdf"><div class="pdf-card">
+  <div class="pdf-small-title">Programme officiel</div>
+  <h1>Programme<br>de la journée</h1>
+  <div class="pdf-date">Samedi · 25 Juillet 2026</div>
+  <div class="pdf-line"></div>
+  <div class="pdf-program-row"><b>10h00</b><span>Cérémonie civile</span><em>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille<br>Merci d’arriver 15 minutes à l’avance.</em></div>
+  <div class="pdf-program-row"><b>13h30</b><span>Vin d’honneur</span><em>Cocktail, bulles et retrouvailles.</em></div>
+  <div class="pdf-program-row"><b>19h00</b><span>Dîner & soirée dansante</span><em>124Bis Rue de l’Epideme<br>59200 Tourcoing<br>Soirée jusqu’au bout de la nuit.</em></div>
+  <div class="pdf-line"></div>
+  <p><b>Tenue élégante souhaitée.</b><br>Couleurs : bleu marine, ardoise, or, champagne ou blanc.</p>
+  <p class="pdf-note">Merci de confirmer votre présence avant le 1er juin 2026.</p>
+</div></div>
 <script>
 // Protection anti-copie basique (ne bloque pas les captures écran, mais limite clic droit et raccourcis)
 document.addEventListener('contextmenu',e=>e.preventDefault());
@@ -287,7 +317,10 @@ document.querySelectorAll('input[name="boissons"]').forEach(cb=>{
 // EmailJS : remplacez ces 3 valeurs par vos vrais identifiants EmailJS pour envoyer automatiquement.
 const EMAILJS_PUBLIC_KEY = '';
 const EMAILJS_SERVICE_ID = '';
-const EMAILJS_TEMPLATE_ID = '';
+const EMAILJS_TEMPLATE_ID = ''; // template confirmation invité
+// Optionnel : créez un 2e template EmailJS pour vous notifier côté admin.
+const EMAILJS_ADMIN_TEMPLATE_ID = '';
+const ADMIN_EMAIL = '';
 if(window.emailjs && EMAILJS_PUBLIC_KEY){ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }
 
 function getRSVPData(){
@@ -305,7 +338,8 @@ function getRSVPData(){
   const code = guestCode || sessionStorage.getItem('gate_code') || '';
   const full = (prenom+' '+nom).trim() || 'Invité(e)';
   const invitationUrl = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(code || full);
-  return {prenom, nom, full, email, phone, presence, diet, message, alcool, boissons: boissons.join(', '), code, invitationUrl};
+  const qrContent = 'MARIAGE LACACHE & NAOMIE | INVITE: '+full+' | CODE: '+(code||'')+' | DATE: 25/07/2026 | NB: 1 PERSONNE';
+  return {prenom, nom, full, email, phone, presence, diet, message, alcool, boissons: boissons.join(', '), code, invitationUrl, qrContent};
 }
 
 function renderQR(text){
@@ -321,14 +355,8 @@ function renderQR(text){
 }
 
 async function sendConfirmationEmail(data){
-  const status = document.getElementById('emailStatus');
-  const mailLink = document.getElementById('mailLink');
-  const subject = 'Confirmation RSVP - Mariage Lacache & Naomie';
-  const body = `Bonjour ${data.full},\n\nVotre réponse a bien été enregistrée ! 🎉\n\nStatut : ${data.presence}\nNombre de personnes : 1\nBoissons : ${data.alcool === 'Oui' ? data.boissons : 'Sans alcool'}\nRégime / allergies : ${data.diet || 'Non précisé'}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMARIAGE · LACACHE & NAOMIE\nSamedi 25 Juillet 2026 · Lille\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nProgramme :\n- 10h00 - Cérémonie civile · Mairie de Lille\n- 13h30 - Vin d'honneur\n- 19h00 - Dîner & Soirée · 124Bis Rue de l’Epideme, 59200 Tourcoing\n\nTenue élégante souhaitée.\nCouleurs : Bleu marine · Or · Champagne · Blanc\n\n📄 Téléchargez votre invitation personnalisée :\n${data.invitationUrl}\n\nAvec tout notre amour,\nLacache & Naomie 💍`;
-  if(mailLink){
-    mailLink.href = `mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    mailLink.style.display='inline-block';
-  }
+  // Envoi automatique silencieux avec EmailJS.
+  // Renseignez EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID et EMAILJS_TEMPLATE_ID pour activer l'envoi réel.
   if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID){
     try{
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -341,15 +369,13 @@ async function sendConfirmationEmail(data){
         regime_alimentaire: data.diet || 'Non précisé',
         invite_code: data.code,
         invitation_url: data.invitationUrl,
-        wedding_url: window.location.href
+        qr_content: data.qrContent,
+        wedding_url: window.location.href,
+        programme: '10h00 - Cérémonie civile · Mairie de Lille | 13h30 - Vin d’honneur | 19h00 - Dîner & Soirée · 124Bis Rue de l’Epideme, 59200 Tourcoing'
       });
-      if(status) status.textContent='Email automatique envoyé avec le QR code / lien de l’invitation.';
     }catch(err){
-      console.error(err);
-      if(status) status.textContent='Réponse enregistrée. EmailJS n’a pas pu envoyer le mail : utilisez le lien mail pré-rempli.';
+      console.error('EmailJS invité non envoyé :', err);
     }
-  }else{
-    if(status) status.textContent='Réponse enregistrée. Pour l’envoi automatique, renseignez vos IDs EmailJS dans le script. En attendant, le mail pré-rempli est disponible.';
   }
 }
 
@@ -404,9 +430,11 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
     return;
   }
   document.getElementById('downloadPanel').style.display='block';
-  const pg=document.getElementById('pdfGuest'); if(pg) pg.textContent='Invitation pour : '+data.full+' · Code : '+data.code;
+  const pg=document.getElementById('pdfGuest'); if(pg) pg.textContent=data.full;
+  const pc=document.getElementById('pdfCode'); if(pc) pc.textContent='Code invité : '+(data.code || '—')+' · Nombre de personnes : 1';
   const pd=document.getElementById('pdfDrink'); if(pd) pd.textContent='Boissons : '+(data.alcool === 'Oui' ? data.boissons : 'Sans alcool');
-  renderQR(data.invitationUrl);
+  const pdi=document.getElementById('pdfDiet'); if(pdi) pdi.textContent='Régime / allergies : '+(data.diet || 'non précisé');
+  renderQR(data.qrContent);
   const qg=document.getElementById('qrPdfGuest'); if(qg) qg.textContent='QR code pour : '+data.full+' · Code : '+data.code;
   await saveRSVPToSupabase(data);
   await incrementInviteCodeUsage(data.code);
@@ -414,7 +442,7 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'center'});
 });
 function downloadPDF(){const el=document.getElementById('printInvitation');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
-function downloadProgrammePDF(){const el=document.getElementById('programme');html2pdf().set({margin:10,filename:'Programme_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save();}
+function downloadProgrammePDF(){const el=document.getElementById('printProgrammePdf');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'Programme_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
 function downloadQRCodePDF(){const el=document.getElementById('printQrPdf');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'QR_Code_Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
 </script>
 </body>
