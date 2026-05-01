@@ -6,7 +6,9 @@
 <title>Lacache & Naomie - 25.07.2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- EmailJS : activez en remplaçant les IDs dans le script en bas -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--navy:#0A1628;--navy2:#152642;--blue:#203f68;--gold:#BF8A30;--gold2:#D4A84B;--gold3:#EDD38A;--ivory:#FAF7F0;--cream:#F0EAD6;--white:#fff;--muted:#9aa8bb}
@@ -32,7 +34,7 @@ nav a{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18rem;text-tra
 #infos{background:var(--ivory)}.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem}.card{background:var(--white);border-left:3px solid var(--gold2);padding:1.5rem;box-shadow:0 8px 28px rgba(10,22,40,.06)}.card h3{font-family:'Cinzel';letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-size:.72rem;margin-bottom:.7rem}.card p{line-height:1.7;color:#45566f}#faq{background:var(--cream)}.faq-item{background:var(--white);margin:1rem 0;border-left:3px solid var(--gold2)}.faq-q{padding:1.15rem 1.5rem;font-family:'Cinzel';font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between}.faq-a{display:none;padding:0 1.5rem 1.2rem;color:#45566f;line-height:1.7}.faq-item.open .faq-a{display:block}
 /* RSVP */
 #rsvp{background:var(--ivory)}.rsvp-box{max-width:760px;margin:auto;background:white;padding:clamp(2rem,5vw,3.5rem);border:1px solid rgba(191,138,48,.25);box-shadow:0 12px 50px rgba(10,22,40,.08)}.rsvp-box h2{text-align:center;font-size:3.2rem}.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}label{font-family:'Cinzel';font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block;margin:.9rem 0 .35rem}input,select,textarea{width:100%;padding:.9rem 1rem;border:1px solid rgba(191,138,48,.28);background:var(--ivory);font-family:'Lato';outline:none}textarea{min-height:95px;resize:vertical}.full{grid-column:1/-1}.btn{border:none;background:var(--navy);color:var(--ivory);font-family:'Cinzel';letter-spacing:.2em;text-transform:uppercase;padding:1rem 1.4rem;cursor:pointer;margin-top:1rem}.btn.gold{background:var(--gold2);color:var(--navy)}#downloadPanel{display:none;text-align:center;margin-top:1.6rem;padding:1.3rem;background:var(--ivory);border:1px solid rgba(191,138,48,.25)}
-#printInvitation{position:absolute;left:-9999px;top:0;width:794px;background:#FAF7F0;color:#0A1628;padding:38px;font-family:'Cormorant Garamond'}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#BF8A30;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.6}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:24px auto}
+#printInvitation,#printQrPdf{position:absolute;left:-9999px;top:0;width:794px;background:#FAF7F0;color:#0A1628;padding:38px;font-family:'Cormorant Garamond'}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#BF8A30;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.6}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:24px auto}
 @media(max-width:850px){nav{position:static}#hero{grid-template-columns:1fr;padding:2rem 1rem}.hero-img{height:auto;max-height:none}#lieux{grid-template-columns:1fr}.lieux-img{min-height:360px}.frow{grid-template-columns:1fr}.prog-item{grid-template-columns:80px 24px 1fr}}
 @media print{nav,.btn,#downloadPanel{display:none!important}body{background:white}}
 
@@ -81,6 +83,14 @@ body:not(.gate-locked) #access-gate{display:none}
 .footer-final{background:var(--navy);color:#fff;text-align:center;padding:5rem 1.5rem 4.5rem}.footer-final h2{color:#fff;font-size:clamp(2rem,5vw,3.8rem);margin-bottom:.5rem}.footer-date{font-family:'Cinzel',serif;color:var(--gold3);letter-spacing:.4em;text-transform:uppercase;font-size:.58rem}.footer-line{width:60px;height:1px;background:var(--gold2);margin:2.6rem auto}.footer-quote{font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(255,255,255,.42);line-height:1.8;font-size:1rem}
 @media(max-width:900px){.story-grid-final{grid-template-columns:1fr;gap:2.5rem}.info-grid-final{grid-template-columns:1fr 1fr}.rsvp-form-final{grid-template-columns:1fr}}
 @media(max-width:620px){.info-grid-final{grid-template-columns:1fr}.rsvp-box-final{padding:2rem 1.1rem}.heart-polaroid{max-width:320px}}
+
+.drink-help{font-family:'Cormorant Garamond',serif!important;font-size:1.08rem!important;line-height:1.7!important;color:#536176!important;margin:.2rem 0 1rem!important}
+.drink-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:.6rem 0 1rem}
+.drink-radio,.drink-pill{display:flex!important;align-items:center;gap:.55rem;border:1px solid #d6c7a8;background:#fffdf8;padding:.85rem 1rem;color:var(--navy)!important;font-family:'Lato',sans-serif!important;font-size:.92rem!important;letter-spacing:0!important;text-transform:none!important;margin:0!important;cursor:pointer}
+.drink-radio input,.drink-pill input{width:auto!important;margin:0!important;padding:0!important}
+.drink-options{display:none;margin-top:.8rem}.drink-options.show{display:block}.drink-pills{display:flex;flex-wrap:wrap;gap:.7rem}.drink-pill{display:inline-flex!important}.drink-summary{margin-top:.75rem;font-size:.9rem;color:#536176;line-height:1.6}
+#qrBox{margin:1.4rem auto 0;display:none;justify-content:center}#printQr{margin:18px auto 0;display:flex;justify-content:center}.email-status{margin-top:.8rem;font-size:.92rem;color:#536176}#mailLink{display:none;margin-top:1rem;color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
+@media(max-width:620px){.drink-choice-row{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -137,7 +147,7 @@ body:not(.gate-locked) #access-gate{display:none}
     </div>
   </div>
 </section>
-<section id="faq" class="sec"><div class="sw"><span class="stag">Vos questions</span><h2>Questions fréquentes</h2><div class="dv"><span class="dvl"></span><span class="dvd"></span><span class="dvl"></span></div><div class="faq-item"><div class="faq-q">Les enfants sont-ils invités ? <span>+</span></div><div class="faq-a">Oui, si vous le souhaitez, vous pouvez venir avec vos enfants ou sans, cela ne nous dérange pas. Merci de nous prévenir en avance</div></div><div class="faq-item"><div class="faq-q">Y a-t-il un parking sur place ? <span>+</span></div><div class="faq-a">Des options de stationnement existent à proximité. Nous recommandons d’arriver un peu en avance.</div></div><div class="faq-item"><div class="faq-q">Puis-je venir avec un accompagnant non invité ? <span>+</span></div><div class="faq-a">Non, les invitations sont individuelles et les places sont limitées et organisées à l'avance. Merci de votre compréhension.</div></div><div class="faq-item"><div class="faq-q">Quelle tenue porter ? <span>+</span></div><div class="faq-a">Une tenue élégante dans les couleurs du thème : bleu marine, bleu ardoise, or, blanc ou beige champagne.</div></div><div class="faq-item"><div class="faq-q">Quand dois-je confirmer ma présence ? <span>+</span></div><div class="faq-a">Le plus tôt possible via le formulaire RSVP, afin de faciliter l’organisation.</div></div><div class="faq-item"><div class="faq-q">Comment offrir un cadeau ? <span>+</span></div><div class="faq-a">Vos cadeaux sont les bienvenus - ils seront un souvenir précieux de ce jour partagé avec vous.💛</div></div></div></section>
+<section id="faq" class="sec"><div class="sw"><span class="stag">Vos questions</span><h2>Questions fréquentes</h2><div class="dv"><span class="dvl"></span><span class="dvd"></span><span class="dvl"></span></div><div class="faq-item"><div class="faq-q">Les enfants sont-ils invités ? <span>+</span></div><div class="faq-a">Oui, si vous le souhaitez, vous pouvez venir avec vos enfants ou sans, cela ne nous dérange pas. Merci de nous prévenir en avance.</div></div><div class="faq-item"><div class="faq-q">Y a-t-il un parking sur place ? <span>+</span></div><div class="faq-a">Des options de stationnement existent à proximité. Nous recommandons d’arriver un peu en avance.</div></div><div class="faq-item"><div class="faq-q">Puis-je venir avec un accompagnant non invité ? <span>+</span></div><div class="faq-a">Non les invitations sont individuelles, et les places sont limitées et organisées à l’avance. Merci de votre compréhension.</div></div><div class="faq-item"><div class="faq-q">Quelle tenue porter ? <span>+</span></div><div class="faq-a">Une tenue élégante dans les couleurs du thème : bleu marine, bleu ardoise, or, blanc ou beige champagne.</div></div><div class="faq-item"><div class="faq-q">Quand dois-je confirmer ma présence ? <span>+</span></div><div class="faq-a">Le plus tôt possible via le formulaire RSVP, afin de faciliter l’organisation.</div></div><div class="faq-item"><div class="faq-q">Comment offrir un cadeau ? <span>+</span></div><div class="faq-a">Vos cadeaux sont les bienvenus - ils seront un souvenir précieux de ce jour partagé avec vous. 💛</div></div></div></section>
 <section id="rsvp" class="sec rsvp-section-final">
   <div class="rsvp-box rsvp-box-final">
     <span class="stag">Votre réponse</span>
@@ -152,6 +162,24 @@ body:not(.gate-locked) #access-gate{display:none}
       <div><label>Présence *</label><select id="presence" required><option value="">- Sélectionner -</option><option>Je serai présent(e)</option><option>Je ne pourrai pas venir</option></select></div>
       <div><label>Nombre de personnes</label><select id="guestCount" disabled><option value="1" selected>1 personne</option></select><input type="hidden" name="nombre_personnes" value="1"></div>
       <div class="full"><label>Allergies / régime alimentaire</label><input id="diet" placeholder="Végétarien, sans gluten, allergie..."></div>
+      <div class="full drink-section"><label>Boissons</label>
+        <p class="drink-help">Aidez-nous à planifier notre grand jour en nous indiquant vos préférences. Cette question concerne uniquement les boissons, le repas est déjà pris en compte avec les régimes alimentaires.</p>
+        <div class="drink-choice-row">
+          <label class="drink-radio"><input type="radio" name="alcool" value="Non" required> Je ne bois pas d’alcool</label>
+          <label class="drink-radio"><input type="radio" name="alcool" value="Oui" required> Je bois de l’alcool</label>
+        </div>
+        <div id="drinkOptions" class="drink-options">
+          <label>Si oui, que préférez-vous ?</label>
+          <div class="drink-pills">
+            <label class="drink-pill"><input type="checkbox" name="boissons" value="Bière"> Bière</label>
+            <label class="drink-pill"><input type="checkbox" name="boissons" value="Vin rouge"> Vin rouge</label>
+            <label class="drink-pill"><input type="checkbox" name="boissons" value="Vin blanc"> Vin blanc</label>
+            <label class="drink-pill"><input type="checkbox" name="boissons" value="Whisky"> Whisky</label>
+            <label class="drink-pill"><input type="checkbox" name="boissons" value="Champagne"> Champagne</label>
+          </div>
+        </div>
+        <p id="drinkSummary" class="drink-summary"></p>
+      </div>
       <div class="full"><label>Un mot pour les mariés 💌</label><textarea id="message" placeholder="Vos vœux, votre amour pour Lacache & Naomie..."></textarea></div>
       <button class="btn" type="submit">Confirmer ma présence</button>
     </form>
@@ -160,7 +188,12 @@ body:not(.gate-locked) #access-gate{display:none}
       <h3>Merci !</h3>
       <p>Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille 🥂<br>Votre confirmation a bien été prise en compte.</p>
       <p class="rsvp-download-label">Téléchargez votre invitation personnalisée :</p>
-      <button class="btn gold" onclick="downloadPDF()">⬇ Télécharger mon invitation PDF</button>
+      <div id="qrBox"></div>
+      <p id="emailStatus" class="email-status"></p>
+      <a id="mailLink" href="#" target="_blank" rel="noopener">Ouvrir le mail pré-rempli</a>
+      <button class="btn gold" onclick="downloadPDF()">⬇ Télécharger la carte d’invitation PDF</button>
+      <button class="btn" onclick="downloadProgrammePDF()">⬇ Télécharger le programme PDF</button>
+      <button class="btn" onclick="downloadQRCodePDF()">⬇ Télécharger le QR code PDF</button>
     </div>
   </div>
 </section>
@@ -170,7 +203,8 @@ body:not(.gate-locked) #access-gate{display:none}
   <div class="footer-line"></div>
   <p class="footer-quote">« Du virtuel jusqu’à l’autel -<br>nous avons traversé la distance, le doute et le temps.<br>Ce jour est notre récompense, et vous en êtes la lumière. »</p>
 </footer>
-<div id="printInvitation"><div class="pdf-card"><h1>Lacache & Naomie</h1><div class="pdf-date">25 · 07 · 2026</div><div class="pdf-line"></div><p>Invitation de mariage</p><p><b>Cérémonie civile :</b><br>Mairie de Lille - 10h00</p><p><b>Vin d’honneur, dîner & soirée :</b><br>124Bis Rue de l’Epideme, 59200 Tourcoing</p><div class="pdf-line"></div><p id="pdfGuest">Invité(e)</p><p>Merci de présenter cette invitation le jour J.</p></div></div>
+<div id="printInvitation"><div class="pdf-card"><h1>Lacache & Naomie</h1><div class="pdf-date">25 · 07 · 2026</div><div class="pdf-line"></div><p>Invitation de mariage</p><p><b>Cérémonie civile :</b><br>Mairie de Lille - 10h00</p><p><b>Vin d’honneur, dîner & soirée :</b><br>124Bis Rue de l’Epideme, 59200 Tourcoing</p><p><b>Programme :</b><br>10h00 · Cérémonie civile<br>13h30 · Vin d’honneur<br>19h00 · Dîner & soirée dansante</p><div class="pdf-line"></div><p id="pdfGuest">Invité(e)</p><p id="pdfDrink">Boissons : à confirmer</p><div id="printQr"></div><p>Merci de présenter cette invitation avec QR code le jour J.</p></div></div>
+<div id="printQrPdf"><div class="pdf-card"><h1>QR code invitation</h1><div class="pdf-date">Lacache & Naomie · 25 · 07 · 2026</div><div class="pdf-line"></div><p id="qrPdfGuest">Invité(e)</p><div id="printQrOnly"></div><p>Ce QR code est personnel et lié à votre invitation.</p></div></div>
 <script>
 // Protection anti-copie basique (ne bloque pas les captures écran, mais limite clic droit et raccourcis)
 document.addEventListener('contextmenu',e=>e.preventDefault());
@@ -216,8 +250,9 @@ async function checkGate(){
     if(!res.ok) throw new Error('Erreur Supabase');
     if(!rows || rows.length===0){err.textContent='Code inconnu. Vérifiez le code exact depuis le panel admin.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';return;}
     const invite=rows[0];
-    if(invite.used){err.textContent='Ce code a déjà été utilisé. Créez ou réinitialisez un code dans le panel admin.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';return;}
-    await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code),{method:'PATCH',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({used:true,used_at:new Date().toISOString()})});
+    const usedCount = Number(invite.used_count ?? (invite.used ? 2 : 0));
+    const maxUses = Number(invite.max_uses ?? 2);
+    if(usedCount >= maxUses){err.textContent='Ce code a déjà été utilisé 2 fois. Merci de nous contacter si besoin.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';return;}
     ok.style.display='block'; ok.textContent='✓ Code validé. Bienvenue !';
     setTimeout(()=>unlockSite(invite),500);
   }catch(e){console.error(e);err.textContent='Erreur réseau ou configuration. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';}
@@ -227,15 +262,35 @@ window.addEventListener('DOMContentLoaded',()=>{if(sessionStorage.getItem('gate_
 function updateCountdown(){const target=new Date('2026-07-25T10:00:00').getTime();const now=Date.now();let d=Math.max(0,target-now);const days=Math.floor(d/(1000*60*60*24));d-=days*86400000;const hours=Math.floor(d/3600000);d-=hours*3600000;const minutes=Math.floor(d/60000);d-=minutes*60000;const seconds=Math.floor(d/1000);['days','hours','minutes','seconds'].forEach((id,i)=>{const vals=[days,hours,minutes,seconds];const el=document.getElementById(id);if(el)el.textContent=vals[i];});}
 setInterval(updateCountdown,1000);updateCountdown();
 document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>q.parentElement.classList.toggle('open')));
-// EmailJS init
-emailjs.init('WqZvQ1reFTM1ISd3E');
+// Boissons : affiche les préférences seulement si l’invité boit de l’alcool
+const drinkOptions = document.getElementById('drinkOptions');
+const drinkSummary = document.getElementById('drinkSummary');
+document.querySelectorAll('input[name="alcool"]').forEach(radio=>{
+  radio.addEventListener('change',()=>{
+    const isOui = radio.value === 'Oui' && radio.checked;
+    if(drinkOptions) drinkOptions.classList.toggle('show', isOui);
+    if(!isOui){
+      document.querySelectorAll('input[name="boissons"]').forEach(cb=>cb.checked=false);
+      if(drinkSummary) drinkSummary.textContent = 'Boissons : sans alcool.';
+    } else {
+      if(drinkSummary) drinkSummary.textContent = 'Sélectionnez les boissons préférées.';
+    }
+  });
+});
+document.querySelectorAll('input[name="boissons"]').forEach(cb=>{
+  cb.addEventListener('change',()=>{
+    const selected = Array.from(document.querySelectorAll('input[name="boissons"]:checked')).map(x=>x.value);
+    if(drinkSummary) drinkSummary.textContent = selected.length ? 'Préférences : '+selected.join(', ') : 'Aucune boisson alcoolisée sélectionnée.';
+  });
+});
 
-document.getElementById('rsvpForm').addEventListener('submit', async function(e){
-  e.preventDefault();
-  const btn = this.querySelector('button[type="submit"]');
-  btn.disabled = true;
-  btn.textContent = 'Envoi en cours…';
+// EmailJS : remplacez ces 3 valeurs par vos vrais identifiants EmailJS pour envoyer automatiquement.
+const EMAILJS_PUBLIC_KEY = '';
+const EMAILJS_SERVICE_ID = '';
+const EMAILJS_TEMPLATE_ID = '';
+if(window.emailjs && EMAILJS_PUBLIC_KEY){ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }
 
+function getRSVPData(){
   const prenom = document.getElementById('f-prenom').value.trim();
   const nom = document.getElementById('f-nom').value.trim();
   const email = document.getElementById('f-email').value.trim();
@@ -243,65 +298,124 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
   const presence = document.getElementById('presence').value;
   const diet = document.getElementById('diet').value.trim();
   const message = document.getElementById('message').value.trim();
+  const alcool = document.querySelector('input[name="alcool"]:checked')?.value || '';
+  const boissons = alcool === 'Oui'
+    ? Array.from(document.querySelectorAll('input[name="boissons"]:checked')).map(x=>x.value)
+    : ['Sans alcool'];
   const code = guestCode || sessionStorage.getItem('gate_code') || '';
   const full = (prenom+' '+nom).trim() || 'Invité(e)';
+  const invitationUrl = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(code || full);
+  return {prenom, nom, full, email, phone, presence, diet, message, alcool, boissons: boissons.join(', '), code, invitationUrl};
+}
 
-  // 1. Sauvegarder dans Supabase
-  try {
-    await fetch(SB_URL+'/rest/v1/rsvp', {
-      method: 'POST',
-      headers: {
-        'apikey': SB_KEY,
-        'Authorization': 'Bearer '+SB_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        prenom, nom, email, tel: phone,
-        presence: presence.includes('présent') ? 'oui' : 'non',
-        nb_personnes: 1,
-        regime: diet,
-        message,
-        invite_code: code
+function renderQR(text){
+  const qrBox = document.getElementById('qrBox');
+  const printQr = document.getElementById('printQr');
+  const printQrOnly = document.getElementById('printQrOnly');
+  [qrBox, printQr, printQrOnly].forEach(box=>{
+    if(!box) return;
+    box.innerHTML='';
+    box.style.display='flex';
+    new QRCode(box,{text:text,width:110,height:110,colorDark:'#0A1628',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+  });
+}
+
+async function sendConfirmationEmail(data){
+  const status = document.getElementById('emailStatus');
+  const mailLink = document.getElementById('mailLink');
+  const subject = 'Confirmation RSVP - Mariage Lacache & Naomie';
+  const body = `Bonjour ${data.full},\n\nVotre réponse a bien été enregistrée ! 🎉\n\nStatut : ${data.presence}\nNombre de personnes : 1\nBoissons : ${data.alcool === 'Oui' ? data.boissons : 'Sans alcool'}\nRégime / allergies : ${data.diet || 'Non précisé'}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMARIAGE · LACACHE & NAOMIE\nSamedi 25 Juillet 2026 · Lille\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nProgramme :\n- 10h00 - Cérémonie civile · Mairie de Lille\n- 13h30 - Vin d'honneur\n- 19h00 - Dîner & Soirée · 124Bis Rue de l’Epideme, 59200 Tourcoing\n\nTenue élégante souhaitée.\nCouleurs : Bleu marine · Or · Champagne · Blanc\n\n📄 Téléchargez votre invitation personnalisée :\n${data.invitationUrl}\n\nAvec tout notre amour,\nLacache & Naomie 💍`;
+  if(mailLink){
+    mailLink.href = `mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    mailLink.style.display='inline-block';
+  }
+  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID){
+    try{
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_name: data.full,
+        to_email: data.email,
+        presence_label: data.presence,
+        nb_personnes: '1',
+        alcool_label: data.alcool || 'Non renseigné',
+        boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
+        regime_alimentaire: data.diet || 'Non précisé',
+        invite_code: data.code,
+        invitation_url: data.invitationUrl,
+        wedding_url: window.location.href
+      });
+      if(status) status.textContent='Email automatique envoyé avec le QR code / lien de l’invitation.';
+    }catch(err){
+      console.error(err);
+      if(status) status.textContent='Réponse enregistrée. EmailJS n’a pas pu envoyer le mail : utilisez le lien mail pré-rempli.';
+    }
+  }else{
+    if(status) status.textContent='Réponse enregistrée. Pour l’envoi automatique, renseignez vos IDs EmailJS dans le script. En attendant, le mail pré-rempli est disponible.';
+  }
+}
+
+
+async function saveRSVPToSupabase(data){
+  try{
+    await fetch(SB_URL+'/rest/v1/rsvps',{
+      method:'POST',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({
+        invite_code:data.code,
+        prenom:data.prenom,
+        nom:data.nom,
+        email:data.email,
+        telephone:data.phone,
+        presence:data.presence,
+        nb_personnes:1,
+        regime_alimentaire:data.diet,
+        alcool:data.alcool,
+        boissons:data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
+        message:data.message,
+        created_at:new Date().toISOString()
       })
     });
-  } catch(err) { console.warn('Supabase RSVP error:', err); }
+  }catch(err){console.warn('RSVP Supabase non enregistré :',err);}
+}
 
-  // 2. Email de confirmation à l'invité (avec QR code)
-  if (email) {
-    try {
-      await emailjs.send('service_9cilotm', 'template_qepoc28', {
-        to_email: email,
-        to_name: full,
-        presence_label: presence.includes('présent') ? 'Présent(e) ✓' : 'Absent(e)',
-        invite_code: code,
-        invitation_url: 'https://www.notre-grand-jour.online'
-      });
-    } catch(err) { console.warn('Email invité error:', err); }
-  }
-
-  // 3. Email récapitulatif pour les mariés
-  try {
-    await emailjs.send('service_9cilotm', 'template_qepoc28', {
-      to_email: 'eliet9052@gmail.com',
-      to_name: 'Lacache & Naomie',
-      presence_label: '📋 NOUVEAU RSVP\n\nNom : '+full+'\nEmail : '+(email||'-')+'\nTél : '+(phone||'-')+'\nRéponse : '+presence+'\nRégime : '+(diet||'-')+'\nMessage : '+(message||'-')+'\nCode : '+code,
-      invite_code: code,
-      invitation_url: 'https://www.notre-grand-jour.online'
+async function incrementInviteCodeUsage(code){
+  if(!code) return;
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code)+'&limit=1',{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,Accept:'application/json'}});
+    const rows=await res.json().catch(()=>[]);
+    if(!rows || !rows.length) return;
+    const invite=rows[0];
+    const current=Number(invite.used_count ?? (invite.used ? 1 : 0));
+    const max=Number(invite.max_uses ?? 2);
+    const next=Math.min(current+1,max);
+    await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code),{
+      method:'PATCH',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({used_count:next,max_uses:max,used:next>=max,used_at:new Date().toISOString()})
     });
-  } catch(err) { console.warn('Email admin error:', err); }
+  }catch(err){console.warn('Compteur code non mis à jour :',err);}
+}
 
-  // 4. Afficher le panneau de succès
-  const gc = document.getElementById('guestCount');
-  if(gc) gc.value='1';
+document.getElementById('rsvpForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const gc=document.getElementById('guestCount'); if(gc) gc.value='1';
+  const data = getRSVPData();
+  if(data.alcool === 'Oui' && !data.boissons){
+    alert('Merci de sélectionner au moins une boisson alcoolisée ou de choisir “Je ne bois pas d’alcool”.');
+    return;
+  }
   document.getElementById('downloadPanel').style.display='block';
-  const pg = document.getElementById('pdfGuest');
-  if(pg) pg.textContent='Invitation pour : '+full+' · Code : '+code;
+  const pg=document.getElementById('pdfGuest'); if(pg) pg.textContent='Invitation pour : '+data.full+' · Code : '+data.code;
+  const pd=document.getElementById('pdfDrink'); if(pd) pd.textContent='Boissons : '+(data.alcool === 'Oui' ? data.boissons : 'Sans alcool');
+  renderQR(data.invitationUrl);
+  const qg=document.getElementById('qrPdfGuest'); if(qg) qg.textContent='QR code pour : '+data.full+' · Code : '+data.code;
+  await saveRSVPToSupabase(data);
+  await incrementInviteCodeUsage(data.code);
+  await sendConfirmationEmail(data);
   document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'center'});
-  btn.disabled = false;
-  btn.textContent = 'Confirmer ma présence';
 });
 function downloadPDF(){const el=document.getElementById('printInvitation');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
+function downloadProgrammePDF(){const el=document.getElementById('programme');html2pdf().set({margin:10,filename:'Programme_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save();}
+function downloadQRCodePDF(){const el=document.getElementById('printQrPdf');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'QR_Code_Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
 </script>
 </body>
 </html>
