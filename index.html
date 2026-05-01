@@ -405,7 +405,7 @@ body.unlocked #access-gate{display:none}
         </div>
       </div>
       <div class="prog-item">
-        <div class="prog-time">13h30</div>
+        <div class="prog-time">12h00</div>
         <div class="prog-dot-wrap"><div class="prog-dot"></div><div class="prog-line"></div></div>
         <div>
           <div class="prog-name">Vin d'honneur</div>
@@ -581,6 +581,10 @@ body.unlocked #access-gate{display:none}
       <div class="success-icon">💌</div>
       <h3>Merci !</h3>
       <p id="success-msg">Lacache &amp; Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille. 🥂</p>
+      <div id="download-section" style="display:none;margin-top:2rem">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:#556;margin-bottom:1rem">Téléchargez votre invitation personnalisée :</p>
+        <button class="inv-btn" onclick="downloadInvitation()" style="margin:0 auto">⬇️ Télécharger mon invitation PDF</button>
+      </div>
     </div>
   </div>
 </section>
@@ -771,15 +775,16 @@ async function submitRSVP(e){
       throw new Error(err.message||'Erreur '+res.status);
     }
     document.getElementById('rsvp-form').style.display='none';
+    if(presence==='oui'){const dw=document.getElementById('download-btn-wrap');if(dw)dw.style.display='block';}
     const sp=document.getElementById('success-panel');
     sp.style.display='block';
     document.getElementById('success-msg').innerHTML=presence==='oui'
       ?'Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille. 🥂<br><small style="color:#888;font-size:.85rem">Un email de confirmation vous a été envoyé.</small>'
       :'Votre réponse a bien été enregistrée. Vous serez présents dans nos pensées ce jour-là. 💛';
-    // Afficher le bouton téléchargement seulement si présent
+    // Afficher le bouton téléchargement dans le panneau succès si présent
     if(presence==='oui'){
-      const qrSec=document.getElementById('qr-sec');
-      if(qrSec){qrSec.style.display='block';setTimeout(()=>qrSec.scrollIntoView({behavior:'smooth',block:'center'}),300);}
+      const dlSection=document.getElementById('download-section');
+      if(dlSection){dlSection.style.display='block';}
     }
     // Envoyer email de confirmation
     if(email){
@@ -860,7 +865,7 @@ function downloadInvitation(){
     <p class="prog-title">Programme de la journée</p>
     <div class="prog">
       <div class="prog-row"><span class="prog-t">10h00</span><span class="prog-n">Cérémonie civile</span><span class="prog-d">Mairie de Lille</span></div>
-      <div class="prog-row"><span class="prog-t">13h30</span><span class="prog-n">Vin d'honneur</span><span class="prog-d">Cocktail &amp; retrouvailles</span></div>
+      <div class="prog-row"><span class="prog-t">12h00</span><span class="prog-n">Vin d'honneur</span><span class="prog-d">Cocktail &amp; retrouvailles</span></div>
       <div class="prog-row"><span class="prog-t">19h00</span><span class="prog-n">Dîner &amp; Soirée</span><span class="prog-d">Latin Dance Lille</span></div>
     </div>
     <div class="divider"><div class="dvl"></div><div class="gem"></div><div class="dvr"></div></div>
