@@ -533,7 +533,7 @@ body.unlocked #access-gate{display:none}
 </section>
 
 <!-- INVITATION / QR -->
-<section id="qr-sec">
+<section id="qr-sec" style="display:none">
   <div class="sw reveal" style="text-align:center;max-width:600px">
     <span class="stag">Votre invitation</span>
     <h2>Téléchargez votre invitation</h2>
@@ -776,6 +776,11 @@ async function submitRSVP(e){
     document.getElementById('success-msg').innerHTML=presence==='oui'
       ?'Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille. 🥂<br><small style="color:#888;font-size:.85rem">Un email de confirmation vous a été envoyé.</small>'
       :'Votre réponse a bien été enregistrée. Vous serez présents dans nos pensées ce jour-là. 💛';
+    // Afficher le bouton téléchargement seulement si présent
+    if(presence==='oui'){
+      const qrSec=document.getElementById('qr-sec');
+      if(qrSec){qrSec.style.display='block';setTimeout(()=>qrSec.scrollIntoView({behavior:'smooth',block:'center'}),300);}
+    }
     // Envoyer email de confirmation
     if(email){
       const code = guestCode || sessionStorage.getItem('gate_code') || '';
@@ -864,20 +869,14 @@ function downloadInvitation(){
     <div class="theme">Thème · Bleu Marine · Or · Champagne · Blanc</div>
     <p class="footer">Tenue de soirée élégante · Confirmation avant le 1er juin 2026<br>notre-grand-jour.online</p>
   </div>
-  <script>
-    window.onload = function(){
-      // Try to trigger save as PDF dialog
-      document.title = 'Invitation-Lacache-Naomie-${nom.replace(/ /g,"-")}';
-      setTimeout(() => { window.print(); }, 600);
-    };
-  <\/script>
+
   </body></html>`;
 
   const blob = new Blob([invHtml], {type: 'text/html'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'Invitation-Lacache-Naomie-'+nom.replace(/ /g,'-')+'.html';
+  a.download = 'Invitation-Lacache-Naomie-'+nom.replace(/ /g,'-')+'.pdf';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
