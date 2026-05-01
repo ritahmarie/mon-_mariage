@@ -638,7 +638,7 @@ let guestCode = '';
 
 async function checkGate(){
   const raw=document.getElementById('gate-input').value.trim();
-  const code=raw.toLowerCase().replace(/[^a-z0-9-]/g,'');
+  const code=raw.trim().replace(/[^a-zA-Z0-9-]/g,'');
   const btn=document.getElementById('gate-btn');
   const errEl=document.getElementById('gate-err');
   const okEl=document.getElementById('gate-ok-msg');
@@ -647,7 +647,7 @@ async function checkGate(){
   btn.disabled=true;btn.textContent='Vérification…';
   try{
     // Fetch avec header Accept explicite
-    const res = await fetch(SB_URL+'/rest/v1/invite_codes?code=eq.'+encodeURIComponent(code)+'&limit=1',{
+    const res = await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code)+'&limit=1',{
       method:'GET',
       headers:{
         'apikey':SB_KEY,
