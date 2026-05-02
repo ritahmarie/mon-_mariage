@@ -139,8 +139,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <thead>
         <tr>
           <th>Code</th>
-          <th>Invité</th><th>Email</th><th>Utilisations</th>
-          <th>Statut</th>
+          <th>Invité</th><th>Email</th>
+          <th>Accès</th>
+          <th>RSVP</th>
           <th>Utilisé le</th>
           <th>Créé le</th>
           <th>Action</th>
@@ -207,13 +208,47 @@ async function genCodes(){
 
   try {
     await sb('/invite_codes','POST', rows.length===1 ? rows[0] : rows);
+
+    // Envoi automatique du mail si email fourni
+    let mailStatus = [];
+    if(email && window.emailjs){
+      for(const row of rows){
+        try{
+          const weddingUrl = 'https://notre-grand-jour.online?code=' + encodeURIComponent(row.code);
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_INVITATION_TEMPLATE_ID, {
+            from_name: 'Lacache & Naomie',
+            reply_to: 'lacachenaomie@gmail.com',
+            to_name: row.nom,
+            to_email: email,
+            email: email,
+            name: 'Lacache & Naomie',
+            invite_code: row.code.toUpperCase(),
+            wedding_url: weddingUrl,
+            invitation_url: weddingUrl
+          });
+          mailStatus.push({ code: row.code, ok: true });
+        }catch(mailErr){
+          console.error('Mail non envoyé:', mailErr);
+          mailStatus.push({ code: row.code, ok: false });
+        }
+      }
+    }
+
     res.style.display='block';
-    res.innerHTML = `<p style="color:var(--gold3);font-size:.55rem;letter-spacing:.2em;margin-bottom:.8rem">✓ Code(s) créé(s) pour <strong>${nom}</strong> — à envoyer par SMS/email :</p>`
+    const mailInfo = email
+      ? (mailStatus.every(m=>m.ok)
+          ? '<span style="color:#4ade80">✉ Mail envoyé automatiquement à '+email+'</span>'
+          : '<span style="color:#f87171">⚠ Mail non envoyé — vérifiez EmailJS</span>')
+      : '<span style="color:rgba(255,255,255,.4)">Pas d\'email — envoi manuel requis</span>';
+
+    res.innerHTML = `<p style="color:var(--gold3);font-size:.55rem;letter-spacing:.2em;margin-bottom:.6rem">✓ Code(s) créé(s) pour <strong>${nom}</strong></p>
+      <p style="font-size:.55rem;margin-bottom:.8rem">${mailInfo}</p>`
       + newCodes.map(c=>`<div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem">
           <span class="code-chip">${c.toUpperCase()}</span>
           <button class="copy-btn" onclick="navigator.clipboard.writeText('${c}').then(()=>this.textContent='✓ Copié!')">Copier</button>
         </div>`).join('');
     document.getElementById('gen-nom').value='';
+    document.getElementById('gen-email').value='';
     loadCodes();
   } catch(e){
     err.textContent='Erreur : '+e.message;
@@ -255,7 +290,8 @@ function renderTable(codes){
           <button class="copy-btn" style="margin-left:.4rem" onclick="navigator.clipboard.writeText('${c.code}').then(()=>this.textContent='✓')">Copier</button></td>
       <td>${c.nom||'—'}</td>
       <td style="font-size:.6rem;color:rgba(255,255,255,.5)">${c.email||'—'}</td>
-      <td>${badge} <span style="font-size:.5rem;color:rgba(255,255,255,.35)">${c.used_count||0}/${c.max_uses||2}</span></td>
+      <td><span style="font-size:.6rem">${c.used_count||0}/${c.max_uses||2} accès</span><br>${badge}</td>
+      <td>${c.rsvp_confirmed ? '<span class="badge" style="color:#4ade80;border-color:rgba(74,222,128,.3)">✓ Confirmé</span>' : '<span class="badge" style="color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.1)">En attente</span>'}</td>
       <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${usedAt}</td>
       <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${createdAt}</td>
       <td style="display:flex;gap:.4rem;flex-wrap:wrap">
