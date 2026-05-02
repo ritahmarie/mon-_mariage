@@ -53,12 +53,36 @@ function normCode(c){return String(c||'').trim().toLowerCase().normalize('NFD').
 function upper(c){return normCode(c).toUpperCase()}
 function showErr(m){const e=document.getElementById('loginErr');e.textContent=m;e.style.display='block'}
 async function sb(path,method='GET',body=null){const opts={method,headers:{apikey:CONFIG.sbKey,Authorization:'Bearer '+CONFIG.sbKey,'Content-Type':'application/json',Prefer:'return=representation'}};if(body)opts.body=JSON.stringify(body);const r=await fetch(CONFIG.sbUrl+'/rest/v1'+path,opts);if(r.status===204)return null;const txt=await r.text();const data=txt?JSON.parse(txt):null;if(!r.ok)throw new Error((data&&(data.message||data.hint))||txt||'Erreur Supabase '+r.status);return data}
-function login(){if(document.getElementById('pwd').value.trim()!==CONFIG.adminPwd){showErr('Mot de passe incorrect.');return}try{emailjs.init(CONFIG.emailPublic)}catch(e){}document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadCodes()}
+function login(){if(document.getElementById('pwd').value.trim()!==CONFIG.adminPwd){showErr('Mot de passe incorrect.');return}try{emailjs.init({publicKey:CONFIG.emailPublic})}catch(e){try{emailjs.init(CONFIG.emailPublic)}catch(_){}}document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadCodes()}
 async function loadCodes(){codes=await sb('/invite_codes?select=*&order=created_at.desc')||[];updateStats();renderTable()}
 function updateStats(){const total=codes.length, confirmed=codes.filter(c=>!!c.rsvp_confirmed).length, scanned=codes.filter(c=>!!c.scanned_entry).length;document.getElementById('sTotal').textContent=total;document.getElementById('sConfirmed').textContent=confirmed;document.getElementById('sScanned').textContent=scanned;document.getElementById('sWaiting').textContent=total-confirmed}
 function genCode(){const words=['rose','lune','etoile','soleil','fleur','ciel','jardin','riviere','aube','nuage','amour','alliance'];return words[Math.floor(Math.random()*words.length)]+'-'+Math.floor(1000+Math.random()*9000)}
-function weddingUrl(code){return location.origin+location.pathname.replace(/admin-codes\.html?$/,'index.html')+'?code='+encodeURIComponent(normCode(code))}
-async function sendInvitationMail(row){try{await emailjs.send(CONFIG.emailService,CONFIG.tplInvitation,{to_email:row.email,to_name:row.nom||row.name||'Invité',invite_code:upper(row.code),wedding_url:weddingUrl(row.code),qr_content:`INVITE: ${row.nom||'Invité'} | CODE: ${upper(row.code)} | DATE: 25-07-2026`});await sb('/invite_codes?code=eq.'+encodeURIComponent(normCode(row.code)),'PATCH',{invitation_sent_at:new Date().toISOString()}).catch(()=>{});return true}catch(e){return false}}
+function weddingUrl(code){return 'https://www.notre-grand-jour.online/?code='+encodeURIComponent(normCode(code))}
+async function sendInvitationMail(row){
+  try{
+    if(!window.emailjs) throw new Error('EmailJS non chargé');
+    try{emailjs.init({publicKey:CONFIG.emailPublic})}catch(e){try{emailjs.init(CONFIG.emailPublic)}catch(_){}}
+    await emailjs.send(CONFIG.emailService,CONFIG.tplInvitation,{
+      to_email:row.email,
+      email:row.email,
+      to_name:row.nom||row.name||'Invité',
+      invite_code:upper(row.code),
+      wedding_url:weddingUrl(row.code),
+      invitation_url:weddingUrl(row.code),
+      qr_content:encodeURIComponent(upper(row.code)),
+      qr_raw_content:upper(row.code),
+      from_name:'Lacache & Naomie',
+      reply_to:'lacachenaomie@gmail.com'
+    });
+    await sb('/invite_codes?code=eq.'+encodeURIComponent(normCode(row.code)),'PATCH',{invitation_sent_at:new Date().toISOString()}).catch(()=>{});
+    console.log('Invitation EmailJS envoyée à',row.email);
+    return true;
+  }catch(e){
+    console.error('Erreur EmailJS invitation :',e);
+    alert('Le code a été créé, mais le mail invitation n’a pas été envoyé : '+(e?.text||e?.message||JSON.stringify(e)));
+    return false;
+  }
+}
 async function createGuest(){const name=document.getElementById('guestName').value.trim(), email=document.getElementById('guestEmail').value.trim(), phone=document.getElementById('guestPhone').value.trim(), nb=parseInt(document.getElementById('guestNb').value)||1, msg=document.getElementById('createMsg'), btn=document.getElementById('createBtn');msg.style.display='none';if(!name)return alert('Nom obligatoire.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert('Email invalide.');btn.disabled=true;btn.textContent='Création + envoi…';try{const rows=[];for(let i=0;i<nb;i++){rows.push({code:genCode(),nom:nb>1?`${name} (${i+1})`:name,email,phone:phone||null,used:false,used_count:0,max_uses:2,rsvp_confirmed:false,scanned_entry:false})}const inserted=await sb('/invite_codes','POST',rows.length===1?rows[0]:rows);const list=Array.isArray(inserted)?inserted:rows;const results=[];for(const r of list){results.push({code:r.code,sent:await sendInvitationMail(r)})}msg.innerHTML='Code(s) créé(s) : '+results.map(r=>`<span class="chip">${upper(r.code)}</span> ${r.sent?'<span class="yes">mail envoyé</span>':'<span class="no">mail non envoyé</span>'}`).join(' &nbsp; ');msg.style.display='block';['guestName','guestEmail','guestPhone'].forEach(id=>document.getElementById(id).value='');await loadCodes()}catch(e){alert('Erreur : '+e.message)}finally{btn.disabled=false;btn.textContent="Créer + envoyer l'invitation"}}
 function renderTable(){const q=(document.getElementById('search').value||'').toLowerCase();const list=codes.filter(c=>!q||String(c.code).toLowerCase().includes(q)||String(c.nom||'').toLowerCase().includes(q)||String(c.email||'').toLowerCase().includes(q));const tb=document.getElementById('tbody');if(!list.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:28px">Aucun invité.</td></tr>';return}tb.innerHTML=list.map(c=>`<tr><td><span class="chip">${upper(c.code)}</span></td><td>${c.nom||'—'}</td><td>${c.email||'—'}</td><td>${c.used_count||0}/${c.max_uses||2}</td><td>${c.rsvp_confirmed?'<span class="yes">Confirmé</span>':'<span class="wait">En attente</span>'}</td><td>${c.scanned_entry?'<span class="yes">Validée</span>':'<span class="wait">Non scannée</span>'}</td><td>${c.created_at?new Date(c.created_at).toLocaleDateString('fr-FR'):'—'}</td><td><button class="btn dark" onclick="resend('${normCode(c.code)}')">Renvoyer</button></td></tr>`).join('')}
 async function resend(code){const row=codes.find(c=>normCode(c.code)===normCode(code));if(!row||!row.email)return alert('Email manquant.');const ok=await sendInvitationMail(row);alert(ok?'Invitation renvoyée.':'Erreur EmailJS. Vérifie ton template.')}
