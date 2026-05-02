@@ -251,7 +251,7 @@ function unlockSite(invite){
   guestNom = invite?.nom || invite?.invite || '';
   guestEmail = invite?.email || '';
   guestCode = normalizeCode(invite?.code || document.getElementById('gate-input')?.value || '');
-  guestPhone = invite?.phone || '';
+  guestPhone = invite?.phone || invite?.telephone || invite?.rsvp_phone || ''; // PRO: téléphone prérempli avec tous les noms de colonnes possibles
   sessionStorage.setItem('gate_ok','1');
   sessionStorage.setItem('gate_nom',guestNom);
   sessionStorage.setItem('gate_email',guestEmail);
@@ -379,7 +379,14 @@ const EMAILJS_ADMIN_TEMPLATE_ID = '';
 const ADMIN_EMAIL = 'lacachenaomie@gmail.com';
 const FROM_NAME = 'Lacache & Naomie';
 const REPLY_TO = 'lacachenaomie@gmail.com';
-if(window.emailjs && EMAILJS_PUBLIC_KEY){ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }
+if(window.emailjs && EMAILJS_PUBLIC_KEY){
+  try{ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }catch(e){ try{ emailjs.init(EMAILJS_PUBLIC_KEY); }catch(_){} }
+}
+function _emailJsReady(){
+  if(!window.emailjs) throw new Error('EmailJS non chargé. Vérifie ta connexion ou le CDN EmailJS.');
+  if(!EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID) throw new Error('EmailJS non configuré : Public Key ou Service ID manquant.');
+  try{ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }catch(e){ try{ emailjs.init(EMAILJS_PUBLIC_KEY); }catch(_){} }
+}
 
 function getRSVPData(){
   const prenom = document.getElementById('f-prenom').value.trim();
@@ -396,7 +403,7 @@ function getRSVPData(){
   const code = guestCode || sessionStorage.getItem('gate_code') || '';
   const full = (prenom+' '+nom).trim() || 'Invité(e)';
   const invitationUrl = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(code || full);
-  const qrContent = 'MARIAGE LACACHE & NAOMIE | INVITE: '+full+' | CODE: '+(code||'')+' | DATE: 25/07/2026 | NB: 1 PERSONNE';
+  const qrContent = (code||'').toUpperCase();
   return {prenom, nom, full, email, phone, presence, diet, message, alcool, boissons: boissons.join(', '), code, invitationUrl, qrContent};
 }
 
@@ -443,51 +450,50 @@ async function sendInvitationEmail(invite){
 }
 
 async function sendConfirmationEmail(data){
-    if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_CONFIRMATION_TEMPLATE_ID){
-    try{
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, emailBaseParams({
-        to_name: data.full,
-        to_email: data.email,
-        email: data.email,
-        name: FROM_NAME,
-        presence_label: data.presence,
-        nb_personnes: '1 personne',
-        alcool_label: data.alcool || 'Non renseigné',
-        boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
-        regime_alimentaire: data.diet || 'Non précisé',
-        invite_code: data.code,
-        invite_name: data.full,
-        invite_email: data.email,
-        invite_phone: data.phone || '-',
-        message_invite: data.message || '-',
-        invitation_url: data.invitationUrl,
-        qr_content: data.qrContent,
-        wedding_url: window.location.origin + window.location.pathname,
-        ..._buildEmailPdfPayload(data)
-      }));
-    }catch(err){
-      
-    }
+  if(!EMAILJS_CONFIRMATION_TEMPLATE_ID){
+    console.warn('EmailJS confirmation non envoyé : Template ID manquant.');
+    return false;
   }
 
-  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_ADMIN_TEMPLATE_ID){
+  const basePayload = emailBaseParams({
+    to_name: data.full,
+    to_email: data.email,
+    email: data.email,
+    name: FROM_NAME,
+    presence_label: data.presence,
+    nb_personnes: '1 personne',
+    alcool_label: data.alcool || 'Non renseigné',
+    boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
+    regime_alimentaire: data.diet || 'Non précisé',
+    invite_code: data.code,
+    invite_name: data.full,
+    invite_email: data.email,
+    invite_phone: data.phone || '-',
+    message_invite: data.message || '-',
+    invitation_url: data.invitationUrl,
+    qr_content: encodeURIComponent(data.qrContent || data.code || ''),
+    qr_raw_content: data.qrContent || data.code || '',
+    wedding_url: window.location.origin + window.location.pathname
+  });
+
+  try{
+    _emailJsReady();
+    const pdfPayload = _buildEmailPdfPayload(data);
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, {...basePayload, ...pdfPayload});
+    console.log('EmailJS confirmation envoyé avec pièces jointes PDF.');
+    return true;
+  }catch(err){
+    console.error('Erreur EmailJS confirmation avec PDF :', err);
+    // PRO: fallback pour que l’invité reçoive quand même le mail même si les pièces jointes PDF dépassent la limite EmailJS.
     try{
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, emailBaseParams({
-        to_email: ADMIN_EMAIL,
-        email: ADMIN_EMAIL,
-        to_name: FROM_NAME,
-        invite_name: data.full,
-        invite_email: data.email,
-        invite_phone: data.phone || '-',
-        presence_label: data.presence,
-        nb_personnes: '1 personne',
-        boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
-        regime_alimentaire: data.diet || 'Non précisé',
-        message_invite: data.message || '-',
-        invite_code: data.code
-      }));
-    }catch(err){
-      
+      _emailJsReady();
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, basePayload);
+      console.warn('EmailJS confirmation envoyé sans pièces jointes PDF après fallback.');
+      return true;
+    }catch(err2){
+      console.error('Erreur EmailJS confirmation fallback :', err2);
+      alert('Votre RSVP est enregistré, mais le mail de confirmation n’a pas pu être envoyé. Détail EmailJS : '+(err2?.text || err2?.message || JSON.stringify(err2)));
+      return false;
     }
   }
 }
@@ -938,15 +944,20 @@ function _buildEmailPdfPayload(data){
   const invitationDoc = _buildInvitationDoc();
   const programmeDoc = _buildProgrammeDoc();
   const qrDoc = _buildQRCodeDoc();
+  const invitationB64 = _docBase64(invitationDoc);
+  const programmeB64 = _docBase64(programmeDoc);
+  const qrB64 = _docBase64(qrDoc);
+  // PRO: on envoie les deux formats possibles pour EmailJS.
+  // Dans EmailJS > Attachments, utilise idéalement *_pdf_content comme contenu base64.
   return {
-    invitation_pdf_base64: _docDataUri(invitationDoc),
-    invitation_pdf_content: _docBase64(invitationDoc),
+    invitation_pdf_base64: invitationB64,
+    invitation_pdf_content: invitationB64,
     invitation_filename: `Invitation_${safe}_Lacache_Naomie.pdf`,
-    programme_pdf_base64: _docDataUri(programmeDoc),
-    programme_pdf_content: _docBase64(programmeDoc),
+    programme_pdf_base64: programmeB64,
+    programme_pdf_content: programmeB64,
     programme_filename: `Programme_Lacache_Naomie.pdf`,
-    qr_pdf_base64: _docDataUri(qrDoc),
-    qr_pdf_content: _docBase64(qrDoc),
+    qr_pdf_base64: qrB64,
+    qr_pdf_content: qrB64,
     qr_filename: `QR_Code_${safe}.pdf`
   };
 }
