@@ -238,11 +238,9 @@ body:not(.gate-locked) #access-gate{display:none}
   <p class="pdf-note">Merci de confirmer votre présence avant le 1er juin 2026.</p>
 </div></div>
 <script>
-// Protection anti-copie basique (ne bloque pas les captures écran, mais limite clic droit et raccourcis)
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['s','u','p','c'].includes(e.key.toLowerCase()))e.preventDefault();if(e.key==='PrintScreen')e.preventDefault();});
 
-// SUPABASE : mêmes codes que le panel admin
 const SB_URL='https://mbtnqiotfbaagunpsvex.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
 let guestNom='', guestEmail='', guestPhone='', guestCode='';
@@ -289,7 +287,6 @@ async function checkGate(){
     const usedCount = Number(invite.used_count ?? (invite.used ? 2 : 0));
     const maxUses = Number(invite.max_uses ?? 2);
     if(usedCount >= maxUses){err.textContent='Ce code a déjà été utilisé le nombre de fois autorisé. Merci de nous contacter si besoin.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';return;}
-    // Incrémenter immédiatement à l'entrée (chaque passage au gate compte)
     const next = Math.min(usedCount + 1, maxUses);
     try{
       await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code),{
@@ -305,7 +302,6 @@ async function checkGate(){
 window.addEventListener('DOMContentLoaded',async()=>{
   const savedCode = sessionStorage.getItem('gate_code');
   if(sessionStorage.getItem('gate_ok')==='1' && savedCode){
-    // Re-vérifier Supabase : si le code est épuisé, on bloque même la session
     try{
       const res=await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(savedCode)+'&limit=1',{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,Accept:'application/json'}});
       const rows=await res.json().catch(()=>[]);
@@ -314,7 +310,6 @@ window.addEventListener('DOMContentLoaded',async()=>{
         const usedCount=Number(invite.used_count ?? (invite.used ? 2 : 0));
         const maxUses=Number(invite.max_uses ?? 2);
         if(usedCount >= maxUses){
-          // Code épuisé : on efface la session et on bloque
           sessionStorage.clear();
           const err=document.getElementById('gate-err');
           if(err){err.textContent='Ce code a déjà été utilisé le nombre de fois autorisé.';err.style.display='block';}
@@ -355,7 +350,6 @@ function resetInactivityTimer(){
 function updateCountdown(){const target=new Date('2026-07-25T10:00:00').getTime();const now=Date.now();let d=Math.max(0,target-now);const days=Math.floor(d/(1000*60*60*24));d-=days*86400000;const hours=Math.floor(d/3600000);d-=hours*3600000;const minutes=Math.floor(d/60000);d-=minutes*60000;const seconds=Math.floor(d/1000);['days','hours','minutes','seconds'].forEach((id,i)=>{const vals=[days,hours,minutes,seconds];const el=document.getElementById(id);if(el)el.textContent=vals[i];});}
 setInterval(updateCountdown,1000);updateCountdown();
 document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>q.parentElement.classList.toggle('open')));
-// Boissons : affiche les préférences seulement si l’invité boit de l’alcool
 const drinkOptions = document.getElementById('drinkOptions');
 const drinkSummary = document.getElementById('drinkSummary');
 document.querySelectorAll('input[name="alcool"]').forEach(radio=>{
@@ -377,7 +371,6 @@ document.querySelectorAll('input[name="boissons"]').forEach(cb=>{
   });
 });
 
-// EmailJS : configuration des 2 emails automatiques
 const EMAILJS_PUBLIC_KEY = 'WqZvQ1reFTM1ISd3E';
 const EMAILJS_SERVICE_ID = 'service_9cilotm';
 const EMAILJS_INVITATION_TEMPLATE_ID = 'template_4n9w6sv'; 
@@ -428,7 +421,6 @@ function emailBaseParams(extra={}){
   };
 }
 
-// Le template EmailJS doit avoir To Email = {{to_email}}
 async function sendInvitationEmail(invite){
   if(!window.emailjs || !EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_INVITATION_TEMPLATE_ID) return;
   const toEmail = invite.email || invite.to_email || '';
@@ -575,12 +567,9 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   renderQR(data.qrContent);
   const qg=document.getElementById('qrPdfGuest'); if(qg) qg.textContent='QR code pour : '+data.full+' · Code : '+data.code;
   await saveRSVPToSupabase(data);
-  // Épuiser le code immédiatement après RSVP confirmé — plus d'accès possible
   await _burnInviteCode(data.code);
   await sendConfirmationEmail(data);
   document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'center'});
-  // Vider la session : l'invité peut encore télécharger ses PDF sur cette page
-  // mais ne pourra plus revenir sur le site
   sessionStorage.clear();
   clearTimeout(inactivityTimer);
 });
@@ -599,10 +588,8 @@ function _getQRDataURL(){
 }
 
 function _makePdfBase(){
-  // On utilise l'API jsPDF directement
   const { jsPDF } = window.jspdf || {};
   if(!jsPDF){
-    // Fallback : créer via html2pdf qui expose jsPDF
     alert('jsPDF non disponible, rechargez la page.');
     return null;
   }
@@ -614,10 +601,8 @@ function _makePdfBase(){
   const GOLD3  = [237, 211, 138];
   const IVORY  = [250, 247, 240];
   const MUTED  = [154, 168, 187];
-  // Fond navy
   doc.setFillColor(...NAVY);
   doc.rect(0, 0, W, H, 'F');
-  // Bordure or
   doc.setDrawColor(...GOLD);
   doc.setLineWidth(1.5);
   doc.rect(20, 20, W-40, H-40, 'S');
@@ -628,7 +613,6 @@ function _drawHLine(doc, y, GOLD, W){
   doc.setDrawColor(...GOLD);
   doc.setLineWidth(0.5);
   doc.line(W/2 - 90, y, W/2 + 90, y);
-  // losange central
   doc.setFillColor(...GOLD);
   doc.rect(W/2 - 4, y - 4, 8, 8, 'F');
 }
@@ -640,7 +624,6 @@ function _buildInvitationDoc(){
   const { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED } = base;
 
   let y = 55;
-  // Kicker
   doc.setFont('helvetica','normal');
   doc.setFontSize(7);
   doc.setTextColor(...MUTED);
@@ -649,7 +632,6 @@ function _buildInvitationDoc(){
   doc.setCharSpace(0);
 
   y += 32;
-  // Noms
   doc.setFont('times','italic');
   doc.setFontSize(44);
   doc.setTextColor(...IVORY);
@@ -689,7 +671,6 @@ function _buildInvitationDoc(){
   y += 20;
   _drawHLine(doc, y, GOLD, W);
 
-  // Date & lieu
   y += 22;
   doc.setFont('helvetica','bold');
   doc.setFontSize(10);
@@ -706,7 +687,6 @@ function _buildInvitationDoc(){
   y += 24;
   _drawHLine(doc, y, GOLD, W);
 
-  // Programme
   y += 20;
   doc.setFont('helvetica','normal');
   doc.setFontSize(7);
@@ -723,19 +703,16 @@ function _buildInvitationDoc(){
 
   y += 14;
   prog.forEach(p => {
-    // heure
     doc.setFont('times','italic');
     doc.setFontSize(18);
     doc.setTextColor(...GOLD);
     doc.text(p.h, 55, y);
-    // titre
     doc.setFont('helvetica','bold');
     doc.setFontSize(8);
     doc.setTextColor(...IVORY);
     doc.setCharSpace(2);
     doc.text(p.t, 155, y - 6);
     doc.setCharSpace(0);
-    // lieu (multi-ligne)
     doc.setFont('times','italic');
     doc.setFontSize(10);
     doc.setTextColor(...MUTED);
@@ -743,7 +720,6 @@ function _buildInvitationDoc(){
     lines.forEach((ln, i) => {
       doc.text(ln, 155, y + 6 + i * 13);
     });
-    // trait séparateur
     doc.setDrawColor(212,168,75,0.3);
     doc.setLineWidth(0.3);
     const rowH = Math.max(36, lines.length * 13 + 20);
@@ -752,7 +728,6 @@ function _buildInvitationDoc(){
   });
 
   y += 4;
-  // Boissons & régime
   doc.setFont('times','italic');
   doc.setFontSize(11);
   doc.setTextColor(...MUTED);
@@ -785,7 +760,6 @@ function _buildInvitationDoc(){
     y += 20;
   }
 
-  // Thème
   doc.setFillColor(...GOLD3);
   const themeText = 'THÈME · BLEU MARINE · OR · CHAMPAGNE · BLANC';
   doc.setFont('helvetica','bold');
@@ -798,7 +772,6 @@ function _buildInvitationDoc(){
   doc.setCharSpace(0);
 
   y += 32;
-  // Note de bas
   doc.setFont('times','italic');
   doc.setFontSize(9);
   doc.setTextColor(...MUTED);
