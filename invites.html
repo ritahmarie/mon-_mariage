@@ -554,21 +554,66 @@ function stopScanner(){
 
 async function onScanSuccess(text){
   html5QrCode.pause(true);
-  let data;
-  try{data=JSON.parse(text);}catch{showResult('error','⚠️','QR invalide','','Format non reconnu');setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;}
-  const g=guests.find(x=>x.id===data.id);
-  if(!g){showResult('error','✗',data.nom||'Inconnu','','Invité introuvable');setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;}
-  if(g.presence==='oui'){
-    showResult('already','⚠',g.prenom+" "+g.nom,[g.presence,g.table_num?`Table ${g.table_num}`:null].filter(Boolean).join(' · '),'Déjà pointé(e)');
+
+  let nomInvite='', codeInvite='';
+  if(text.includes('INVITE:') && text.includes('CODE:')){
+    text.split('|').map(s=>s.trim()).forEach(p=>{
+      if(p.startsWith('INVITE:')) nomInvite=p.replace('INVITE:','').trim();
+      if(p.startsWith('CODE:')) codeInvite=p.replace('CODE:','').trim();
+    });
+  } else {
+    try{
+      const d=JSON.parse(text);
+      nomInvite=d.nom||''; codeInvite='';
+    }catch{
+      showResult('error','⚠️','QR invalide','','Format non reconnu');
+      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
+    }
+  }
+
+  if(!codeInvite){
+    showResult('error','⚠️','QR invalide','','Code introuvable dans le QR');
     setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
   }
-  const now=new Date().toISOString();g.presence='present';g.scanned_at=now;
-  try{await sbFetch(`/rsvp?id=eq.${g.id}`,'PATCH',{presence:'present',scanned_at:now});}catch(e){console.error(e);}
-  addLog(g);renderGuests();updateStats();
-  showResult('success','✓',g.prenom+" "+g.nom,[g.presence,g.table_num?`Table ${g.table_num}`:null].filter(Boolean).join(' · '),'Bienvenue ! Entrée enregistrée ✦');
-  // Page bienvenue après 1.5s
-  setTimeout(()=>{stopScanner();showWelcomePage(g);},1500);
+
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/invite_codes?code=ilike.${encodeURIComponent(codeInvite)}&limit=1`,
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'}});
+    const rows=await res.json();
+
+    if(!rows||!rows.length){
+      showResult('error','✗',nomInvite||codeInvite,'','Invité introuvable');
+      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
+    }
+    const invite=rows[0];
+
+    if(invite.scanned_entry){
+      showResult('already','⚠',nomInvite,`Code : ${codeInvite.toUpperCase()}`,'Déjà enregistré(e) à l\'entrée');
+      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
+    }
+    if(!invite.rsvp_confirmed){
+      showResult('error','✗',nomInvite,`Code : ${codeInvite.toUpperCase()}`,'RSVP non confirmé');
+      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
+    }
+
+    const now=new Date().toISOString();
+    await fetch(`${SB_URL}/rest/v1/invite_codes?code=ilike.${encodeURIComponent(codeInvite)}`,{
+      method:'PATCH',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({scanned_entry:true,scanned_at:now})
+    });
+
+    const fakeGuest={prenom:nomInvite,nom:'',table_num:null};
+    addLog(fakeGuest);updateStats();
+    showResult('success','✓',nomInvite,`Code : ${codeInvite.toUpperCase()}`,'Bienvenue ! Entrée validée ✦');
+    setTimeout(()=>{stopScanner();showWelcomePage(fakeGuest);},1500);
+
+  }catch(err){
+    showResult('error','⚠️','Erreur réseau','','Impossible de vérifier. Réessayez.');
+    setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);
+  }
 }
+
 
 function showResult(type,icon,name,detail,status){
   const box=document.getElementById('scan-result-box');
