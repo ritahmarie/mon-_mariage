@@ -542,7 +542,7 @@ async function _burnInviteCode(code){
     await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code),{
       method:'PATCH',
       headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-      body:JSON.stringify({used_count:max,used:true,used_at:new Date().toISOString()})
+      body:JSON.stringify({used_count:max,used:true,used_at:new Date().toISOString(),rsvp_confirmed:true})
     });
   }catch(err){console.warn('Burn code échoué :',err);}
 }
