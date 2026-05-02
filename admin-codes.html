@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 :root{--navy:#0A1628;--navy2:#152642;--gold:#BF8A30;--gold2:#D4A84B;--gold3:#EDD38A;--ivory:#FAF7F0;--green:#4ade80;--red:#f87171;--orange:#f59e0b;--muted:#9aa8bb}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Lato,Arial,sans-serif;background:radial-gradient(circle at 70% 10%,rgba(212,168,75,.08),transparent 35%),var(--navy);color:var(--ivory);min-height:100vh}.wrap{max-width:1120px;margin:auto;padding:28px}.login{max-width:440px;margin:10vh auto;padding:36px;border:1px solid rgba(212,168,75,.45);background:rgba(255,255,255,.045);box-shadow:0 30px 90px rgba(0,0,0,.34)}h1,h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300}.brand{text-align:center;font-size:58px;line-height:.92}.brand span{color:var(--gold);font-size:38px}.tag{text-align:center;font-family:Cinzel,serif;letter-spacing:.3em;text-transform:uppercase;font-size:11px;color:var(--gold3);margin:22px 0}.input,select{width:100%;padding:14px;background:rgba(255,255,255,.07);border:1px solid rgba(212,168,75,.32);color:#fff;font:16px Lato;outline:none}.input::placeholder{color:rgba(255,255,255,.38)}label{display:block;font-family:Cinzel,serif;color:var(--gold3);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}.btn{border:0;background:var(--gold2);color:var(--navy);padding:14px 18px;font-family:Cinzel,serif;letter-spacing:.18em;text-transform:uppercase;font-weight:600;cursor:pointer}.btn:hover{filter:brightness(1.08)}.btn.dark{background:transparent;color:var(--gold3);border:1px solid rgba(212,168,75,.45)}.btn.red{background:transparent;color:var(--red);border:1px solid rgba(248,113,113,.45)}.btn:disabled{opacity:.55;cursor:not-allowed}.err{display:none;color:#ffc0c0;text-align:center;margin-top:14px}.app{display:none}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid rgba(212,168,75,.22);padding-bottom:20px;flex-wrap:wrap}.top h1{font-size:44px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.stat{background:rgba(255,255,255,.045);border:1px solid rgba(212,168,75,.2);padding:18px}.num{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--gold2)}.lab{font-family:Cinzel,serif;color:var(--muted);font-size:11px;letter-spacing:.16em;text-transform:uppercase}.card{background:rgba(255,255,255,.045);border:1px solid rgba(212,168,75,.22);padding:22px;margin-bottom:22px}.grid{display:grid;grid-template-columns:2fr 2fr 1.4fr 1fr;gap:14px;align-items:end}.msg{display:none;margin-top:14px;padding:12px;border:1px solid rgba(212,168,75,.25);background:rgba(212,168,75,.08);color:var(--gold3)}.tools{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}.search{flex:1;min-width:240px}.tablewrap{overflow:auto;border:1px solid rgba(212,168,75,.18);background:rgba(255,255,255,.03)}table{width:100%;border-collapse:collapse;min-width:920px}th{font-family:Cinzel,serif;font-size:11px;letter-spacing:.15em;color:var(--gold2);text-align:left;padding:13px;border-bottom:1px solid rgba(212,168,75,.24)}td{padding:13px;border-bottom:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.82)}.chip{display:inline-block;border:1px solid rgba(212,168,75,.35);background:rgba(212,168,75,.11);padding:5px 9px;color:var(--gold3);font-family:Cinzel,serif;letter-spacing:.08em}.yes{color:var(--green)}.no{color:var(--red)}.wait{color:var(--orange)}@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.wrap{padding:16px}.brand{font-size:48px}}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Lato,Arial,sans-serif;background:radial-gradient(circle at 70% 10%,rgba(212,168,75,.08),transparent 35%),var(--navy);color:var(--ivory);min-height:100vh}.wrap{max-width:1120px;margin:auto;padding:28px}.login{max-width:440px;margin:10vh auto;padding:36px;border:1px solid rgba(212,168,75,.45);background:rgba(255,255,255,.045);box-shadow:0 30px 90px rgba(0,0,0,.34)}h1,h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300}.brand{text-align:center;font-size:58px;line-height:.92}.brand span{color:var(--gold);font-size:38px}.tag{text-align:center;font-family:Cinzel,serif;letter-spacing:.3em;text-transform:uppercase;font-size:11px;color:var(--gold3);margin:22px 0}.input,select{width:100%;padding:14px;background:rgba(255,255,255,.07);border:1px solid rgba(212,168,75,.32);color:#fff;font:16px Lato;outline:none}.input::placeholder{color:rgba(255,255,255,.38)}label{display:block;font-family:Cinzel,serif;color:var(--gold3);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}.btn{border:0;background:var(--gold2);color:var(--navy);padding:14px 18px;font-family:Cinzel,serif;letter-spacing:.18em;text-transform:uppercase;font-weight:600;cursor:pointer}.btn:hover{filter:brightness(1.08)}.btn.dark{background:transparent;color:var(--gold3);border:1px solid rgba(212,168,75,.45)}.btn.red{background:transparent;color:var(--red);border:1px solid rgba(248,113,113,.45)}.btn:disabled{opacity:.55;cursor:not-allowed}.err{display:none;color:#ffc0c0;text-align:center;margin-top:14px}.app{display:none}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid rgba(212,168,75,.22);padding-bottom:20px;flex-wrap:wrap}.top h1{font-size:44px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.stat{background:rgba(255,255,255,.045);border:1px solid rgba(212,168,75,.2);padding:18px}.num{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--gold2)}.lab{font-family:Cinzel,serif;color:var(--muted);font-size:11px;letter-spacing:.16em;text-transform:uppercase}.card{background:rgba(255,255,255,.045);border:1px solid rgba(212,168,75,.22);padding:22px;margin-bottom:22px}.grid{display:grid;grid-template-columns:2fr 2fr 1.4fr 1fr;gap:14px;align-items:end}.msg{display:none;margin-top:14px;padding:12px;border:1px solid rgba(212,168,75,.25);background:rgba(212,168,75,.08);color:var(--gold3)}.tools{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}.search{flex:1;min-width:240px}.tablewrap{overflow:auto;border:1px solid rgba(212,168,75,.18);background:rgba(255,255,255,.03)}table{width:100%;border-collapse:collapse;min-width:1200px}th{font-family:Cinzel,serif;font-size:11px;letter-spacing:.15em;color:var(--gold2);text-align:left;padding:13px;border-bottom:1px solid rgba(212,168,75,.24)}td{padding:13px;border-bottom:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.82)}.chip{display:inline-block;border:1px solid rgba(212,168,75,.35);background:rgba(212,168,75,.11);padding:5px 9px;color:var(--gold3);font-family:Cinzel,serif;letter-spacing:.08em}.yes{color:var(--green)}.no{color:var(--red)}.wait{color:var(--orange)}@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.wrap{padding:16px}.brand{font-size:48px}}
 </style>
 </head>
 <body>
@@ -39,7 +39,7 @@
     <div id="createMsg" class="msg"></div>
   </div>
   <div class="tools"><input id="search" class="input search" placeholder="Rechercher nom, email ou code…" oninput="renderTable()"><button class="btn dark" onclick="exportCSV()">Exporter CSV</button></div>
-  <div class="tablewrap"><table><thead><tr><th>Code</th><th>Invité</th><th>Email</th><th>Usage</th><th>RSVP</th><th>Entrée</th><th>Créé le</th><th>Action</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  <div class="tablewrap"><table><thead><tr><th>Code</th><th>Surnom (admin)</th><th>Vrai nom (RSVP)</th><th>Email</th><th>Tél</th><th>Présence</th><th>Allergie</th><th>Message</th><th>Usage</th><th>Entrée</th><th>Action</th></tr></thead><tbody id="tbody"></tbody></table></div>
 </div>
 <script>
 const CONFIG={
@@ -48,13 +48,17 @@ const CONFIG={
   sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI',
   emailPublic:'WqZvQ1reFTM1ISd3E', emailService:'service_9cilotm', tplInvitation:'template_4n9w6sv'
 };
-let codes=[];
+let codes=[];let rsvps=[];
 function normCode(c){return String(c||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function upper(c){return normCode(c).toUpperCase()}
 function showErr(m){const e=document.getElementById('loginErr');e.textContent=m;e.style.display='block'}
 async function sb(path,method='GET',body=null){const opts={method,headers:{apikey:CONFIG.sbKey,Authorization:'Bearer '+CONFIG.sbKey,'Content-Type':'application/json',Prefer:'return=representation'}};if(body)opts.body=JSON.stringify(body);const r=await fetch(CONFIG.sbUrl+'/rest/v1'+path,opts);if(r.status===204)return null;const txt=await r.text();const data=txt?JSON.parse(txt):null;if(!r.ok)throw new Error((data&&(data.message||data.hint))||txt||'Erreur Supabase '+r.status);return data}
 function login(){if(document.getElementById('pwd').value.trim()!==CONFIG.adminPwd){showErr('Mot de passe incorrect.');return}try{emailjs.init({publicKey:CONFIG.emailPublic})}catch(e){try{emailjs.init(CONFIG.emailPublic)}catch(_){}}document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadCodes()}
-async function loadCodes(){codes=await sb('/invite_codes?select=*&order=created_at.desc')||[];updateStats();renderTable()}
+async function loadCodes(){
+  codes=await sb('/invite_codes?select=*&order=created_at.desc')||[];
+  rsvps=await sb('/rsvps?select=*&order=created_at.desc')||[];
+  updateStats();renderTable();
+}
 function updateStats(){const total=codes.length, confirmed=codes.filter(c=>!!c.rsvp_confirmed).length, scanned=codes.filter(c=>!!c.scanned_entry).length;document.getElementById('sTotal').textContent=total;document.getElementById('sConfirmed').textContent=confirmed;document.getElementById('sScanned').textContent=scanned;document.getElementById('sWaiting').textContent=total-confirmed}
 function genCode(){const words=['rose','lune','etoile','soleil','fleur','ciel','jardin','riviere','aube','nuage','amour','alliance'];return words[Math.floor(Math.random()*words.length)]+'-'+Math.floor(1000+Math.random()*9000)}
 function weddingUrl(code){return 'https://www.notre-grand-jour.online/?code='+encodeURIComponent(normCode(code))}
@@ -75,18 +79,52 @@ async function sendInvitationMail(row){
       reply_to:'lacachenaomie@gmail.com'
     });
     await sb('/invite_codes?code=eq.'+encodeURIComponent(normCode(row.code)),'PATCH',{invitation_sent_at:new Date().toISOString()}).catch(()=>{});
-    console.log('Invitation EmailJS envoyée à',row.email);
     return true;
   }catch(e){
-    console.error('Erreur EmailJS invitation :',e);
     alert('Le code a été créé, mais le mail invitation n’a pas été envoyé : '+(e?.text||e?.message||JSON.stringify(e)));
     return false;
   }
 }
 async function createGuest(){const name=document.getElementById('guestName').value.trim(), email=document.getElementById('guestEmail').value.trim(), phone=document.getElementById('guestPhone').value.trim(), nb=parseInt(document.getElementById('guestNb').value)||1, msg=document.getElementById('createMsg'), btn=document.getElementById('createBtn');msg.style.display='none';if(!name)return alert('Nom obligatoire.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert('Email invalide.');btn.disabled=true;btn.textContent='Création + envoi…';try{const rows=[];for(let i=0;i<nb;i++){rows.push({code:genCode(),nom:nb>1?`${name} (${i+1})`:name,email,phone:phone||null,used:false,used_count:0,max_uses:2,rsvp_confirmed:false,scanned_entry:false})}const inserted=await sb('/invite_codes','POST',rows.length===1?rows[0]:rows);const list=Array.isArray(inserted)?inserted:rows;const results=[];for(const r of list){results.push({code:r.code,sent:await sendInvitationMail(r)})}msg.innerHTML='Code(s) créé(s) : '+results.map(r=>`<span class="chip">${upper(r.code)}</span> ${r.sent?'<span class="yes">mail envoyé</span>':'<span class="no">mail non envoyé</span>'}`).join(' &nbsp; ');msg.style.display='block';['guestName','guestEmail','guestPhone'].forEach(id=>document.getElementById(id).value='');await loadCodes()}catch(e){alert('Erreur : '+e.message)}finally{btn.disabled=false;btn.textContent="Créer + envoyer l'invitation"}}
-function renderTable(){const q=(document.getElementById('search').value||'').toLowerCase();const list=codes.filter(c=>!q||String(c.code).toLowerCase().includes(q)||String(c.nom||'').toLowerCase().includes(q)||String(c.email||'').toLowerCase().includes(q));const tb=document.getElementById('tbody');if(!list.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:28px">Aucun invité.</td></tr>';return}tb.innerHTML=list.map(c=>`<tr><td><span class="chip">${upper(c.code)}</span></td><td>${c.nom||'—'}</td><td>${c.email||'—'}</td><td>${c.used_count||0}/${c.max_uses||2}</td><td>${c.rsvp_confirmed?'<span class="yes">Confirmé</span>':'<span class="wait">En attente</span>'}</td><td>${c.scanned_entry?'<span class="yes">Validée</span>':'<span class="wait">Non scannée</span>'}</td><td>${c.created_at?new Date(c.created_at).toLocaleDateString('fr-FR'):'—'}</td><td><button class="btn dark" onclick="resend('${normCode(c.code)}')">Renvoyer</button></td></tr>`).join('')}
+function renderTable(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const list=codes.filter(c=>!q||String(c.code).toLowerCase().includes(q)||String(c.nom||'').toLowerCase().includes(q)||String(c.email||'').toLowerCase().includes(q)||String(c.rsvp_name||'').toLowerCase().includes(q));
+  const tb=document.getElementById('tbody');
+  if(!list.length){tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:28px">Aucun invité.</td></tr>';return}
+  tb.innerHTML=list.map(c=>{
+    const r=rsvps.find(x=>normCode(x.invite_code||'')===normCode(c.code)||normCode(x.code||'')===normCode(c.code));
+    const vraiNom = r ? (r.prenom||'')+' '+(r.nom||'') : (c.rsvp_name||'—');
+    const tel = r ? (r.tel||r.telephone||r.phone||'—') : (c.rsvp_phone||'—');
+    const presence = r ? (r.presence||'—') : '—';
+    const allergie = r ? (r.allergie||r.regime_alimentaire||r.diet||'—') : '—';
+    const message = r ? (r.message||'—') : '—';
+    return `<tr>
+      <td><span class="chip">${upper(c.code)}</span></td>
+      <td style="color:var(--gold2)">${c.nom||'—'}</td>
+      <td style="color:#fff;font-weight:500">${vraiNom.trim()||'—'}</td>
+      <td style="font-size:.75rem">${c.email||r?.email||'—'}</td>
+      <td style="font-size:.75rem">${tel}</td>
+      <td>${presence==='oui'||presence==='YES'||presence==='Oui'?'<span class="yes">Oui</span>':presence==='non'||presence==='NO'?'<span class="no">Non</span>':presence==='—'?'<span class="wait">—</span>':'<span class="yes">'+presence+'</span>'}</td>
+      <td style="font-size:.75rem;max-width:120px;overflow:hidden;text-overflow:ellipsis">${allergie}</td>
+      <td style="font-size:.75rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;font-style:italic">${message}</td>
+      <td>${c.used_count||0}/${c.max_uses||2}</td>
+      <td>${c.scanned_entry?'<span class="yes">Validée</span>':'<span class="wait">Non scannée</span>'}</td>
+      <td><button class="btn dark" onclick="resend('${normCode(c.code)}')">Renvoyer</button></td>
+    </tr>`;
+  }).join('');
+}
 async function resend(code){const row=codes.find(c=>normCode(c.code)===normCode(code));if(!row||!row.email)return alert('Email manquant.');const ok=await sendInvitationMail(row);alert(ok?'Invitation renvoyée.':'Erreur EmailJS. Vérifie ton template.')}
-function exportCSV(){const rows=[['code','nom','email','used_count','max_uses','rsvp_confirmed','scanned_entry','created_at'],...codes.map(c=>[c.code,c.nom||'',c.email||'',c.used_count||0,c.max_uses||2,!!c.rsvp_confirmed,!!c.scanned_entry,c.created_at||''])];const csv='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='codes_invites_lacache_naomie.csv';a.click()}
+function exportCSV(){
+  const rows=[['code','surnom_admin','vrai_prenom','vrai_nom','email','telephone','presence','allergie','message','usage','rsvp_confirmed','scanned_entry','created_at']];
+  codes.forEach(c=>{
+    const r=rsvps.find(x=>normCode(x.invite_code||'')===normCode(c.code)||normCode(x.code||'')===normCode(c.code));
+    rows.push([c.code,c.nom||'',r?.prenom||'',r?.nom||'',c.email||r?.email||'',r?.tel||r?.telephone||r?.phone||c.phone||'',r?.presence||'',r?.allergie||r?.regime_alimentaire||'',r?.message||'',`${c.used_count||0}/${c.max_uses||2}`,!!c.rsvp_confirmed,!!c.scanned_entry,c.created_at||'']);
+  });
+  const csv='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='invites_mariage_complet.csv';a.click();
+}
 </script>
 </body>
 </html>
