@@ -9,6 +9,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- EmailJS : activez en remplaçant les IDs dans le script en bas -->
+
+
+
+
+ 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -451,7 +456,6 @@ async function sendInvitationEmail(invite){
 
 async function sendConfirmationEmail(data){
   if(!EMAILJS_CONFIRMATION_TEMPLATE_ID){
-    console.warn('EmailJS confirmation non envoyé : Template ID manquant.');
     return false;
   }
 
@@ -480,18 +484,13 @@ async function sendConfirmationEmail(data){
     _emailJsReady();
     const pdfPayload = _buildEmailPdfPayload(data);
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, {...basePayload, ...pdfPayload});
-    console.log('EmailJS confirmation envoyé avec pièces jointes PDF.');
     return true;
   }catch(err){
-    console.error('Erreur EmailJS confirmation avec PDF :', err);
-    // PRO: fallback pour que l’invité reçoive quand même le mail même si les pièces jointes PDF dépassent la limite EmailJS.
     try{
       _emailJsReady();
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, basePayload);
-      console.warn('EmailJS confirmation envoyé sans pièces jointes PDF après fallback.');
       return true;
     }catch(err2){
-      console.error('Erreur EmailJS confirmation fallback :', err2);
       alert('Votre RSVP est enregistré, mais le mail de confirmation n’a pas pu être envoyé. Détail EmailJS : '+(err2?.text || err2?.message || JSON.stringify(err2)));
       return false;
     }
@@ -947,8 +946,6 @@ function _buildEmailPdfPayload(data){
   const invitationB64 = _docBase64(invitationDoc);
   const programmeB64 = _docBase64(programmeDoc);
   const qrB64 = _docBase64(qrDoc);
-  // PRO: on envoie les deux formats possibles pour EmailJS.
-  // Dans EmailJS > Attachments, utilise idéalement *_pdf_content comme contenu base64.
   return {
     invitation_pdf_base64: invitationB64,
     invitation_pdf_content: invitationB64,
