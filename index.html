@@ -1,33 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lacache & Naomie - 25.07.2026</t
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  itle>
-
-
-  
+<title>Lacache & Naomie - 25.07.2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -364,7 +340,7 @@ function resetInactivityTimer(){
     sessionStorage.clear();
     document.body.classList.add('gate-locked');
     const err = document.getElementById('gate-err');
-    if(err){ err.textContent = 'Session expirée après 5 min d'inactivité. Entrez à nouveau votre code.'; err.style.display = 'block'; }
+    if(err){ err.textContent = "Session expirée après 5 min d'inactivité. Entrez à nouveau votre code."; err.style.display = 'block'; }
     const input = document.getElementById('gate-input');
     if(input) input.value = '';
   }, INACTIVITY_LIMIT);
