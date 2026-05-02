@@ -20,7 +20,7 @@ h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.2rem;col
 /* Login */
 #login-box{max-width:360px;margin:4rem auto;background:rgba(255,255,255,.04);border:1px solid rgba(191,138,48,.25);padding:2rem;text-align:center}
 #login-box h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;margin-bottom:1.5rem;color:var(--gold3)}
-input[type=password],input[type=text],input[type=number]{
+input[type=password],input[type=text],input[type=email],input[type=tel],input[type=number]{
   width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(191,138,48,.3);
   color:var(--ivory);padding:.8rem 1rem;font-family:'Cinzel',serif;font-size:.7rem;
   letter-spacing:.1em;outline:none;transition:border-color .25s;margin-bottom:.8rem;display:block;
@@ -99,8 +99,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <!-- Stats -->
     <div class="stats-row">
       <div class="stat"><div class="stat-n" id="s-total">—</div><div class="stat-l">Codes créés</div></div>
-      <div class="stat"><div class="stat-n" id="s-used" style="color:#f87171">—</div><div class="stat-l">Utilisés</div></div>
-      <div class="stat"><div class="stat-n" id="s-free" style="color:#4ade80">—</div><div class="stat-l">Disponibles</div></div>
+      <div class="stat"><div class="stat-n" id="s-rsvp" style="color:#4ade80">—</div><div class="stat-l">RSVP confirmés</div></div>
+      <div class="stat"><div class="stat-n" id="s-free" style="color:#EDD38A">—</div><div class="stat-l">En attente</div></div>
     </div>
 
     <!-- Générer des codes -->
@@ -114,8 +114,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div>
           </div>
         <div>
-          <label>Email de l'invité (pour "code oublié")</label>
+          <label>Email de l'invité</label>
           <input type="email" id="gen-email" placeholder="email@exemple.com">
+        </div>
+        <div>
+          <label>Téléphone de l'invité (optionnel)</label>
+          <input type="tel" id="gen-phone" placeholder="Ex: 06 12 34 56 78">
         </div>
         <div>
           <label>Nb de codes (si famille)</label>
@@ -140,8 +144,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <tr>
           <th>Code</th>
           <th>Invité</th><th>Email</th>
-          <th>Accès</th>
-          <th>RSVP</th>
+          <th>Accès</th><th>RSVP</th>
           <th>Utilisé le</th>
           <th>Créé le</th>
           <th>Action</th>
@@ -181,78 +184,64 @@ function login(){
 }
 
 function genCode(){
-  // code lisible type "ROSE-7429"
-  const words=['ROSE','LUNE','ÉTOILE','PLUIE','SOLEIL','FLEUR','VENT','NUAGE','AUBE','CIEL','MER','RIVIÈRE','JARDIN','NUIT'];
+    const words=['ROSE','LUNE','ÉTOILE','PLUIE','SOLEIL','FLEUR','VENT','NUAGE','AUBE','CIEL','MER','RIVIÈRE','JARDIN','NUIT'];
   const w = words[Math.floor(Math.random()*words.length)];
   const n = String(Math.floor(1000+Math.random()*9000));
   return (w+'-'+n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
 
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+
 async function genCodes(){
   const nom = document.getElementById('gen-nom').value.trim();
   const email = document.getElementById('gen-email') ? document.getElementById('gen-email').value.trim() : '';
+  const phone = document.getElementById('gen-phone') ? document.getElementById('gen-phone').value.trim() : '';
   const nb  = parseInt(document.getElementById('gen-nb').value)||1;
   const err = document.getElementById('gen-err');
   const res = document.getElementById('gen-result');
   err.style.display='none'; res.style.display='none';
 
   if(!nom){ err.textContent='Entrez le nom de l\'invité.'; err.style.display='block'; return; }
+  if(!email){ err.textContent='Entrez l\'email de l\'invité pour envoyer automatiquement le code.'; err.style.display='block'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent='Email invité invalide.'; err.style.display='block'; return; }
 
   const rows = [];
-  const newCodes = [];
   for(let i=0;i<nb;i++){
     const code = genCode();
-    newCodes.push(code);
-    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), email:email||null, used:false, used_count:0, max_uses:2, created_at:new Date().toISOString() });
+    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), email:email||null, phone:phone||null, used:false, used_count:0, max_uses:2, created_at:new Date().toISOString() });
   }
 
-  try {
-    await sb('/invite_codes','POST', rows.length===1 ? rows[0] : rows);
+  const btn = document.querySelector('.gen-box button[onclick="genCodes()"]');
+  const oldBtnText = btn?.textContent;
+  if(btn){ btn.disabled = true; btn.textContent = 'Création + envoi…'; }
 
-    // Envoi automatique du mail si email fourni
-    let mailStatus = [];
-    if(email && window.emailjs){
-      for(const row of rows){
-        try{
-          const weddingUrl = 'https://notre-grand-jour.online?code=' + encodeURIComponent(row.code);
-          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_INVITATION_TEMPLATE_ID, {
-            from_name: 'Lacache & Naomie',
-            reply_to: 'lacachenaomie@gmail.com',
-            to_name: row.nom,
-            to_email: email,
-            email: email,
-            name: 'Lacache & Naomie',
-            invite_code: row.code.toUpperCase(),
-            wedding_url: weddingUrl,
-            invitation_url: weddingUrl
-          });
-          mailStatus.push({ code: row.code, ok: true });
-        }catch(mailErr){
-          console.error('Mail non envoyé:', mailErr);
-          mailStatus.push({ code: row.code, ok: false });
-        }
-      }
+  try {
+    const inserted = await sb('/invite_codes','POST', rows.length===1 ? rows[0] : rows);
+
+        const sendResults = [];
+    for(const row of rows){
+      const sent = await sendInviteEmail(row.code, row.nom, row.email, false);
+      sendResults.push({ code: row.code, nom: row.nom, email: row.email, sent });
     }
 
     res.style.display='block';
-    const mailInfo = email
-      ? (mailStatus.every(m=>m.ok)
-          ? '<span style="color:#4ade80">✉ Mail envoyé automatiquement à '+email+'</span>'
-          : '<span style="color:#f87171">⚠ Mail non envoyé — vérifiez EmailJS</span>')
-      : '<span style="color:rgba(255,255,255,.4)">Pas d\'email — envoi manuel requis</span>';
-
-    res.innerHTML = `<p style="color:var(--gold3);font-size:.55rem;letter-spacing:.2em;margin-bottom:.6rem">✓ Code(s) créé(s) pour <strong>${nom}</strong></p>
-      <p style="font-size:.55rem;margin-bottom:.8rem">${mailInfo}</p>`
-      + newCodes.map(c=>`<div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem">
-          <span class="code-chip">${c.toUpperCase()}</span>
-          <button class="copy-btn" onclick="navigator.clipboard.writeText('${c}').then(()=>this.textContent='✓ Copié!')">Copier</button>
+    res.innerHTML = `<p style="color:var(--gold3);font-size:.55rem;letter-spacing:.2em;margin-bottom:.8rem">✓ Code(s) créé(s) pour <strong>${escapeHtml(nom)}</strong> — email envoyé automatiquement à <strong>${escapeHtml(email)}</strong> :</p>`
+      + sendResults.map(r=>`<div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem;flex-wrap:wrap">
+          <span class="code-chip">${r.code.toUpperCase()}</span>
+          <span style="font-size:.55rem;color:${r.sent ? '#4ade80' : '#f87171'}">${r.sent ? '✓ Mail envoyé' : '⚠ Mail non envoyé — utiliser le bouton Envoyer'}</span>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('${r.code}').then(()=>this.textContent='✓ Copié!')">Copier</button>
         </div>`).join('');
     document.getElementById('gen-nom').value='';
     document.getElementById('gen-email').value='';
+    if(document.getElementById('gen-phone')) document.getElementById('gen-phone').value='';
     loadCodes();
   } catch(e){
-    err.textContent='Erreur : '+e.message;
+    err.textContent='Erreur : '+(e.message || JSON.stringify(e));
     err.style.display='block';
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = oldBtnText || 'Générer le code'; }
   }
 }
 
@@ -262,14 +251,14 @@ async function loadCodes(){
     allCodes = data||[];
     updateStats();
     renderTable(allCodes);
-  } catch(e){ console.error(e); }
+  } catch(e){  }
 }
 
 function updateStats(){
-  const used  = allCodes.filter(c=>c.used).length;
-  const free  = allCodes.filter(c=>!c.used).length;
+  const confirmed = allCodes.filter(c=>c.rsvp_confirmed).length;
+  const free      = allCodes.filter(c=>!c.rsvp_confirmed).length;
   document.getElementById('s-total').textContent = allCodes.length;
-  document.getElementById('s-used').textContent  = used;
+  document.getElementById('s-rsvp').textContent  = confirmed;
   document.getElementById('s-free').textContent  = free;
 }
 
@@ -282,16 +271,19 @@ function renderTable(codes){
   tb.innerHTML = codes.map(c=>{
     const usedAt = c.used_at ? new Date(c.used_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
     const createdAt = c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) : '—';
-    const badge = c.used
-      ? '<span class="badge used">✗ Utilisé</span>'
+    const accessBadge = c.used
+      ? '<span class="badge used">✗ Bloqué</span>'
       : '<span class="badge free">✓ Libre</span>';
+    const rsvpBadge = c.rsvp_confirmed
+      ? '<span class="badge" style="color:#4ade80;border-color:rgba(74,222,128,.3)">✓ Confirmé</span>'
+      : '<span class="badge" style="color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.1)">En attente</span>';
     return `<tr>
       <td><span class="code-chip">${c.code.toUpperCase()}</span>
           <button class="copy-btn" style="margin-left:.4rem" onclick="navigator.clipboard.writeText('${c.code}').then(()=>this.textContent='✓')">Copier</button></td>
       <td>${c.nom||'—'}</td>
-      <td style="font-size:.6rem;color:rgba(255,255,255,.5)">${c.email||'—'}</td>
-      <td><span style="font-size:.6rem">${c.used_count||0}/${c.max_uses||2} accès</span><br>${badge}</td>
-      <td>${c.rsvp_confirmed ? '<span class="badge" style="color:#4ade80;border-color:rgba(74,222,128,.3)">✓ Confirmé</span>' : '<span class="badge" style="color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.1)">En attente</span>'}</td>
+      <td style="font-size:.6rem;color:rgba(255,255,255,.5)">${c.email||'—'}<br><span style="color:rgba(255,255,255,.35)">${c.phone||''}</span></td>
+      <td>${accessBadge}<br><span style="font-size:.5rem;color:rgba(255,255,255,.35)">${c.used_count||0}/${c.max_uses||2} accès</span></td>
+      <td>${rsvpBadge}</td>
       <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${usedAt}</td>
       <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${createdAt}</td>
       <td style="display:flex;gap:.4rem;flex-wrap:wrap">
@@ -316,11 +308,11 @@ async function deleteCode(code){
 
 function exportCSV(){
   if(!allCodes.length){ alert('Aucun code.'); return; }
-  const headers=['Code','Invité','Utilisé','Date utilisation','Date création'];
+  const headers=['Code','Invité','Email','Téléphone','Utilisations','RSVP confirmé','Date utilisation','Date création'];
   const rows = allCodes.map(c=>{
     const ua = c.used_at?new Date(c.used_at).toLocaleDateString('fr-FR'):'';
     const ca = c.created_at?new Date(c.created_at).toLocaleDateString('fr-FR'):'';
-    return [c.code,c.nom,c.used?'Oui':'Non',ua,ca].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',');
+    return [c.code,c.nom,c.email||'',c.phone||'',`${c.used_count||0}/${c.max_uses||2}`,c.rsvp_confirmed?'Oui':'Non',ua,ca].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',');
   });
   const csv = [headers.join(','),...rows].join('\n');
   const a = document.createElement('a');
@@ -329,46 +321,85 @@ function exportCSV(){
   a.click();
 }
 
-// ── EmailJS config ───────────────────────────────────────────────────────────
 const EMAILJS_PUBLIC_KEY = 'WqZvQ1reFTM1ISd3E';
 const EMAILJS_SERVICE_ID = 'service_9cilotm';
 const EMAILJS_INVITATION_TEMPLATE_ID = 'template_4n9w6sv';
+const WEDDING_URL = 'https://notre-grand-jour.online';
+const FROM_NAME = 'Lacache & Naomie';
+const REPLY_TO = 'lacachenaomie@gmail.com';
 
+let emailJSReady = false;
 (function(){
+  if(window.emailjs){
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    emailJSReady = true;
+    return;
+  }
   const s = document.createElement('script');
   s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-  s.onload = () => emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  s.onload = () => {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    emailJSReady = true;
+  };
+  s.onerror = () => {
+    emailJSReady = false;
+    
+  };
   document.head.appendChild(s);
 })();
 
-async function sendInviteEmail(code, nom, email){
+function waitForEmailJS(timeoutMs=6000){
+  return new Promise((resolve,reject)=>{
+    const start = Date.now();
+    const timer = setInterval(()=>{
+      if(window.emailjs && emailJSReady){ clearInterval(timer); resolve(true); }
+      else if(Date.now()-start > timeoutMs){ clearInterval(timer); reject(new Error('EmailJS non chargé')); }
+    },100);
+  });
+}
+
+async function sendInviteEmail(code, nom, email, askConfirm=true){
   if(!email || email === 'null' || email === ''){
-    alert('Cet invité n\'a pas d\'email enregistré. Ajoutez son email d\'abord.');
-    return;
+    if(askConfirm) alert('Cet invité n\'a pas d\'email enregistré. Ajoutez son email d\'abord.');
+    return false;
   }
-  if(!confirm('Envoyer le code ' + code.toUpperCase() + ' à ' + email + ' ?')) return;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    if(askConfirm) alert('Email invalide : ' + email);
+    return false;
+  }
+  if(askConfirm && !confirm('Envoyer le code ' + code.toUpperCase() + ' à ' + email + ' ?')) return false;
+
   try{
-    const weddingUrl = 'https://notre-grand-jour.online?code=' + encodeURIComponent(code);
+    await waitForEmailJS();
+    const weddingUrl = WEDDING_URL + '?code=' + encodeURIComponent(code);
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_INVITATION_TEMPLATE_ID, {
-      from_name: 'Lacache & Naomie',
-      reply_to: 'lacachenaomie@gmail.com',
-      to_name: nom,
+      from_name: FROM_NAME,
+      reply_to: REPLY_TO,
+      to_name: nom || 'Invité(e)',
       to_email: email,
       email: email,
-      name: 'Lacache & Naomie',
+      name: FROM_NAME,
       invite_code: code.toUpperCase(),
       wedding_url: weddingUrl,
       invitation_url: weddingUrl
     });
-    alert('✓ Mail envoyé à ' + email);
-    // Enregistrer l'email dans Supabase si pas encore fait
-    await sb('/invite_codes?code=eq.' + encodeURIComponent(code), 'PATCH', { email: email });
+
+    // Garder une trace simple dans Supabase si la colonne existe.
+    // Si la colonne n'existe pas, on ignore sans bloquer le mail.
+    try{
+      await sb('/invite_codes?code=eq.' + encodeURIComponent(code), 'PATCH', { email: email, invitation_sent_at: new Date().toISOString() });
+    }catch(_){
+      try{ await sb('/invite_codes?code=eq.' + encodeURIComponent(code), 'PATCH', { email: email }); }catch(__){}
+    }
+
+    if(askConfirm) alert('✓ Mail envoyé à ' + email);
+    return true;
   }catch(err){
-    console.error(err);
-    alert('Erreur envoi mail : ' + (err.text || err.message || JSON.stringify(err)));
+    
+    if(askConfirm) alert('Erreur envoi mail : ' + (err.text || err.message || JSON.stringify(err)));
+    return false;
   }
 }
-
 document.getElementById('admin-pwd').focus();
 </script>
 </body>
