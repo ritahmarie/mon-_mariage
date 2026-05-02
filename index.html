@@ -314,13 +314,19 @@ document.querySelectorAll('input[name="boissons"]').forEach(cb=>{
   });
 });
 
-// EmailJS : remplacez ces 3 valeurs par vos vrais identifiants EmailJS pour envoyer automatiquement.
-const EMAILJS_PUBLIC_KEY = '';
-const EMAILJS_SERVICE_ID = '';
-const EMAILJS_TEMPLATE_ID = ''; // template confirmation invité
-// Optionnel : créez un 2e template EmailJS pour vous notifier côté admin.
-const EMAILJS_ADMIN_TEMPLATE_ID = '';
-const ADMIN_EMAIL = '';
+// EmailJS : configuration des 2 emails automatiques
+// 1) EMAILJS_PUBLIC_KEY : votre Public Key EmailJS
+// 2) EMAILJS_SERVICE_ID : votre Service ID Gmail EmailJS
+// 3) EMAILJS_INVITATION_TEMPLATE_ID : template du mail d'invitation envoyé depuis le panel/admin
+// 4) EMAILJS_CONFIRMATION_TEMPLATE_ID : template du mail de confirmation après RSVP
+const EMAILJS_PUBLIC_KEY = ''; // ex : 'VOTRE_PUBLIC_KEY'
+const EMAILJS_SERVICE_ID = 'service_9cilotm';
+const EMAILJS_INVITATION_TEMPLATE_ID = ''; // mail d'invitation avec code
+const EMAILJS_CONFIRMATION_TEMPLATE_ID = ''; // mail de confirmation RSVP
+const EMAILJS_ADMIN_TEMPLATE_ID = ''; // optionnel : notification admin après RSVP
+const ADMIN_EMAIL = 'lacachenaomie@gmail.com';
+const FROM_NAME = 'Lacache & Naomie';
+const REPLY_TO = 'lacachenaomie@gmail.com';
 if(window.emailjs && EMAILJS_PUBLIC_KEY){ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }
 
 function getRSVPData(){
@@ -354,27 +360,83 @@ function renderQR(text){
   });
 }
 
+function emailBaseParams(extra={}){
+  return {
+    from_name: FROM_NAME,
+    reply_to: REPLY_TO,
+    bcc_email: ADMIN_EMAIL,
+    ...extra
+  };
+}
+
+// À appeler depuis le panel/admin quand vous envoyez le code d'accès à un invité.
+// Le template EmailJS doit avoir To Email = {{to_email}}
+async function sendInvitationEmail(invite){
+  if(!window.emailjs || !EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_INVITATION_TEMPLATE_ID) return;
+  const toEmail = invite.email || invite.to_email || '';
+  const toName = invite.nom || invite.name || invite.to_name || 'Invité(e)';
+  const inviteCode = invite.code || invite.invite_code || '';
+  const weddingUrl = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(inviteCode);
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_INVITATION_TEMPLATE_ID, emailBaseParams({
+      to_email: toEmail,
+      email: toEmail,
+      to_name: toName,
+      name: FROM_NAME,
+      invite_code: inviteCode,
+      wedding_url: weddingUrl,
+      invitation_url: weddingUrl
+    }));
+  }catch(err){
+    console.error('EmailJS invitation non envoyé :', err);
+  }
+}
+
 async function sendConfirmationEmail(data){
-  // Envoi automatique silencieux avec EmailJS.
-  // Renseignez EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID et EMAILJS_TEMPLATE_ID pour activer l'envoi réel.
-  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID){
+  // Envoi automatique silencieux au mail saisi par l'invité.
+  // Le template EmailJS doit avoir To Email = {{to_email}}
+  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_CONFIRMATION_TEMPLATE_ID){
     try{
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, emailBaseParams({
         to_name: data.full,
         to_email: data.email,
+        email: data.email,
+        name: FROM_NAME,
         presence_label: data.presence,
-        nb_personnes: '1',
+        nb_personnes: '1 personne',
         alcool_label: data.alcool || 'Non renseigné',
         boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
         regime_alimentaire: data.diet || 'Non précisé',
         invite_code: data.code,
         invitation_url: data.invitationUrl,
         qr_content: data.qrContent,
-        wedding_url: window.location.href,
+        wedding_url: window.location.origin + window.location.pathname,
         programme: '10h00 - Cérémonie civile · Mairie de Lille | 13h30 - Vin d’honneur | 19h00 - Dîner & Soirée · 124Bis Rue de l’Epideme, 59200 Tourcoing'
-      });
+      }));
     }catch(err){
-      console.error('EmailJS invité non envoyé :', err);
+      console.error('EmailJS confirmation invité non envoyé :', err);
+    }
+  }
+
+  // Notification admin optionnelle, sans afficher de message aux invités.
+  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_ADMIN_TEMPLATE_ID){
+    try{
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, emailBaseParams({
+        to_email: ADMIN_EMAIL,
+        email: ADMIN_EMAIL,
+        to_name: FROM_NAME,
+        invite_name: data.full,
+        invite_email: data.email,
+        invite_phone: data.phone || '-',
+        presence_label: data.presence,
+        nb_personnes: '1 personne',
+        boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
+        regime_alimentaire: data.diet || 'Non précisé',
+        message_invite: data.message || '-',
+        invite_code: data.code
+      }));
+    }catch(err){
+      console.error('EmailJS notification admin non envoyée :', err);
     }
   }
 }
