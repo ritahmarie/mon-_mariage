@@ -6,6 +6,7 @@
 <title>Lacache & Naomie - 25.07.2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- EmailJS : activez en remplaçant les IDs dans le script en bas -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -493,6 +494,7 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
     return;
   }
   document.getElementById('downloadPanel').style.display='block';
+  _storePdfData(data);
   const pg=document.getElementById('pdfGuest'); if(pg) pg.textContent=data.full;
   const pc=document.getElementById('pdfCode'); if(pc) pc.textContent='Code invité : '+(data.code || '—')+' · Nombre de personnes : 1';
   const pd=document.getElementById('pdfDrink'); if(pd) pd.textContent='Boissons : '+(data.alcool === 'Oui' ? data.boissons : 'Sans alcool');
@@ -504,47 +506,372 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   await sendConfirmationEmail(data);
   document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'center'});
 });
-function _generatePDF(elId, filename) {
-  const el = document.getElementById(elId);
-  // Rendre visible hors écran de façon fiable pour html2canvas
-  const prev = {
-    position: el.style.position,
-    left: el.style.left,
-    top: el.style.top,
-    visibility: el.style.visibility,
-    zIndex: el.style.zIndex
-  };
-  el.style.position = 'fixed';
-  el.style.left = '-9999px';
-  el.style.top = '0';
-  el.style.visibility = 'visible';
-  el.style.zIndex = '-1';
-  el.style.display = 'block';
+// ── Génération PDF via jsPDF pur (sans html2canvas) ──────────────────────────
+// Stockage des données courantes pour les PDF
+let _pdfData = {};
 
-  return html2pdf().set({
-    margin: 0,
-    filename: filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#0A1628',
-      windowWidth: 794
-    },
-    jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-  }).from(el).save().then(() => {
-    el.style.position = prev.position || 'absolute';
-    el.style.left = prev.left || '-9999px';
-    el.style.top = prev.top || '0';
-    el.style.visibility = 'hidden';
-    el.style.display = '';
-    el.style.zIndex = prev.zIndex || '';
-  });
+function _storePdfData(data){
+  _pdfData = data;
 }
-function downloadPDF(){ _generatePDF('printInvitation','Invitation_Lacache_Naomie.pdf'); }
-function downloadProgrammePDF(){ _generatePDF('printProgrammePdf','Programme_Lacache_Naomie.pdf'); }
-function downloadQRCodePDF(){ _generatePDF('printQrPdf','QR_Code_Invitation_Lacache_Naomie.pdf'); }
+
+function _getQRDataURL(){
+  // Récupère le canvas du QR code déjà rendu dans #qrBox
+  const qrBox = document.getElementById('qrBox');
+  if(!qrBox) return null;
+  const canvas = qrBox.querySelector('canvas');
+  if(!canvas) return null;
+  return canvas.toDataURL('image/png');
+}
+
+function _makePdfBase(){
+  // jsPDF est inclus via html2pdf.bundle, on l'accède via window.jspdf ou on crée via html2pdf
+  // On utilise l'API jsPDF directement
+  const { jsPDF } = window.jspdf || {};
+  if(!jsPDF){
+    // Fallback : créer via html2pdf qui expose jsPDF
+    alert('jsPDF non disponible, rechargez la page.');
+    return null;
+  }
+  const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+  const W = doc.internal.pageSize.getWidth();   // 595.28
+  const H = doc.internal.pageSize.getHeight();  // 841.89
+  const NAVY   = [10, 22, 40];
+  const GOLD   = [212, 168, 75];
+  const GOLD3  = [237, 211, 138];
+  const IVORY  = [250, 247, 240];
+  const MUTED  = [154, 168, 187];
+  // Fond navy
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, W, H, 'F');
+  // Bordure or
+  doc.setDrawColor(...GOLD);
+  doc.setLineWidth(1.5);
+  doc.rect(20, 20, W-40, H-40, 'S');
+  return { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED };
+}
+
+function _drawHLine(doc, y, GOLD, W){
+  doc.setDrawColor(...GOLD);
+  doc.setLineWidth(0.5);
+  doc.line(W/2 - 90, y, W/2 + 90, y);
+  // losange central
+  doc.setFillColor(...GOLD);
+  doc.rect(W/2 - 4, y - 4, 8, 8, 'F');
+}
+
+function downloadPDF(){
+  const pd = _pdfData;
+  const base = _makePdfBase();
+  if(!base) return;
+  const { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED } = base;
+
+  let y = 55;
+  // Kicker
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(4);
+  doc.text('INVITATION PERSONNELLE', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 32;
+  // Noms
+  doc.setFont('times','italic');
+  doc.setFontSize(44);
+  doc.setTextColor(...IVORY);
+  doc.text('Lacache', W/2, y, {align:'center'});
+  y += 30;
+  doc.setFontSize(28);
+  doc.setTextColor(...GOLD);
+  doc.text('&', W/2, y, {align:'center'});
+  y += 36;
+  doc.setFontSize(44);
+  doc.setTextColor(...IVORY);
+  doc.text('Naomie', W/2, y, {align:'center'});
+
+  y += 22;
+  _drawHLine(doc, y, GOLD, W);
+
+  y += 22;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(3);
+  doc.text('CETTE INVITATION EST ADRESSÉE À', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 26;
+  doc.setFont('times','italic');
+  doc.setFontSize(28);
+  doc.setTextColor(...GOLD3);
+  doc.text(pd.full || 'Invité(e)', W/2, y, {align:'center'});
+
+  y += 16;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
+  doc.text('Code invité : '+(pd.code||'—')+' · 1 personne', W/2, y, {align:'center'});
+
+  y += 20;
+  _drawHLine(doc, y, GOLD, W);
+
+  // Date & lieu
+  y += 22;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...GOLD3);
+  doc.setCharSpace(3);
+  doc.text('SAMEDI · 25 JUILLET 2026', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+  y += 16;
+  doc.setFont('times','italic');
+  doc.setFontSize(13);
+  doc.setTextColor(...IVORY);
+  doc.text('Mairie de Lille · Latin Dance · Lille', W/2, y, {align:'center'});
+
+  y += 24;
+  _drawHLine(doc, y, GOLD, W);
+
+  // Programme
+  y += 20;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(3);
+  doc.text('PROGRAMME DE LA JOURNÉE', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  const prog = [
+    {h:'10h00', t:'CÉRÉMONIE CIVILE',  l:'Mairie de Lille\nPlace du Général de Gaulle\n59000 Lille'},
+    {h:'13h30', t:'VIN D\'HONNEUR',     l:'Cocktail & retrouvailles'},
+    {h:'19h00', t:'DÎNER & SOIRÉE',    l:'124Bis Rue de l\'Epideme\n59200 Tourcoing'},
+  ];
+
+  y += 14;
+  prog.forEach(p => {
+    // heure
+    doc.setFont('times','italic');
+    doc.setFontSize(18);
+    doc.setTextColor(...GOLD);
+    doc.text(p.h, 55, y);
+    // titre
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.setTextColor(...IVORY);
+    doc.setCharSpace(2);
+    doc.text(p.t, 155, y - 6);
+    doc.setCharSpace(0);
+    // lieu (multi-ligne)
+    doc.setFont('times','italic');
+    doc.setFontSize(10);
+    doc.setTextColor(...MUTED);
+    const lines = p.l.split('\n');
+    lines.forEach((ln, i) => {
+      doc.text(ln, 155, y + 6 + i * 13);
+    });
+    // trait séparateur
+    doc.setDrawColor(212,168,75,0.3);
+    doc.setLineWidth(0.3);
+    const rowH = Math.max(36, lines.length * 13 + 20);
+    y += rowH;
+    doc.line(55, y - 8, W - 55, y - 8);
+  });
+
+  y += 4;
+  // Boissons & régime
+  doc.setFont('times','italic');
+  doc.setFontSize(11);
+  doc.setTextColor(...MUTED);
+  doc.text('Boissons : '+(pd.alcool==='Oui' ? pd.boissons : 'Sans alcool'), W/2, y, {align:'center'});
+  y += 15;
+  doc.text('Régime / allergies : '+(pd.diet||'non précisé'), W/2, y, {align:'center'});
+
+  y += 20;
+  _drawHLine(doc, y, GOLD, W);
+
+  // QR Code
+  y += 18;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(3);
+  doc.text('VOTRE QR CODE D\'ENTRÉE LE JOUR J', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  const qrDataUrl = _getQRDataURL();
+  if(qrDataUrl){
+    const qrSize = 110;
+    doc.addImage(qrDataUrl, 'PNG', W/2 - qrSize/2, y + 8, qrSize, qrSize);
+    y += qrSize + 18;
+  } else {
+    y += 20;
+    doc.setFont('times','italic');
+    doc.setFontSize(10);
+    doc.setTextColor(...MUTED);
+    doc.text('[QR code non disponible]', W/2, y, {align:'center'});
+    y += 20;
+  }
+
+  // Thème
+  doc.setFillColor(...GOLD3);
+  const themeText = 'THÈME · BLEU MARINE · OR · CHAMPAGNE · BLANC';
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  doc.setCharSpace(2);
+  const tw = doc.getTextWidth(themeText) + 20;
+  doc.rect(W/2 - tw/2, y, tw, 18, 'F');
+  doc.setTextColor(...NAVY);
+  doc.text(themeText, W/2, y + 12, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 32;
+  // Note de bas
+  doc.setFont('times','italic');
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
+  doc.text('Tenue de soirée élégante · Confirmation avant le 1er juin 2026', W/2, y, {align:'center'});
+  y += 14;
+  doc.text('notre-grand-jour.online', W/2, y, {align:'center'});
+
+  doc.save('Invitation_Lacache_Naomie.pdf');
+}
+
+function downloadProgrammePDF(){
+  const base = _makePdfBase();
+  if(!base) return;
+  const { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED } = base;
+
+  let y = 55;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(4);
+  doc.text('PROGRAMME OFFICIEL', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 34;
+  doc.setFont('times','italic');
+  doc.setFontSize(40);
+  doc.setTextColor(...IVORY);
+  doc.text('Programme', W/2, y, {align:'center'});
+  y += 28;
+  doc.setFontSize(26);
+  doc.text('de la journée', W/2, y, {align:'center'});
+
+  y += 22;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...GOLD3);
+  doc.setCharSpace(3);
+  doc.text('SAMEDI · 25 JUILLET 2026', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 24;
+  _drawHLine(doc, y, GOLD, W);
+  y += 30;
+
+  const prog = [
+    {h:'10h00', t:'CÉRÉMONIE CIVILE',      l:'Mairie de Lille\nPlace du Général de Gaulle, 59000 Lille\nMerci d\'arriver 15 minutes à l\'avance.'},
+    {h:'13h30', t:'VIN D\'HONNEUR',         l:'Cocktail, bulles et retrouvailles.'},
+    {h:'19h00', t:'DÎNER & SOIRÉE DANSANTE',l:'124Bis Rue de l\'Epideme, 59200 Tourcoing\nSoirée jusqu\'au bout de la nuit.'},
+  ];
+
+  prog.forEach(p => {
+    doc.setFont('times','italic');
+    doc.setFontSize(22);
+    doc.setTextColor(...GOLD);
+    doc.text(p.h, 55, y);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...IVORY);
+    doc.setCharSpace(2);
+    doc.text(p.t, 155, y - 8);
+    doc.setCharSpace(0);
+    doc.setFont('times','italic');
+    doc.setFontSize(12);
+    doc.setTextColor(...MUTED);
+    const lines = p.l.split('\n');
+    lines.forEach((ln, i) => doc.text(ln, 155, y + 6 + i * 14));
+    doc.setDrawColor(212,168,75,0.3);
+    doc.setLineWidth(0.3);
+    const rowH = Math.max(44, lines.length * 14 + 24);
+    y += rowH;
+    doc.line(55, y - 10, W - 55, y - 10);
+    y += 8;
+  });
+
+  y += 10;
+  _drawHLine(doc, y, GOLD, W);
+  y += 24;
+
+  doc.setFont('times','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(...IVORY);
+  doc.text('Tenue élégante souhaitée.', W/2, y, {align:'center'});
+  y += 18;
+  doc.setFont('times','italic');
+  doc.setFontSize(12);
+  doc.setTextColor(...MUTED);
+  doc.text('Couleurs : bleu marine, ardoise, or, champagne ou blanc.', W/2, y, {align:'center'});
+  y += 18;
+  doc.text('Merci de confirmer votre présence avant le 1er juin 2026.', W/2, y, {align:'center'});
+
+  doc.save('Programme_Lacache_Naomie.pdf');
+}
+
+function downloadQRCodePDF(){
+  const pd = _pdfData;
+  const base = _makePdfBase();
+  if(!base) return;
+  const { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED } = base;
+
+  let y = 80;
+  doc.setFont('times','italic');
+  doc.setFontSize(36);
+  doc.setTextColor(...IVORY);
+  doc.text('QR code invitation', W/2, y, {align:'center'});
+  y += 26;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(10);
+  doc.setTextColor(...GOLD3);
+  doc.setCharSpace(2);
+  doc.text('LACACHE & NAOMIE · 25 · 07 · 2026', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+  y += 24;
+  _drawHLine(doc, y, GOLD, W);
+  y += 26;
+  doc.setFont('times','italic');
+  doc.setFontSize(16);
+  doc.setTextColor(...IVORY);
+  doc.text(pd.full || 'Invité(e)', W/2, y, {align:'center'});
+  y += 14;
+  doc.setFontSize(11);
+  doc.setTextColor(...MUTED);
+  doc.text('Code : '+(pd.code||'—'), W/2, y, {align:'center'});
+  y += 20;
+
+  const qrDataUrl = _getQRDataURL();
+  if(qrDataUrl){
+    const qrSize = 160;
+    doc.addImage(qrDataUrl, 'PNG', W/2 - qrSize/2, y, qrSize, qrSize);
+    y += qrSize + 20;
+  } else {
+    doc.setFont('times','italic');
+    doc.setFontSize(11);
+    doc.setTextColor(...MUTED);
+    doc.text('[QR code non disponible]', W/2, y + 20, {align:'center'});
+    y += 40;
+  }
+
+  doc.setFont('times','italic');
+  doc.setFontSize(11);
+  doc.setTextColor(...MUTED);
+  doc.text('Ce QR code est personnel et lié à votre invitation.', W/2, y, {align:'center'});
+  y += 14;
+  doc.text('À présenter à l\'entrée avec une pièce d\'identité.', W/2, y, {align:'center'});
+
+  doc.save('QR_Code_Invitation_Lacache_Naomie.pdf');
+}
 </script>
 </body>
 </html>
