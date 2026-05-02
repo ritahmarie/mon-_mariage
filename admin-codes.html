@@ -3,404 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Codes d'invitation · Lacache & Naomie</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<title>Admin — Lacache & Naomie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --ink:#0A1628;--navy:#152642;--gold:#BF8A30;--gold2:#D4A84B;--gold3:#EDD38A;
-  --ivory:#FAF7F0;--cream:#F0EAD6;
-}
-body{background:var(--ink);color:var(--ivory);font-family:'Cinzel',serif;min-height:100vh;padding:2rem 1rem}
-.wrap{max-width:900px;margin:0 auto}
-h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.2rem;color:var(--ivory);margin-bottom:.3rem;text-align:center}
-.sub{font-size:.48rem;letter-spacing:.4em;color:var(--gold3);text-align:center;margin-bottom:2rem}
-.divider{height:1px;background:linear-gradient(to right,transparent,rgba(191,138,48,.4),transparent);margin:1.5rem 0}
-
-/* Login */
-#login-box{max-width:360px;margin:4rem auto;background:rgba(255,255,255,.04);border:1px solid rgba(191,138,48,.25);padding:2rem;text-align:center}
-#login-box h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;margin-bottom:1.5rem;color:var(--gold3)}
-input[type=password],input[type=text],input[type=email],input[type=tel],input[type=number]{
-  width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(191,138,48,.3);
-  color:var(--ivory);padding:.8rem 1rem;font-family:'Cinzel',serif;font-size:.7rem;
-  letter-spacing:.1em;outline:none;transition:border-color .25s;margin-bottom:.8rem;display:block;
-}
-input:focus{border-color:var(--gold2)}
-button{
-  background:var(--gold);border:none;color:var(--ink);font-family:'Cinzel',serif;
-  font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;padding:.8rem 1.5rem;
-  cursor:pointer;transition:background .2s;
-}
-button:hover{background:var(--gold2)}
-button.secondary{background:transparent;border:1px solid rgba(191,138,48,.4);color:var(--gold3)}
-button.secondary:hover{background:rgba(191,138,48,.1)}
-button.danger{background:transparent;border:1px solid rgba(248,113,113,.4);color:#f87171}
-button.danger:hover{background:rgba(248,113,113,.1)}
-.err{color:#f87171;font-size:.6rem;margin-top:.5rem;font-family:'Cormorant Garamond',serif;font-style:italic}
-
-/* Dashboard */
-#dashboard{display:none}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
-.stat{background:rgba(255,255,255,.04);border:1px solid rgba(191,138,48,.2);padding:1.2rem;text-align:center}
-.stat-n{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--gold2)}
-.stat-l{font-size:.42rem;letter-spacing:.2em;color:rgba(255,255,255,.35);margin-top:.3rem}
-
-/* Génération */
-.gen-box{background:rgba(255,255,255,.03);border:1px solid rgba(191,138,48,.2);padding:1.5rem;margin-bottom:1.5rem}
-.gen-box h3{font-size:.55rem;letter-spacing:.3em;color:var(--gold3);margin-bottom:1.2rem}
-.gen-row{display:flex;gap:.8rem;align-items:flex-end;flex-wrap:wrap}
-.gen-row label{font-size:.45rem;letter-spacing:.2em;color:rgba(255,255,255,.4);display:block;margin-bottom:.4rem}
-.gen-row input{margin-bottom:0;width:auto;flex:1;min-width:160px}
-.gen-row input[type=number]{width:80px;flex:none}
-
-/* Table */
-table{width:100%;border-collapse:collapse;font-size:.7rem}
-th{font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);padding:.7rem .8rem;border-bottom:1px solid rgba(191,138,48,.3);text-align:left}
-td{padding:.7rem .8rem;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.65)}
-tr:hover td{background:rgba(255,255,255,.02)}
-.code-chip{
-  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;
-  background:rgba(191,138,48,.12);border:1px solid rgba(191,138,48,.25);
-  padding:.25rem .6rem;display:inline-block;
-}
-.badge{font-size:.4rem;letter-spacing:.1em;padding:.2rem .5rem;border:1px solid;display:inline-block}
-.badge.used{color:#f87171;border-color:rgba(248,113,113,.3)}
-.badge.free{color:#4ade80;border-color:rgba(74,222,128,.3)}
-.copy-btn{background:transparent;border:1px solid rgba(191,138,48,.2);color:var(--gold3);font-size:.38rem;padding:.2rem .5rem;cursor:pointer;letter-spacing:.1em}
-.copy-btn:hover{background:rgba(191,138,48,.1)}
-.action-row{display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
-.search-input{width:240px;margin-bottom:0;flex:none}
-
-/* Export */
-.export-area{background:rgba(255,255,255,.04);border:1px solid rgba(191,138,48,.15);padding:1rem;margin-top:1rem;font-size:.65rem;color:rgba(255,255,255,.5);font-family:monospace;white-space:pre;overflow-x:auto;max-height:200px;overflow-y:auto;display:none}
-
-@media(max-width:600px){
-  .stats-row{grid-template-columns:1fr 1fr}
-  .gen-row{flex-direction:column}
-  .gen-row input[type=number]{width:100%}
-}
+:root{--navy:#0A1628;--navy2:#152642;--gold:#BF8A30;--gold2:#D4A84B;--gold3:#EDD38A;--ivory:#FAF7F0;--green:#4ade80;--red:#f87171;--orange:#f59e0b;--muted:#9aa8bb}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Lato,Arial,sans-serif;background:radial-gradient(circle at 70% 10%,rgba(212,168,75,.08),transparent 35%),var(--navy);color:var(--ivory);min-height:100vh}.wrap{max-width:1120px;margin:auto;padding:28px}.login{max-width:440px;margin:10vh auto;padding:36px;border:1px solid rgba(212,168,75,.45);background:rgba(255,255,255,.045);box-shadow:0 30px 90px rgba(0,0,0,.34)}h1,h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300}.brand{text-align:center;font-size:58px;line-height:.92}.brand span{color:var(--gold);font-size:38px}.tag{text-align:center;font-family:Cinzel,serif;letter-spacing:.3em;text-transform:uppercase;font-size:11px;color:var(--gold3);margin:22px 0}.input,select{width:100%;padding:14px;background:rgba(255,255,255,.07);border:1px solid rgba(212,168,75,.32);color:#fff;font:16px Lato;outline:none}.input::placeholder{color:rgba(255,255,255,.38)}label{display:block;font-family:Cinzel,serif;color:var(--gold3);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}.btn{border:0;background:var(--gold2);color:var(--navy);padding:14px 18px;font-family:Cinzel,serif;letter-spacing:.18em;text-transform:uppercase;font-weight:600;cursor:pointer}.btn:hover{filter:brightness(1.08)}.btn.dark{background:transparent;color:var(--gold3);border:1px solid rgba(212,168,75,.45)}.btn.red{background:transparent;color:var(--red);border:1px solid rgba(248,113,113,.45)}.btn:disabled{opacity:.55;cursor:not-allowed}.err{display:none;color:#ffc0c0;text-align:center;margin-top:14px}.app{display:none}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid rgba(212,168,75,.22);padding-bottom:20px;flex-wrap:wrap}.top h1{font-size:44px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.stat{background:rgba(255,255,255,.045);border:1px solid rgba(212,168,75,.2);padding:18px}.num{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--gold2)}.lab{font-family:Cinzel,serif;color:var(--muted);font-size:11px;letter-spacing:.16em;text-transform:uppercase}.card{background:rgba(255,255,255,.045);border:1px solid rgba(212,168,75,.22);padding:22px;margin-bottom:22px}.grid{display:grid;grid-template-columns:2fr 2fr 1.4fr 1fr;gap:14px;align-items:end}.msg{display:none;margin-top:14px;padding:12px;border:1px solid rgba(212,168,75,.25);background:rgba(212,168,75,.08);color:var(--gold3)}.tools{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}.search{flex:1;min-width:240px}.tablewrap{overflow:auto;border:1px solid rgba(212,168,75,.18);background:rgba(255,255,255,.03)}table{width:100%;border-collapse:collapse;min-width:920px}th{font-family:Cinzel,serif;font-size:11px;letter-spacing:.15em;color:var(--gold2);text-align:left;padding:13px;border-bottom:1px solid rgba(212,168,75,.24)}td{padding:13px;border-bottom:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.82)}.chip{display:inline-block;border:1px solid rgba(212,168,75,.35);background:rgba(212,168,75,.11);padding:5px 9px;color:var(--gold3);font-family:Cinzel,serif;letter-spacing:.08em}.yes{color:var(--green)}.no{color:var(--red)}.wait{color:var(--orange)}@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.wrap{padding:16px}.brand{font-size:48px}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Lacache & Naomie</h1>
-  <p class="sub">Gestion des codes d'invitation · 25 · 07 · 2026</p>
-
-  <!-- Login -->
-  <div id="login-box">
-    <h2>🔐 Espace mariés</h2>
-    <input type="password" id="admin-pwd" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter')login()">
-    <button onclick="login()" style="width:100%">Se connecter</button>
-    <p class="err" id="login-err" style="display:none">Mot de passe incorrect.</p>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="dashboard">
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat"><div class="stat-n" id="s-total">—</div><div class="stat-l">Codes créés</div></div>
-      <div class="stat"><div class="stat-n" id="s-rsvp" style="color:#4ade80">—</div><div class="stat-l">RSVP confirmés</div></div>
-      <div class="stat"><div class="stat-n" id="s-free" style="color:#EDD38A">—</div><div class="stat-l">En attente</div></div>
-    </div>
-
-    <!-- Générer des codes -->
-    <div class="gen-box">
-      <h3>✦ Créer un code pour un invité</h3>
-      <div class="gen-row">
-        <div>
-          <label>Prénom & Nom de l'invité</label>
-          <input type="text" id="gen-nom" placeholder="Ex: Marie Dupont">
-        </div>
-        <div>
-          </div>
-        <div>
-          <label>Email de l'invité</label>
-          <input type="email" id="gen-email" placeholder="email@exemple.com">
-        </div>
-        <div>
-          <label>Téléphone de l'invité (optionnel)</label>
-          <input type="tel" id="gen-phone" placeholder="Ex: 06 12 34 56 78">
-        </div>
-        <div>
-          <label>Nb de codes (si famille)</label>
-          <input type="number" id="gen-nb" value="1" min="1" max="10">
-        </div>
-        <button onclick="genCodes()">Générer le code</button>
-      </div>
-      <p class="err" id="gen-err" style="display:none;margin-top:.8rem"></p>
-      <div id="gen-result" style="margin-top:1rem;display:none"></div>
-    </div>
-
-    <!-- Actions -->
-    <div class="action-row">
-      <input type="text" class="search-input" id="search" placeholder="Rechercher…" oninput="filterTable()">
-      <button class="secondary" onclick="loadCodes()">↻ Actualiser</button>
-      <button class="secondary" onclick="exportCSV()">⬇ Exporter CSV</button>
-    </div>
-
-    <!-- Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Invité</th><th>Email</th>
-          <th>Accès</th><th>RSVP</th>
-          <th>Utilisé le</th>
-          <th>Créé le</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="codes-tbody"></tbody>
-    </table>
-
-    <div class="export-area" id="export-area"></div>
-  </div>
+<div id="login" class="login">
+  <h1 class="brand">Lacache<br><span>&</span><br>Naomie</h1>
+  <div class="tag">Espace admin · codes invités</div>
+  <input id="pwd" class="input" type="password" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter')login()">
+  <button class="btn" style="width:100%;margin-top:16px" onclick="login()">Se connecter</button>
+  <p id="loginErr" class="err"></p>
 </div>
-
+<div id="app" class="app wrap">
+  <div class="top"><h1>Codes d'invitation</h1><div><button class="btn dark" onclick="loadCodes()">Actualiser</button></div></div>
+  <div class="stats">
+    <div class="stat"><div id="sTotal" class="num">0</div><div class="lab">Codes créés</div></div>
+    <div class="stat"><div id="sConfirmed" class="num">0</div><div class="lab">RSVP confirmés</div></div>
+    <div class="stat"><div id="sScanned" class="num">0</div><div class="lab">Entrées validées</div></div>
+    <div class="stat"><div id="sWaiting" class="num">0</div><div class="lab">En attente</div></div>
+  </div>
+  <div class="card">
+    <h2 style="font-size:34px;margin-bottom:16px">Créer un invité</h2>
+    <div class="grid">
+      <div><label>Prénom & Nom</label><input id="guestName" class="input" placeholder="Ex : Marie Dupont"></div>
+      <div><label>Email de l'invité</label><input id="guestEmail" class="input" type="email" placeholder="email@exemple.com"></div>
+      <div><label>Téléphone</label><input id="guestPhone" class="input" placeholder="optionnel"></div>
+      <div><label>Nombre</label><input id="guestNb" class="input" type="number" min="1" max="10" value="1"></div>
+    </div>
+    <button id="createBtn" class="btn" style="margin-top:16px" onclick="createGuest()">Créer + envoyer l'invitation</button>
+    <div id="createMsg" class="msg"></div>
+  </div>
+  <div class="tools"><input id="search" class="input search" placeholder="Rechercher nom, email ou code…" oninput="renderTable()"><button class="btn dark" onclick="exportCSV()">Exporter CSV</button></div>
+  <div class="tablewrap"><table><thead><tr><th>Code</th><th>Invité</th><th>Email</th><th>Usage</th><th>RSVP</th><th>Entrée</th><th>Créé le</th><th>Action</th></tr></thead><tbody id="tbody"></tbody></table></div>
+</div>
 <script>
-const SB_URL = 'https://mbtnqiotfbaagunpsvex.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
-const ADMIN_PWD = 'lacache2026';
-
-let allCodes = [];
-
-async function sb(path, method='GET', body=null){
-  const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'}};
-  if(body) opts.body=JSON.stringify(body);
-  const r=await fetch(SB_URL+'/rest/v1'+path,opts);
-  if(r.status===204||r.status===200&&method==='DELETE') return null;
-  return r.json();
-}
-
-function login(){
-  const pwd = document.getElementById('admin-pwd').value;
-  if(pwd === ADMIN_PWD){
-    document.getElementById('login-box').style.display='none';
-    document.getElementById('dashboard').style.display='block';
-    loadCodes();
-  } else {
-    document.getElementById('login-err').style.display='block';
-  }
-}
-
-function genCode(){
-    const words=['ROSE','LUNE','ÉTOILE','PLUIE','SOLEIL','FLEUR','VENT','NUAGE','AUBE','CIEL','MER','RIVIÈRE','JARDIN','NUIT'];
-  const w = words[Math.floor(Math.random()*words.length)];
-  const n = String(Math.floor(1000+Math.random()*9000));
-  return (w+'-'+n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-}
-
-function escapeHtml(value){
-  return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
-}
-
-async function genCodes(){
-  const nom = document.getElementById('gen-nom').value.trim();
-  const email = document.getElementById('gen-email') ? document.getElementById('gen-email').value.trim() : '';
-  const phone = document.getElementById('gen-phone') ? document.getElementById('gen-phone').value.trim() : '';
-  const nb  = parseInt(document.getElementById('gen-nb').value)||1;
-  const err = document.getElementById('gen-err');
-  const res = document.getElementById('gen-result');
-  err.style.display='none'; res.style.display='none';
-
-  if(!nom){ err.textContent='Entrez le nom de l\'invité.'; err.style.display='block'; return; }
-  if(!email){ err.textContent='Entrez l\'email de l\'invité pour envoyer automatiquement le code.'; err.style.display='block'; return; }
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent='Email invité invalide.'; err.style.display='block'; return; }
-
-  const rows = [];
-  for(let i=0;i<nb;i++){
-    const code = genCode();
-    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), email:email||null, phone:phone||null, used:false, used_count:0, max_uses:2, created_at:new Date().toISOString() });
-  }
-
-  const btn = document.querySelector('.gen-box button[onclick="genCodes()"]');
-  const oldBtnText = btn?.textContent;
-  if(btn){ btn.disabled = true; btn.textContent = 'Création + envoi…'; }
-
-  try {
-    const inserted = await sb('/invite_codes','POST', rows.length===1 ? rows[0] : rows);
-
-        const sendResults = [];
-    for(const row of rows){
-      const sent = await sendInviteEmail(row.code, row.nom, row.email, false);
-      sendResults.push({ code: row.code, nom: row.nom, email: row.email, sent });
-    }
-
-    res.style.display='block';
-    res.innerHTML = `<p style="color:var(--gold3);font-size:.55rem;letter-spacing:.2em;margin-bottom:.8rem">✓ Code(s) créé(s) pour <strong>${escapeHtml(nom)}</strong> — email envoyé automatiquement à <strong>${escapeHtml(email)}</strong> :</p>`
-      + sendResults.map(r=>`<div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem;flex-wrap:wrap">
-          <span class="code-chip">${r.code.toUpperCase()}</span>
-          <span style="font-size:.55rem;color:${r.sent ? '#4ade80' : '#f87171'}">${r.sent ? '✓ Mail envoyé' : '⚠ Mail non envoyé — utiliser le bouton Envoyer'}</span>
-          <button class="copy-btn" onclick="navigator.clipboard.writeText('${r.code}').then(()=>this.textContent='✓ Copié!')">Copier</button>
-        </div>`).join('');
-    document.getElementById('gen-nom').value='';
-    document.getElementById('gen-email').value='';
-    if(document.getElementById('gen-phone')) document.getElementById('gen-phone').value='';
-    loadCodes();
-  } catch(e){
-    err.textContent='Erreur : '+(e.message || JSON.stringify(e));
-    err.style.display='block';
-  } finally {
-    if(btn){ btn.disabled = false; btn.textContent = oldBtnText || 'Générer le code'; }
-  }
-}
-
-async function loadCodes(){
-  try {
-    const data = await sb('/invite_codes?order=created_at.desc');
-    allCodes = data||[];
-    updateStats();
-    renderTable(allCodes);
-  } catch(e){  }
-}
-
-function updateStats(){
-  const confirmed = allCodes.filter(c=>c.rsvp_confirmed).length;
-  const free      = allCodes.filter(c=>!c.rsvp_confirmed).length;
-  document.getElementById('s-total').textContent = allCodes.length;
-  document.getElementById('s-rsvp').textContent  = confirmed;
-  document.getElementById('s-free').textContent  = free;
-}
-
-function renderTable(codes){
-  const tb = document.getElementById('codes-tbody');
-  if(!codes.length){
-    tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.3);padding:2rem;font-style:italic">Aucun code pour l\'instant.</td></tr>';
-    return;
-  }
-  tb.innerHTML = codes.map(c=>{
-    const usedAt = c.used_at ? new Date(c.used_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-    const createdAt = c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) : '—';
-    const accessBadge = c.used
-      ? '<span class="badge used">✗ Bloqué</span>'
-      : '<span class="badge free">✓ Libre</span>';
-    const rsvpBadge = c.rsvp_confirmed
-      ? '<span class="badge" style="color:#4ade80;border-color:rgba(74,222,128,.3)">✓ Confirmé</span>'
-      : '<span class="badge" style="color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.1)">En attente</span>';
-    return `<tr>
-      <td><span class="code-chip">${c.code.toUpperCase()}</span>
-          <button class="copy-btn" style="margin-left:.4rem" onclick="navigator.clipboard.writeText('${c.code}').then(()=>this.textContent='✓')">Copier</button></td>
-      <td>${c.nom||'—'}</td>
-      <td style="font-size:.6rem;color:rgba(255,255,255,.5)">${c.email||'—'}<br><span style="color:rgba(255,255,255,.35)">${c.phone||''}</span></td>
-      <td>${accessBadge}<br><span style="font-size:.5rem;color:rgba(255,255,255,.35)">${c.used_count||0}/${c.max_uses||2} accès</span></td>
-      <td>${rsvpBadge}</td>
-      <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${usedAt}</td>
-      <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${createdAt}</td>
-      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
-        <button class="copy-btn" onclick="sendInviteEmail('${c.code}','${c.nom}','${c.email||''}')" style="color:#4ade80;border-color:rgba(74,222,128,.3)">✉ Envoyer</button>
-        <button class="danger" style="font-size:.38rem;padding:.2rem .5rem" onclick="deleteCode('${c.code}')">Suppr.</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function filterTable(){
-  const q = document.getElementById('search').value.toLowerCase();
-  const filtered = q ? allCodes.filter(c=>(c.code+c.nom).toLowerCase().includes(q)) : allCodes;
-  renderTable(filtered);
-}
-
-async function deleteCode(code){
-  if(!confirm('Supprimer le code '+code.toUpperCase()+' ?')) return;
-  await sb('/invite_codes?code=eq.'+encodeURIComponent(code),'DELETE');
-  loadCodes();
-}
-
-function exportCSV(){
-  if(!allCodes.length){ alert('Aucun code.'); return; }
-  const headers=['Code','Invité','Email','Téléphone','Utilisations','RSVP confirmé','Date utilisation','Date création'];
-  const rows = allCodes.map(c=>{
-    const ua = c.used_at?new Date(c.used_at).toLocaleDateString('fr-FR'):'';
-    const ca = c.created_at?new Date(c.created_at).toLocaleDateString('fr-FR'):'';
-    return [c.code,c.nom,c.email||'',c.phone||'',`${c.used_count||0}/${c.max_uses||2}`,c.rsvp_confirmed?'Oui':'Non',ua,ca].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',');
-  });
-  const csv = [headers.join(','),...rows].join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download = 'codes-invitation-lacache-naomie.csv';
-  a.click();
-}
-
-const EMAILJS_PUBLIC_KEY = 'WqZvQ1reFTM1ISd3E';
-const EMAILJS_SERVICE_ID = 'service_9cilotm';
-const EMAILJS_INVITATION_TEMPLATE_ID = 'template_4n9w6sv';
-const WEDDING_URL = 'https://notre-grand-jour.online';
-const FROM_NAME = 'Lacache & Naomie';
-const REPLY_TO = 'lacachenaomie@gmail.com';
-
-let emailJSReady = false;
-(function(){
-  if(window.emailjs){
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-    emailJSReady = true;
-    return;
-  }
-  const s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-  s.onload = () => {
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-    emailJSReady = true;
-  };
-  s.onerror = () => {
-    emailJSReady = false;
-    
-  };
-  document.head.appendChild(s);
-})();
-
-function waitForEmailJS(timeoutMs=6000){
-  return new Promise((resolve,reject)=>{
-    const start = Date.now();
-    const timer = setInterval(()=>{
-      if(window.emailjs && emailJSReady){ clearInterval(timer); resolve(true); }
-      else if(Date.now()-start > timeoutMs){ clearInterval(timer); reject(new Error('EmailJS non chargé')); }
-    },100);
-  });
-}
-
-async function sendInviteEmail(code, nom, email, askConfirm=true){
-  if(!email || email === 'null' || email === ''){
-    if(askConfirm) alert('Cet invité n\'a pas d\'email enregistré. Ajoutez son email d\'abord.');
-    return false;
-  }
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    if(askConfirm) alert('Email invalide : ' + email);
-    return false;
-  }
-  if(askConfirm && !confirm('Envoyer le code ' + code.toUpperCase() + ' à ' + email + ' ?')) return false;
-
-  try{
-    await waitForEmailJS();
-    const weddingUrl = WEDDING_URL + '?code=' + encodeURIComponent(code);
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_INVITATION_TEMPLATE_ID, {
-      from_name: FROM_NAME,
-      reply_to: REPLY_TO,
-      to_name: nom || 'Invité(e)',
-      to_email: email,
-      email: email,
-      name: FROM_NAME,
-      invite_code: code.toUpperCase(),
-      wedding_url: weddingUrl,
-      invitation_url: weddingUrl
-    });
-
-    // Garder une trace simple dans Supabase si la colonne existe.
-    // Si la colonne n'existe pas, on ignore sans bloquer le mail.
-    try{
-      await sb('/invite_codes?code=eq.' + encodeURIComponent(code), 'PATCH', { email: email, invitation_sent_at: new Date().toISOString() });
-    }catch(_){
-      try{ await sb('/invite_codes?code=eq.' + encodeURIComponent(code), 'PATCH', { email: email }); }catch(__){}
-    }
-
-    if(askConfirm) alert('✓ Mail envoyé à ' + email);
-    return true;
-  }catch(err){
-    
-    if(askConfirm) alert('Erreur envoi mail : ' + (err.text || err.message || JSON.stringify(err)));
-    return false;
-  }
-}
-document.getElementById('admin-pwd').focus();
+const CONFIG={
+  adminPwd:'lacache2026',
+  sbUrl:'https://mbtnqiotfbaagunpsvex.supabase.co',
+  sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI',
+  emailPublic:'WqZvQ1reFTM1ISd3E', emailService:'service_9cilotm', tplInvitation:'template_4n9w6sv'
+};
+let codes=[];
+function normCode(c){return String(c||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function upper(c){return normCode(c).toUpperCase()}
+function showErr(m){const e=document.getElementById('loginErr');e.textContent=m;e.style.display='block'}
+async function sb(path,method='GET',body=null){const opts={method,headers:{apikey:CONFIG.sbKey,Authorization:'Bearer '+CONFIG.sbKey,'Content-Type':'application/json',Prefer:'return=representation'}};if(body)opts.body=JSON.stringify(body);const r=await fetch(CONFIG.sbUrl+'/rest/v1'+path,opts);if(r.status===204)return null;const txt=await r.text();const data=txt?JSON.parse(txt):null;if(!r.ok)throw new Error((data&&(data.message||data.hint))||txt||'Erreur Supabase '+r.status);return data}
+function login(){if(document.getElementById('pwd').value.trim()!==CONFIG.adminPwd){showErr('Mot de passe incorrect.');return}try{emailjs.init(CONFIG.emailPublic)}catch(e){}document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadCodes()}
+async function loadCodes(){codes=await sb('/invite_codes?select=*&order=created_at.desc')||[];updateStats();renderTable()}
+function updateStats(){const total=codes.length, confirmed=codes.filter(c=>!!c.rsvp_confirmed).length, scanned=codes.filter(c=>!!c.scanned_entry).length;document.getElementById('sTotal').textContent=total;document.getElementById('sConfirmed').textContent=confirmed;document.getElementById('sScanned').textContent=scanned;document.getElementById('sWaiting').textContent=total-confirmed}
+function genCode(){const words=['rose','lune','etoile','soleil','fleur','ciel','jardin','riviere','aube','nuage','amour','alliance'];return words[Math.floor(Math.random()*words.length)]+'-'+Math.floor(1000+Math.random()*9000)}
+function weddingUrl(code){return location.origin+location.pathname.replace(/admin-codes\.html?$/,'index.html')+'?code='+encodeURIComponent(normCode(code))}
+async function sendInvitationMail(row){try{await emailjs.send(CONFIG.emailService,CONFIG.tplInvitation,{to_email:row.email,to_name:row.nom||row.name||'Invité',invite_code:upper(row.code),wedding_url:weddingUrl(row.code),qr_content:`INVITE: ${row.nom||'Invité'} | CODE: ${upper(row.code)} | DATE: 25-07-2026`});await sb('/invite_codes?code=eq.'+encodeURIComponent(normCode(row.code)),'PATCH',{invitation_sent_at:new Date().toISOString()}).catch(()=>{});return true}catch(e){return false}}
+async function createGuest(){const name=document.getElementById('guestName').value.trim(), email=document.getElementById('guestEmail').value.trim(), phone=document.getElementById('guestPhone').value.trim(), nb=parseInt(document.getElementById('guestNb').value)||1, msg=document.getElementById('createMsg'), btn=document.getElementById('createBtn');msg.style.display='none';if(!name)return alert('Nom obligatoire.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert('Email invalide.');btn.disabled=true;btn.textContent='Création + envoi…';try{const rows=[];for(let i=0;i<nb;i++){rows.push({code:genCode(),nom:nb>1?`${name} (${i+1})`:name,email,phone:phone||null,used:false,used_count:0,max_uses:2,rsvp_confirmed:false,scanned_entry:false})}const inserted=await sb('/invite_codes','POST',rows.length===1?rows[0]:rows);const list=Array.isArray(inserted)?inserted:rows;const results=[];for(const r of list){results.push({code:r.code,sent:await sendInvitationMail(r)})}msg.innerHTML='Code(s) créé(s) : '+results.map(r=>`<span class="chip">${upper(r.code)}</span> ${r.sent?'<span class="yes">mail envoyé</span>':'<span class="no">mail non envoyé</span>'}`).join(' &nbsp; ');msg.style.display='block';['guestName','guestEmail','guestPhone'].forEach(id=>document.getElementById(id).value='');await loadCodes()}catch(e){alert('Erreur : '+e.message)}finally{btn.disabled=false;btn.textContent="Créer + envoyer l'invitation"}}
+function renderTable(){const q=(document.getElementById('search').value||'').toLowerCase();const list=codes.filter(c=>!q||String(c.code).toLowerCase().includes(q)||String(c.nom||'').toLowerCase().includes(q)||String(c.email||'').toLowerCase().includes(q));const tb=document.getElementById('tbody');if(!list.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:28px">Aucun invité.</td></tr>';return}tb.innerHTML=list.map(c=>`<tr><td><span class="chip">${upper(c.code)}</span></td><td>${c.nom||'—'}</td><td>${c.email||'—'}</td><td>${c.used_count||0}/${c.max_uses||2}</td><td>${c.rsvp_confirmed?'<span class="yes">Confirmé</span>':'<span class="wait">En attente</span>'}</td><td>${c.scanned_entry?'<span class="yes">Validée</span>':'<span class="wait">Non scannée</span>'}</td><td>${c.created_at?new Date(c.created_at).toLocaleDateString('fr-FR'):'—'}</td><td><button class="btn dark" onclick="resend('${normCode(c.code)}')">Renvoyer</button></td></tr>`).join('')}
+async function resend(code){const row=codes.find(c=>normCode(c.code)===normCode(code));if(!row||!row.email)return alert('Email manquant.');const ok=await sendInvitationMail(row);alert(ok?'Invitation renvoyée.':'Erreur EmailJS. Vérifie ton template.')}
+function exportCSV(){const rows=[['code','nom','email','used_count','max_uses','rsvp_confirmed','scanned_entry','created_at'],...codes.map(c=>[c.code,c.nom||'',c.email||'',c.used_count||0,c.max_uses||2,!!c.rsvp_confirmed,!!c.scanned_entry,c.created_at||''])];const csv='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='codes_invites_lacache_naomie.csv';a.click()}
 </script>
 </body>
 </html>
