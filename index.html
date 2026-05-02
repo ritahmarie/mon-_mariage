@@ -1,9 +1,33 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lacache & Naomie - 25.07.2026</title>
+<title>Lacache & Naomie - 25.07.2026</t
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  itle>
+
+
+  
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -249,6 +273,7 @@ let guestNom='', guestEmail='', guestCode='';
 
 function normalizeCode(v){return (v||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,'');}
 function unlockSite(invite){
+  resetInactivityTimer(); // démarrer le timer d'inactivité dès l'accès
   guestNom = invite?.nom || invite?.invite || '';
   guestEmail = invite?.email || '';
   guestCode = normalizeCode(invite?.code || document.getElementById('gate-input')?.value || '');
@@ -323,7 +348,31 @@ window.addEventListener('DOMContentLoaded',async()=>{
     guestCode=savedCode;
     document.body.classList.remove('gate-locked');
     prefillRSVP();
+    resetInactivityTimer(); // démarrer le timer si session reprise
   }
+});
+
+// ── Timer d'inactivité : déconnexion après 5 min sans action ─────────────────
+const INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes en ms
+let inactivityTimer = null;
+
+function resetInactivityTimer(){
+  if(document.body.classList.contains('gate-locked')) return; // pas connecté, inutile
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(()=>{
+    // Déconnexion
+    sessionStorage.clear();
+    document.body.classList.add('gate-locked');
+    const err = document.getElementById('gate-err');
+    if(err){ err.textContent = 'Session expirée après 5 min d'inactivité. Entrez à nouveau votre code.'; err.style.display = 'block'; }
+    const input = document.getElementById('gate-input');
+    if(input) input.value = '';
+  }, INACTIVITY_LIMIT);
+}
+
+// Écouter toute activité utilisateur
+['mousemove','keydown','click','scroll','touchstart'].forEach(evt => {
+  document.addEventListener(evt, resetInactivityTimer, { passive: true });
 });
 
 function updateCountdown(){const target=new Date('2026-07-25T10:00:00').getTime();const now=Date.now();let d=Math.max(0,target-now);const days=Math.floor(d/(1000*60*60*24));d-=days*86400000;const hours=Math.floor(d/3600000);d-=hours*3600000;const minutes=Math.floor(d/60000);d-=minutes*60000;const seconds=Math.floor(d/1000);['days','hours','minutes','seconds'].forEach((id,i)=>{const vals=[days,hours,minutes,seconds];const el=document.getElementById(id);if(el)el.textContent=vals[i];});}
@@ -505,6 +554,23 @@ async function saveRSVPToSupabase(data){
   }catch(err){console.warn('RSVP Supabase non enregistré :',err);}
 }
 
+async function _burnInviteCode(code){
+  // Force le code à max_uses pour bloquer tout accès futur après RSVP
+  if(!code) return;
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code)+'&limit=1',{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,Accept:'application/json'}});
+    const rows=await res.json().catch(()=>[]);
+    if(!rows || !rows.length) return;
+    const invite=rows[0];
+    const max=Number(invite.max_uses ?? 2);
+    await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code),{
+      method:'PATCH',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({used_count:max,used:true,used_at:new Date().toISOString()})
+    });
+  }catch(err){console.warn('Burn code échoué :',err);}
+}
+
 async function incrementInviteCodeUsage(code){
   if(!code) return;
   try{
@@ -540,9 +606,14 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   renderQR(data.qrContent);
   const qg=document.getElementById('qrPdfGuest'); if(qg) qg.textContent='QR code pour : '+data.full+' · Code : '+data.code;
   await saveRSVPToSupabase(data);
-  // Compteur déjà incrémenté au gate, pas de double incrément ici
+  // Épuiser le code immédiatement après RSVP confirmé — plus d'accès possible
+  await _burnInviteCode(data.code);
   await sendConfirmationEmail(data);
   document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'center'});
+  // Vider la session : l'invité peut encore télécharger ses PDF sur cette page
+  // mais ne pourra plus revenir sur le site
+  sessionStorage.clear();
+  clearTimeout(inactivityTimer);
 });
 // ── Génération PDF via jsPDF pur (sans html2canvas) ──────────────────────────
 // Stockage des données courantes pour les PDF
