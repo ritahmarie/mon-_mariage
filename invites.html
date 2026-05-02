@@ -297,346 +297,369 @@
 </div>
 
 <script>
-let SB_URL='',SB_KEY='',EJ_PUB='',EJ_SVC='',EJ_TPL='';
-let guests=[],scannerRunning=false,html5QrCode=null,currentGuest=null,entryLog=[];
+const ADMIN_PWD = 'lacache2026';
+const SB_URL = 'https://mbtnqiotfbaagunpsvex.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
+const EJ_PUB = 'WqZvQ1reFTM1ISd3E';
+const EJ_SVC = 'service_9cilotm';
+const EJ_TPL = 'template_4n9w6sv';
 
-const PROGRAMMES={
-  'JOUR':[
-    {time:'10h00',label:'Cérémonie',detail:'Lieu de la cérémonie'},
-    {time:'13h00',label:'Vin d\'honneur',detail:'Cocktail & réception'},
-    {time:'19h00',label:'Soirée dansante',detail:'Musique & festivités'}
+let guests = [];
+let scannerRunning = false;
+let html5QrCode = null;
+let currentGuest = null;
+let entryLog = [];
+
+const PROGRAMMES = {
+  JOUR: [
+    {time:'10h00', label:'Cérémonie civile', detail:'Mairie de Lille'},
+    {time:'13h30', label:'Vin d\'honneur', detail:'Cocktail & retrouvailles'},
+    {time:'19h00', label:'Dîner & soirée', detail:'124Bis Rue de l\'Epideme, 59200 Tourcoing'}
   ],
-  'SOIRÉE':[
-    {time:'19h00',label:'Dîner',detail:'Salle de réception'},
-    {time:'21h00',label:'Soirée dansante',detail:'Musique & festivités'}
+  SOIRÉE: [
+    {time:'19h00', label:'Dîner & soirée', detail:'124Bis Rue de l\'Epideme, 59200 Tourcoing'}
   ],
-  'COCKTAIL':[
-    {time:'13h00',label:'Vin d\'honneur',detail:'Cocktail & réception'}
+  COCKTAIL: [
+    {time:'13h30', label:'Vin d\'honneur', detail:'Cocktail & retrouvailles'}
   ]
 };
 
-async function sbFetch(path,method='GET',body=null){
-  const opts={method,headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'}};
-  if(body)opts.body=JSON.stringify(body);
-  const res=await fetch(`${SB_URL}/rest/v1${path}`,opts);
-  if(res.status===204)return null;
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.message||data.hint||JSON.stringify(data));
+function showErr(msg){
+  const el = document.getElementById('setup-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function esc(v){
+  return String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+
+async function sbFetch(path, method='GET', body=null){
+  const opts = {
+    method,
+    headers: {
+      apikey: SB_KEY,
+      Authorization: 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation'
+    }
+  };
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(`${SB_URL}/rest/v1${path}`, opts);
+  if(res.status === 204) return null;
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : null;
+  if(!res.ok) throw new Error((data && (data.message || data.hint)) || text || `Erreur Supabase ${res.status}`);
   return data;
 }
 
 async function connectSupabase(){
   const pwd = document.getElementById('admin-password').value.trim();
-  if(pwd !== 'lacache2026'){showErr('Mot de passe incorrect.');return;}
-  SB_URL='https://mbtnqiotfbaagunpsvex.supabase.co';
-  SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
-  EJ_PUB='WqZvQ1reFTM1ISd3E';
-  EJ_SVC='service_9cilotm';
-  EJ_TPL='template_4n9w6sv';
-  const btn=document.getElementById('connect-btn');
-  btn.textContent='Connexion...';btn.disabled=true;
+  if(pwd !== ADMIN_PWD){ showErr('Mot de passe incorrect.'); return; }
+
+  const btn = document.getElementById('connect-btn');
+  btn.textContent = 'Connexion...';
+  btn.disabled = true;
+
   try{
-    const testRes = await fetch(SB_URL+'/rest/v1/invite_codes?limit=1',{
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'}
-    });
-    if(!testRes.ok) throw new Error('Connexion Supabase échouée ('+testRes.status+')');
+    await sbFetch('/invite_codes?select=code&limit=1');
     if(window.emailjs) emailjs.init(EJ_PUB);
-    document.getElementById('setup-screen').style.display='none';
-    document.getElementById('main-app').style.display='block';
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
     await loadGuests();
-  }catch(e){showErr('Erreur connexion : '+e.message);btn.textContent='Se connecter';btn.disabled=false;}
+  }catch(e){
+    showErr('Erreur connexion : ' + e.message);
+    btn.textContent = 'Se connecter';
+    btn.disabled = false;
+  }
 }
-function showErr(msg){const el=document.getElementById('setup-error');el.textContent=msg;el.style.display='block';}
 
 async function loadGuests(){
-  guests=await sbFetch('/rsvps?order=created_at.desc');
-  renderGuests();updateStats();
+  try{
+    guests = await sbFetch('/rsvps?order=created_at.desc') || [];
+  }catch(e){
+    guests = [];
+    console.warn('Impossible de charger les RSVP :', e.message);
+  }
+  renderGuests();
+  updateStats();
 }
 
 async function addGuest(){
-  const nom=document.getElementById('f-nom').value.trim();
-  if(!nom){alert('Le nom est obligatoire.');return;}
-  const payload={prenom:nom,email:document.getElementById('f-email').value.trim()||null,
-    table_num:parseInt(document.getElementById('f-table').value)||null,
-    presence:document.getElementById('f-type').value,
-    note:document.getElementById('f-note').value.trim()||null,presence:'en_attente',max_guests:1};
+  const nomComplet = document.getElementById('f-nom').value.trim();
+  if(!nomComplet){ alert('Le nom est obligatoire.'); return; }
+  const parts = nomComplet.split(/\s+/);
+  const prenom = parts.shift() || nomComplet;
+  const nom = parts.join(' ');
+  const payload = {
+    prenom,
+    nom,
+    email: document.getElementById('f-email').value.trim() || null,
+    telephone: null,
+    presence: 'en_attente',
+    nb_personnes: 1,
+    regime_alimentaire: document.getElementById('f-note').value.trim() || null,
+    message: null,
+    invite_type: document.getElementById('f-type').value,
+    table_num: parseInt(document.getElementById('f-table').value) || null,
+    created_at: new Date().toISOString()
+  };
   try{
-    const res=await sbFetch('/rsvps','POST',payload);
-    if(res&&res[0])guests.push(res[0]);
-    ['f-nom','f-email','f-table','f-note'].forEach(id=>document.getElementById(id).value='');
-    renderGuests();updateStats();
-  }catch(e){alert('Erreur : '+e.message);}
+    const res = await sbFetch('/rsvps', 'POST', payload);
+    if(res && res[0]) guests.unshift(res[0]);
+    ['f-nom','f-email','f-table','f-note'].forEach(id => document.getElementById(id).value = '');
+    renderGuests();
+    updateStats();
+  }catch(e){ alert('Erreur : ' + e.message); }
 }
 
 async function deleteGuest(id){
-  if(!confirm('Supprimer cet invité ?'))return;
-  try{await sbFetch(`/rsvps?id=eq.${id}`,'DELETE');guests=guests.filter(g=>g.id!==id);renderGuests();updateStats();}
-  catch(e){alert('Erreur : '+e.message);}
+  if(!confirm('Supprimer cet invité ?')) return;
+  try{
+    await sbFetch(`/rsvps?id=eq.${encodeURIComponent(id)}`, 'DELETE');
+    guests = guests.filter(g => g.id !== id);
+    renderGuests();
+    updateStats();
+  }catch(e){ alert('Erreur : ' + e.message); }
+}
+
+function guestFullName(g){
+  return ((g.prenom || '') + ' ' + (g.nom || '')).trim() || g.rsvp_name || g.nom || 'Invité';
 }
 
 function renderGuests(){
-  const s=document.getElementById('search').value.toLowerCase();
-  const ft=document.getElementById('filter-type').value;
-  const fs=document.getElementById('filter-statut').value;
-  let list=guests.filter(g=>(!s||g.prenom+" "+g.nom.toLowerCase().includes(s)||(g.email||'').toLowerCase().includes(s))&&(!ft||g.presence===ft)&&(!ft||g.presence===ft)&&(!fs||true));
-  const tbody=document.getElementById('tbody');
-  if(!list.length){tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);font-size:.75rem">Aucun invité trouvé</td></tr>`;return;}
-  const tc={'JOUR':'badge-jour','SOIRÉE':'badge-soiree','COCKTAIL':'badge-cocktail'};
-  const emailOk=!!EJ_PUB;
-  tbody.innerHTML=list.map(g=>{
-    const nom=((g.prenom||'')+' '+(g.nom||'')).trim();
-    const statut=g.presence==='oui'?'<span class="badge badge-present">✓ Présent</span>':g.presence==='non'?'<span class="badge badge-soiree">✗ Absent</span>':'<span class="badge">En attente</span>';
-    const date=g.created_at?new Date(g.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}):'—';
-    const emailBtn=EJ_PUB?'<button class="btn-outline" onclick="sendQR(\''+g.id+'\')">✉</button>':'';
-    return '<tr><td><strong>'+nom+'</strong></td><td>'+(g.email||'—')+'</td><td>'+(g.tel||'—')+'</td><td>'+statut+'</td><td>'+(g.nb||'1')+'</td><td>'+(g.allergie||'—')+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(g.message||'—')+'</td><td style="color:#999;font-size:.7rem">'+date+'</td><td style="white-space:nowrap">'+emailBtn+'<button class="btn-outline dark" onclick="deleteGuest(\''+g.id+'\')">✕</button></td></tr>';
+  const search = (document.getElementById('search')?.value || '').toLowerCase();
+  const typeFilter = document.getElementById('filter-type')?.value || '';
+  const statutFilter = document.getElementById('filter-statut')?.value || '';
+  let list = guests.filter(g => {
+    const full = guestFullName(g).toLowerCase();
+    const email = (g.email || '').toLowerCase();
+    const type = g.invite_type || g.type || '';
+    const statut = g.presence || 'en_attente';
+    return (!search || full.includes(search) || email.includes(search))
+      && (!typeFilter || type === typeFilter)
+      && (!statutFilter || statut === statutFilter);
+  });
+
+  const tbody = document.getElementById('tbody');
+  if(!tbody) return;
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--muted);font-size:.75rem">Aucun invité trouvé</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(g => {
+    const full = esc(guestFullName(g));
+    const statut = g.presence === 'oui'
+      ? '<span class="badge badge-present">✓ Présent</span>'
+      : g.presence === 'non'
+        ? '<span class="badge badge-soiree">✗ Absent</span>'
+        : '<span class="badge badge-attente">En attente</span>';
+    const date = g.created_at ? new Date(g.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) : '—';
+    const id = esc(g.id || '');
+    return `<tr>
+      <td><strong>${full}</strong></td>
+      <td>${esc(g.email || '—')}</td>
+      <td>${esc(g.telephone || g.tel || '—')}</td>
+      <td>${statut}</td>
+      <td>${esc(g.nb_personnes || g.nb || '1')}</td>
+      <td>${esc(g.regime_alimentaire || g.allergie || '—')}</td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.message || '—')}</td>
+      <td style="color:#999;font-size:.7rem">${date}</td>
+      <td style="white-space:nowrap"><button class="btn-outline dark" onclick="deleteGuest('${id}')">✕</button></td>
+    </tr>`;
   }).join('');
+}
 
 function updateStats(){
-  document.getElementById('s-total').textContent=guests.length;
-  document.getElementById('s-presents').textContent=guests.filter(g=>g.presence==='oui').length;
-  document.getElementById('s-attente').textContent=guests.filter(g=>g.presence!=='oui'&&g.presence!=='non').length;
-  document.getElementById('s-jour').textContent=guests.filter(g=>g.presence==='oui').length;
-  document.getElementById('s-soiree').textContent=guests.filter(g=>g.presence==='non').length;
+  const total = guests.length;
+  const presents = guests.filter(g => g.presence === 'oui').length;
+  const attente = guests.filter(g => g.presence !== 'oui' && g.presence !== 'non').length;
+  const jour = guests.filter(g => (g.invite_type || g.type) === 'JOUR').length;
+  const soiree = guests.filter(g => (g.invite_type || g.type) === 'SOIRÉE').length;
+  const set = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+  set('s-total', total); set('s-presents', presents); set('s-attente', attente); set('s-jour', jour); set('s-soiree', soiree);
 }
 
-function showQR(id){
-  const g=guests.find(x=>x.id===id);if(!g)return;
-  currentGuest=g;
-  document.getElementById('m-name').textContent=g.prenom+" "+g.nom;
-  document.getElementById('m-sub').textContent=(g.presence||'')+(g.table_num?` · Table ${g.table_num}`:'');
-  document.getElementById('m-note').textContent=g.note||'';
-  document.getElementById('m-id').textContent=g.id.substring(0,18)+'…';
-  document.getElementById('email-status').textContent='';
-  const sb=document.getElementById('btn-send-email');
-  sb.disabled=!g.email||!EJ_PUB;
-  const qd=document.getElementById('qr-display');qd.innerHTML='';
-  new QRCode(qd,{text:JSON.stringify({id:g.id,nom:g.prenom+" "+g.nom,table:g.table_num,type:g.presence}),
-    width:200,height:200,colorDark:'#1a1512',colorLight:'#f7f3ee',correctLevel:QRCode.CorrectLevel.H});
-  document.getElementById('qr-modal').classList.add('open');
-}
-function closeModal(){document.getElementById('qr-modal').classList.remove('open');currentGuest=null;}
-
-function downloadQR(){
-  if(!currentGuest)return;
-  const canvas=document.querySelector('#qr-display canvas');if(!canvas)return;
-  const g=currentGuest;
-  const fc=document.createElement('canvas');fc.width=280;fc.height=330;
-  const ctx=fc.getContext('2d');
-  ctx.fillStyle='#f7f3ee';ctx.fillRect(0,0,280,330);
-  ctx.strokeStyle='#b8965a';ctx.lineWidth=1;ctx.strokeRect(8,8,264,314);
-  ctx.fillStyle='#b8965a';ctx.font='14px Georgia';ctx.textAlign='center';ctx.fillText('✦',140,26);
-  ctx.drawImage(canvas,40,32,200,200);
-  ctx.fillStyle='#1a1512';ctx.font='bold 15px Georgia,serif';ctx.textAlign='center';ctx.fillText(g.prenom+" "+g.nom,140,260);
-  const meta=[g.presence,g.table_num?`Table ${g.table_num}`:null].filter(Boolean).join(' · ');
-  ctx.fillStyle='#7a6e65';ctx.font='11px monospace';ctx.fillText(meta,140,278);
-  if(g.note){ctx.fillStyle='#c4847a';ctx.font='italic 10px Georgia';ctx.fillText(g.note,140,295);}
-  ctx.fillStyle='#b8965a';ctx.font='9px monospace';ctx.fillText('25.07.2026 · Tourcoing',140,318);
-  const a=document.createElement('a');a.download=`QR_${g.prenom+" "+g.nom.replace(/\s+/g,'_')}.png`;a.href=fc.toDataURL('image/png');a.click();
+function switchTab(tab, btn){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(tab !== 'scanner' && scannerRunning) stopScanner();
 }
 
-async function sendQRByEmail(){
-  if(!currentGuest||!currentGuest.email)return;
-  const statusEl=document.getElementById('email-status');
-  const btn=document.getElementById('btn-send-email');
-  statusEl.textContent='Envoi en cours…';btn.disabled=true;
-  const canvas=document.querySelector('#qr-display canvas');
-  if(!canvas){statusEl.textContent='Erreur QR.';btn.disabled=false;return;}
-  const prog=(PROGRAMMES[currentGuest.presence]||[]).map(p=>`${p.time} — ${p.label}`).join('\n');
-  try{
-    await emailjs.send(EJ_SVC,EJ_TPL,{
-      to_name:currentGuest.guest_name,to_email:currentGuest.email,
-      presence:currentGuest.presence||'',
-      table_num:currentGuest.table_num?`Table ${currentGuest.table_num}`:'',
-      programme:prog,note:currentGuest.note||'',
-      qr_image:canvas.toDataURL('image/png'),
-      mariage_date:'25 juillet 2026',mariage_lieu:'Tourcoing'
+function toggleScanner(){ scannerRunning ? stopScanner() : startScanner(); }
+
+function startScanner(){
+  if(!window.Html5Qrcode){ alert('Librairie scanner non chargée. Vérifiez votre connexion internet.'); return; }
+  if(location.protocol !== 'https:' && location.hostname !== 'localhost'){
+    alert('Le scanner caméra fonctionne uniquement en HTTPS. Déployez sur Vercel/GitHub Pages puis ouvrez le lien HTTPS sur téléphone.');
+    return;
+  }
+  html5QrCode = new Html5Qrcode('reader');
+  html5QrCode.start(
+    { facingMode: 'environment' },
+    { fps: 10, qrbox: { width: 240, height: 240 } },
+    onScanSuccess,
+    () => {}
+  ).then(() => {
+    scannerRunning = true;
+    const b = document.getElementById('scan-btn');
+    b.textContent = '⏹ Arrêter';
+    b.classList.add('stop');
+  }).catch(err => alert('Caméra inaccessible : ' + err));
+}
+
+function stopScanner(){
+  if(!html5QrCode) return;
+  html5QrCode.stop().then(() => {
+    html5QrCode.clear();
+    html5QrCode = null;
+    scannerRunning = false;
+    const b = document.getElementById('scan-btn');
+    b.textContent = '▶ Démarrer le scanner';
+    b.classList.remove('stop');
+  }).catch(() => { html5QrCode = null; scannerRunning = false; });
+}
+
+function extractInviteFromQR(text){
+  let nomInvite = '';
+  let codeInvite = '';
+  if(!text) return { nomInvite, codeInvite };
+
+  if(text.includes('INVITE:') && text.includes('CODE:')){
+    text.split('|').map(s => s.trim()).forEach(p => {
+      if(p.startsWith('INVITE:')) nomInvite = p.replace('INVITE:', '').trim();
+      if(p.startsWith('CODE:')) codeInvite = p.replace('CODE:', '').trim();
     });
-    statusEl.style.color='var(--success)';statusEl.textContent='✓ Email envoyé à '+currentGuest.email;
-  }catch(e){statusEl.style.color='var(--error)';statusEl.textContent='Erreur : '+JSON.stringify(e);}
-  btn.disabled=false;
+    return { nomInvite, codeInvite };
+  }
+
+  try{
+    const d = JSON.parse(text);
+    nomInvite = d.nom || d.name || d.invite || '';
+    codeInvite = d.code || d.invite_code || '';
+    return { nomInvite, codeInvite };
+  }catch(e){
+    const match = text.match(/([A-ZÀ-Ÿa-zà-ÿ]+-[0-9]{4})/);
+    if(match) codeInvite = match[1];
+    return { nomInvite, codeInvite };
+  }
 }
 
-async function quickEmail(id){
-  const g=guests.find(x=>x.id===id);if(!g||!g.email)return;
-  const tmp=document.createElement('div');tmp.style.cssText='position:absolute;left:-9999px';document.body.appendChild(tmp);
-  new QRCode(tmp,{text:JSON.stringify({id:g.id,nom:g.prenom+" "+g.nom,table:g.table_num,type:g.presence}),
-    width:200,height:200,colorDark:'#1a1512',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
-  setTimeout(async()=>{
-    const canvas=tmp.querySelector('canvas');
-    const prog=(PROGRAMMES[g.presence]||[]).map(p=>`${p.time} — ${p.label}`).join('\n');
-    try{
-      await emailjs.send(EJ_SVC,EJ_TPL,{to_name:g.prenom+" "+g.nom,to_email:g.email,
-        presence:g.presence||'',table_num:g.table_num?`Table ${g.table_num}`:'',
-        programme:prog,note:g.note||'',qr_image:canvas?canvas.toDataURL('image/png'):'',
-        mariage_date:'25 juillet 2026',mariage_lieu:'Tourcoing'});
-      alert('✓ Email envoyé à '+g.email);
-    }catch(e){alert('Erreur : '+JSON.stringify(e));}
-    document.body.removeChild(tmp);
-  },400);
+async function onScanSuccess(text){
+  if(html5QrCode) html5QrCode.pause(true);
+  const { nomInvite, codeInvite } = extractInviteFromQR(text);
+
+  if(!codeInvite){
+    showResult('error','⚠️','QR invalide','','Code introuvable dans le QR');
+    setTimeout(() => html5QrCode && html5QrCode.resume(), 2500);
+    return;
+  }
+
+  try{
+    const rows = await sbFetch(`/invite_codes?code=ilike.${encodeURIComponent(codeInvite)}&limit=1`);
+    if(!rows || !rows.length){
+      showResult('error','✗', nomInvite || codeInvite, '', 'Invité introuvable');
+      setTimeout(() => html5QrCode && html5QrCode.resume(), 2500);
+      return;
+    }
+
+    const invite = rows[0];
+    const displayName = invite.rsvp_name || invite.nom || nomInvite || 'Invité';
+
+    if(invite.scanned_entry){
+      showResult('already','⚠', displayName, `Code : ${codeInvite.toUpperCase()}`, 'Déjà enregistré(e) à l’entrée');
+      setTimeout(() => html5QrCode && html5QrCode.resume(), 2500);
+      return;
+    }
+
+    if(!invite.rsvp_confirmed){
+      showResult('error','✗', displayName, `Code : ${codeInvite.toUpperCase()}`, 'RSVP non confirmé');
+      setTimeout(() => html5QrCode && html5QrCode.resume(), 2500);
+      return;
+    }
+
+    const now = new Date().toISOString();
+    await sbFetch(`/invite_codes?code=ilike.${encodeURIComponent(codeInvite)}`, 'PATCH', {
+      scanned_entry: true,
+      scanned_at: now
+    });
+
+    addLog({ prenom: displayName, nom: '', table_num: null });
+    showResult('success','✓', displayName, `Code : ${codeInvite.toUpperCase()}`, 'Bienvenue ! Entrée validée ✦');
+    setTimeout(() => {
+      stopScanner();
+      showWelcomePage({ prenom: displayName, nom: '', presence: 'JOUR', table_num: null, note: '' });
+    }, 1300);
+  }catch(err){
+    showResult('error','⚠️','Erreur réseau','', err.message || 'Impossible de vérifier.');
+    setTimeout(() => html5QrCode && html5QrCode.resume(), 3000);
+  }
 }
 
-function printAllQR(){
-  if(!guests.length){alert('Aucun invité.');return;}
-  const win=window.open('','_blank');
-  win.document.write(`<html><head><title>QR Invités</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
-  <style>body{font-family:Georgia,serif;background:#f7f3ee;margin:0;padding:20px}
-  h1{text-align:center;font-weight:300;font-size:1.4rem;color:#1a1512;margin-bottom:2rem}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
-  .card{background:white;border:1px solid #ede5d8;padding:1.2rem;text-align:center;page-break-inside:avoid}
-  .name{font-size:.95rem;font-weight:600;margin-top:.8rem;color:#1a1512}
-  .meta{font-size:.65rem;color:#7a6e65;letter-spacing:.1em;text-transform:uppercase;margin-top:.2rem}
-  .note{font-size:.6rem;color:#c4847a;font-style:italic;margin-top:.2rem}
-  .uid{font-size:.55rem;color:#b8965a;font-family:monospace;margin-top:.4rem}
-  @media print{body{background:white}}</style></head><body>
-  <h1>✦ Invités — Mariage 25.07.2026</h1>
-  <div class="grid">${guests.map((g,i)=>`<div class="card"><div id="q${i}"></div>
-  <div class="name">${g.prenom+" "+g.nom}</div>
-  <div class="meta">${[g.presence,g.table_num?`Table ${g.table_num}`:null].filter(Boolean).join(' · ')}</div>
-  ${g.note?`<div class="note">${g.note}</div>`:''}
-  <div class="uid">${g.id.substring(0,13)}…</div></div>`).join('')}</div>
-  <script>const d=${JSON.stringify(guests)};
-  d.forEach((g,i)=>{new QRCode(document.getElementById('q'+i),{
-    text:JSON.stringify({id:g.id,nom:g.prenom+" "+g.nom,table:g.table_num,type:g.presence}),
-    width:150,height:150,colorDark:'#1a1512',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});});
-  setTimeout(()=>window.print(),1200);<\/script></body></html>`);
-  win.document.close();
+function showResult(type, icon, name, detail, status){
+  const box = document.getElementById('scan-result-box');
+  box.className = `scan-result ${type}`;
+  box.style.display = 'block';
+  box.innerHTML = `<div class="result-icon">${icon}</div><div class="result-name">${esc(name)}</div>${detail ? `<div class="result-detail">${esc(detail)}</div>` : ''}<div class="result-status">${esc(status)}</div>`;
 }
 
-function exportCSV(){
-  const rows=[['ID','Nom','Email','Table','Type','Note','Statut','Scanned_at']];
-  guests.forEach(g=>rows.push([g.id,g.prenom+" "+g.nom,g.email||'',g.table_num||'',g.presence||'',g.note||'',g.presence||'',g.scanned_at||'']));
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
-  a.download='invites_mariage_25juillet.csv';a.click();
+function addLog(g){
+  const time = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const name = guestFullName(g);
+  entryLog.unshift({ name, time });
+  const list = document.getElementById('log-list');
+  if(list.querySelector('.log-empty')) list.innerHTML = '';
+  const el = document.createElement('div');
+  el.className = 'log-entry';
+  el.innerHTML = `<div><span style="font-weight:500">${esc(name)}</span>${g.table_num ? `<span style="font-size:.62rem;color:var(--muted);margin-left:.4rem">· Table ${esc(g.table_num)}</span>` : ''}</div><span class="log-time">${time}</span>`;
+  list.prepend(el);
+  document.getElementById('log-count').textContent = `${entryLog.length} entrée${entryLog.length > 1 ? 's' : ''}`;
 }
 
-// PAGE BIENVENUE
 function showWelcomePage(g){
-  document.getElementById('main-app').style.display='none';
+  document.getElementById('main-app').style.display = 'none';
   document.getElementById('welcome-screen').classList.add('show');
-  document.getElementById('w-name').textContent=g.prenom+" "+g.nom;
-  document.getElementById('w-table').textContent=[g.presence,g.table_num?`Table ${g.table_num}`:null].filter(Boolean).join(' · ');
-  const prog=PROGRAMMES[g.presence]||[];
-  document.getElementById('w-programme').innerHTML=prog.map(p=>`
+  document.getElementById('w-name').textContent = guestFullName(g);
+  document.getElementById('w-table').textContent = [g.presence, g.table_num ? `Table ${g.table_num}` : null].filter(Boolean).join(' · ');
+  const prog = PROGRAMMES[g.presence] || PROGRAMMES.JOUR;
+  document.getElementById('w-programme').innerHTML = prog.map(p => `
     <div class="programme-item">
       <div class="prog-time">${p.time}</div>
-      <div><div class="prog-label">${p.label}</div><div class="prog-detail">${p.detail}</div></div>
+      <div><div class="prog-label">${esc(p.label)}</div><div class="prog-detail">${esc(p.detail)}</div></div>
     </div>`).join('');
-  const ne=document.getElementById('w-note');
-  if(g.note){ne.textContent=g.note;ne.style.display='block';}else ne.style.display='none';
+  const note = document.getElementById('w-note');
+  if(g.note){ note.textContent = g.note; note.style.display = 'block'; }
+  else note.style.display = 'none';
 }
 
 function backToApp(){
   document.getElementById('welcome-screen').classList.remove('show');
-  document.getElementById('main-app').style.display='block';
+  document.getElementById('main-app').style.display = 'block';
 }
 
-function switchTab(tab,btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');btn.classList.add('active');
-  if(tab!=='scanner'&&scannerRunning)stopScanner();
+function exportCSV(){
+  const rows = [['Nom','Email','Téléphone','Présence','Nb personnes','Allergies','Message','Date']];
+  guests.forEach(g => rows.push([guestFullName(g), g.email || '', g.telephone || '', g.presence || '', g.nb_personnes || 1, g.regime_alimentaire || '', g.message || '', g.created_at || '']));
+  const blob = new Blob(['\uFEFF' + rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'invites_mariage_25juillet.csv';
+  a.click();
 }
 
-function toggleScanner(){scannerRunning?stopScanner():startScanner();}
-
-function startScanner(){
-  html5QrCode=new Html5Qrcode('reader');
-  html5QrCode.start({facingMode:'environment'},{fps:10,qrbox:{width:240,height:240}},onScanSuccess,()=>{})
-  .then(()=>{scannerRunning=true;const b=document.getElementById('scan-btn');b.textContent='⏹ Arrêter';b.classList.add('stop');})
-  .catch(err=>alert('Caméra inaccessible : '+err));
+function printAllQR(){
+  alert('Les QR officiels sont déjà dans les PDF invitation. Utilise surtout l’onglet Scanner entrée pour contrôler les QR le jour J.');
 }
 
-function stopScanner(){
-  if(!html5QrCode)return;
-  html5QrCode.stop().then(()=>{html5QrCode=null;scannerRunning=false;
-    const b=document.getElementById('scan-btn');b.textContent='▶ Démarrer le scanner';b.classList.remove('stop');});
-}
+function closeModal(){ document.getElementById('qr-modal').classList.remove('open'); currentGuest = null; }
+function downloadQR(){ alert('QR individuel non utilisé ici : le QR officiel est dans le PDF invitation.'); }
+async function sendQRByEmail(){ alert('L’envoi du mail se fait depuis le formulaire RSVP / EmailJS confirmation.'); }
 
-async function onScanSuccess(text){
-  html5QrCode.pause(true);
-
-  let nomInvite='', codeInvite='';
-  if(text.includes('INVITE:') && text.includes('CODE:')){
-    text.split('|').map(s=>s.trim()).forEach(p=>{
-      if(p.startsWith('INVITE:')) nomInvite=p.replace('INVITE:','').trim();
-      if(p.startsWith('CODE:')) codeInvite=p.replace('CODE:','').trim();
-    });
-  } else {
-    try{
-      const d=JSON.parse(text);
-      nomInvite=d.nom||''; codeInvite='';
-    }catch{
-      showResult('error','⚠️','QR invalide','','Format non reconnu');
-      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
-    }
-  }
-
-  if(!codeInvite){
-    showResult('error','⚠️','QR invalide','','Code introuvable dans le QR');
-    setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
-  }
-
-  try{
-    const res=await fetch(`${SB_URL}/rest/v1/invite_codes?code=ilike.${encodeURIComponent(codeInvite)}&limit=1`,
-      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'}});
-    const rows=await res.json();
-
-    if(!rows||!rows.length){
-      showResult('error','✗',nomInvite||codeInvite,'','Invité introuvable');
-      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
-    }
-    const invite=rows[0];
-
-    if(invite.scanned_entry){
-      showResult('already','⚠',nomInvite,`Code : ${codeInvite.toUpperCase()}`,'Déjà enregistré(e) à l\'entrée');
-      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
-    }
-    if(!invite.rsvp_confirmed){
-      showResult('error','✗',nomInvite,`Code : ${codeInvite.toUpperCase()}`,'RSVP non confirmé');
-      setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);return;
-    }
-
-    const now=new Date().toISOString();
-    await fetch(`${SB_URL}/rest/v1/invite_codes?code=ilike.${encodeURIComponent(codeInvite)}`,{
-      method:'PATCH',
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify({scanned_entry:true,scanned_at:now})
-    });
-
-    const fakeGuest={prenom:nomInvite,nom:'',table_num:null};
-    addLog(fakeGuest);updateStats();
-    showResult('success','✓',nomInvite,`Code : ${codeInvite.toUpperCase()}`,'Bienvenue ! Entrée validée ✦');
-    setTimeout(()=>{stopScanner();showWelcomePage(fakeGuest);},1500);
-
-  }catch(err){
-    showResult('error','⚠️','Erreur réseau','','Impossible de vérifier. Réessayez.');
-    setTimeout(()=>html5QrCode&&html5QrCode.resume(),3000);
-  }
-}
-
-
-function showResult(type,icon,name,detail,status){
-  const box=document.getElementById('scan-result-box');
-  box.className=`scan-result ${type}`;box.style.display='block';
-  box.innerHTML=`<div class="result-icon">${icon}</div><div class="result-name">${name}</div>${detail?`<div class="result-detail">${detail}</div>`:''}<div class="result-status">${status}</div>`;
-}
-
-function addLog(g){
-  const time=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  entryLog.unshift({name:g.prenom+" "+g.nom,time});
-  const list=document.getElementById('log-list');
-  if(list.querySelector('.log-empty'))list.innerHTML='';
-  const el=document.createElement('div');el.className='log-entry';
-  el.innerHTML=`<div><span style="font-weight:500">${g.prenom+" "+g.nom}</span>${g.table_num?`<span style="font-size:.62rem;color:var(--muted);margin-left:.4rem">· Table ${g.table_num}</span>`:''}</div><span class="log-time">${time}</span>`;
-  list.prepend(el);
-  document.getElementById('log-count').textContent=`${entryLog.length} entrée${entryLog.length>1?'s':''}`;
-}
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-document.getElementById('qr-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+document.getElementById('qr-modal').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
 </script>
 </body>
 </html>
