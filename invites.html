@@ -336,18 +336,20 @@ async function connectSupabase(){
   const btn=document.getElementById('connect-btn');
   btn.textContent='Connexion...';btn.disabled=true;
   try{
-    // Test connection - use rsvp table which exists
-    await sbFetch('/rsvp?limit=1');
-    emailjs.init(EJ_PUB);
+    const testRes = await fetch(SB_URL+'/rest/v1/invite_codes?limit=1',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'}
+    });
+    if(!testRes.ok) throw new Error('Connexion Supabase échouée ('+testRes.status+')');
+    if(window.emailjs) emailjs.init(EJ_PUB);
     document.getElementById('setup-screen').style.display='none';
     document.getElementById('main-app').style.display='block';
     await loadGuests();
-  }catch(e){showErr('Erreur : '+e.message);btn.textContent='Se connecter';btn.disabled=false;}
+  }catch(e){showErr('Erreur connexion : '+e.message);btn.textContent='Se connecter';btn.disabled=false;}
 }
 function showErr(msg){const el=document.getElementById('setup-error');el.textContent=msg;el.style.display='block';}
 
 async function loadGuests(){
-  guests=await sbFetch('/rsvp?order=prenom.asc');
+  guests=await sbFetch('/rsvps?order=created_at.desc');
   renderGuests();updateStats();
 }
 
@@ -359,7 +361,7 @@ async function addGuest(){
     presence:document.getElementById('f-type').value,
     note:document.getElementById('f-note').value.trim()||null,presence:'en_attente',max_guests:1};
   try{
-    const res=await sbFetch('/rsvp','POST',payload);
+    const res=await sbFetch('/rsvps','POST',payload);
     if(res&&res[0])guests.push(res[0]);
     ['f-nom','f-email','f-table','f-note'].forEach(id=>document.getElementById(id).value='');
     renderGuests();updateStats();
@@ -368,7 +370,7 @@ async function addGuest(){
 
 async function deleteGuest(id){
   if(!confirm('Supprimer cet invité ?'))return;
-  try{await sbFetch(`/rsvp?id=eq.${id}`,'DELETE');guests=guests.filter(g=>g.id!==id);renderGuests();updateStats();}
+  try{await sbFetch(`/rsvps?id=eq.${id}`,'DELETE');guests=guests.filter(g=>g.id!==id);renderGuests();updateStats();}
   catch(e){alert('Erreur : '+e.message);}
 }
 
@@ -634,6 +636,7 @@ function addLog(g){
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 document.getElementById('qr-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+} // fermeture onScanSuccess manquante
 </script>
 </body>
 </html>
