@@ -245,27 +245,30 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['s','u','p',
 // SUPABASE : mêmes codes que le panel admin
 const SB_URL='https://mbtnqiotfbaagunpsvex.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
-let guestNom='', guestEmail='', guestCode='';
+let guestNom='', guestEmail='', guestPhone='', guestCode='';
 
 function normalizeCode(v){return (v||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,'');}
 function unlockSite(invite){
-  resetInactivityTimer(); // démarrer le timer d'inactivité dès l'accès
+  resetInactivityTimer();
   guestNom = invite?.nom || invite?.invite || '';
   guestEmail = invite?.email || '';
   guestCode = normalizeCode(invite?.code || document.getElementById('gate-input')?.value || '');
+  guestPhone = invite?.phone || '';
   sessionStorage.setItem('gate_ok','1');
   sessionStorage.setItem('gate_nom',guestNom);
   sessionStorage.setItem('gate_email',guestEmail);
+  sessionStorage.setItem('gate_phone',guestPhone);
   sessionStorage.setItem('gate_code',guestCode);
   document.body.classList.remove('gate-locked');
   prefillRSVP();
 }
 function prefillRSVP(){
-  const parts=(guestNom||sessionStorage.getItem('gate_nom')||'').trim().split(/\s+/).filter(Boolean);
-  const prenom=document.getElementById('f-prenom'), nom=document.getElementById('f-nom'), email=document.getElementById('f-email');
-  if(prenom && parts.length) prenom.value=parts[0];
-  if(nom && parts.length>1) nom.value=parts.slice(1).join(' ');
-  if(email && (guestEmail||sessionStorage.getItem('gate_email'))) email.value=guestEmail||sessionStorage.getItem('gate_email');
+    const email = document.getElementById('f-email');
+  const phone = document.getElementById('f-phone');
+  if(email && (guestEmail||sessionStorage.getItem('gate_email')))
+    email.value = guestEmail||sessionStorage.getItem('gate_email');
+  if(phone && (guestPhone||sessionStorage.getItem('gate_phone')))
+    phone.value = guestPhone||sessionStorage.getItem('gate_phone');
 }
 async function checkGate(){
   const input=document.getElementById('gate-input');
@@ -294,10 +297,10 @@ async function checkGate(){
         headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
         body:JSON.stringify({used_count:next,max_uses:maxUses,used:next>=maxUses,used_at:new Date().toISOString()})
       });
-    }catch(patchErr){console.warn('Compteur accès non mis à jour:',patchErr);}
+    }catch(patchErr){}
     ok.style.display='block'; ok.textContent='✓ Code validé. Bienvenue !';
     setTimeout(()=>unlockSite(invite),500);
-  }catch(e){console.error(e);err.textContent='Erreur réseau ou configuration. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';}
+  }catch(e){err.textContent='Erreur réseau ou configuration. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';}
 }
 window.addEventListener('DOMContentLoaded',async()=>{
   const savedCode = sessionStorage.getItem('gate_code');
@@ -318,17 +321,17 @@ window.addEventListener('DOMContentLoaded',async()=>{
           return;
         }
       }
-    }catch(e){console.warn('Re-vérification session échouée:',e);}
+    }catch(e){}
     guestNom=sessionStorage.getItem('gate_nom')||'';
     guestEmail=sessionStorage.getItem('gate_email')||'';
+    guestPhone=sessionStorage.getItem('gate_phone')||'';
     guestCode=savedCode;
     document.body.classList.remove('gate-locked');
     prefillRSVP();
-    resetInactivityTimer(); // démarrer le timer si session reprise
+    resetInactivityTimer();
   }
 });
 
-// ── Timer d'inactivité : déconnexion après 5 min sans action ─────────────────
 const INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes en ms
 let inactivityTimer = null;
 
@@ -336,7 +339,6 @@ function resetInactivityTimer(){
   if(document.body.classList.contains('gate-locked')) return; // pas connecté, inutile
   clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(()=>{
-    // Déconnexion
     sessionStorage.clear();
     document.body.classList.add('gate-locked');
     const err = document.getElementById('gate-err');
@@ -346,7 +348,6 @@ function resetInactivityTimer(){
   }, INACTIVITY_LIMIT);
 }
 
-// Écouter toute activité utilisateur
 ['mousemove','keydown','click','scroll','touchstart'].forEach(evt => {
   document.addEventListener(evt, resetInactivityTimer, { passive: true });
 });
@@ -377,15 +378,11 @@ document.querySelectorAll('input[name="boissons"]').forEach(cb=>{
 });
 
 // EmailJS : configuration des 2 emails automatiques
-// 1) EMAILJS_PUBLIC_KEY : votre Public Key EmailJS
-// 2) EMAILJS_SERVICE_ID : votre Service ID Gmail EmailJS
-// 3) EMAILJS_INVITATION_TEMPLATE_ID : template du mail d'invitation envoyé depuis le panel/admin
-// 4) EMAILJS_CONFIRMATION_TEMPLATE_ID : template du mail de confirmation après RSVP
 const EMAILJS_PUBLIC_KEY = 'WqZvQ1reFTM1ISd3E';
 const EMAILJS_SERVICE_ID = 'service_9cilotm';
-const EMAILJS_INVITATION_TEMPLATE_ID = 'template_4n9w6sv'; // mail d'invitation avec code
-const EMAILJS_CONFIRMATION_TEMPLATE_ID = 'template_qepoc28'; // mail de confirmation RSVP
-const EMAILJS_ADMIN_TEMPLATE_ID = ''; // pas de 3ème template — admin reçoit en BCC
+const EMAILJS_INVITATION_TEMPLATE_ID = 'template_4n9w6sv'; 
+const EMAILJS_CONFIRMATION_TEMPLATE_ID = 'template_qepoc28'; 
+const EMAILJS_ADMIN_TEMPLATE_ID = ''; 
 const ADMIN_EMAIL = 'lacachenaomie@gmail.com';
 const FROM_NAME = 'Lacache & Naomie';
 const REPLY_TO = 'lacachenaomie@gmail.com';
@@ -431,7 +428,6 @@ function emailBaseParams(extra={}){
   };
 }
 
-// À appeler depuis le panel/admin quand vous envoyez le code d'accès à un invité.
 // Le template EmailJS doit avoir To Email = {{to_email}}
 async function sendInvitationEmail(invite){
   if(!window.emailjs || !EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_INVITATION_TEMPLATE_ID) return;
@@ -450,14 +446,12 @@ async function sendInvitationEmail(invite){
       invitation_url: weddingUrl
     }));
   }catch(err){
-    console.error('EmailJS invitation non envoyé :', err);
+    
   }
 }
 
 async function sendConfirmationEmail(data){
-  // Envoi automatique silencieux au mail saisi par l'invité.
-  // Le template EmailJS doit avoir To Email = {{to_email}}
-  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_CONFIRMATION_TEMPLATE_ID){
+    if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_CONFIRMATION_TEMPLATE_ID){
     try{
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, emailBaseParams({
         to_name: data.full,
@@ -479,11 +473,10 @@ async function sendConfirmationEmail(data){
         wedding_url: window.location.origin + window.location.pathname
       }));
     }catch(err){
-      console.error('EmailJS confirmation invité non envoyé :', err);
+      
     }
   }
 
-  // Notification admin optionnelle, sans afficher de message aux invités.
   if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_ADMIN_TEMPLATE_ID){
     try{
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, emailBaseParams({
@@ -501,7 +494,7 @@ async function sendConfirmationEmail(data){
         invite_code: data.code
       }));
     }catch(err){
-      console.error('EmailJS notification admin non envoyée :', err);
+      
     }
   }
 }
@@ -527,11 +520,10 @@ async function saveRSVPToSupabase(data){
         created_at:new Date().toISOString()
       })
     });
-  }catch(err){console.warn('RSVP Supabase non enregistré :',err);}
+  }catch(err){}
 }
 
 async function _burnInviteCode(code){
-  // Force le code à max_uses pour bloquer tout accès futur après RSVP
   if(!code) return;
   try{
     const res=await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code)+'&limit=1',{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,Accept:'application/json'}});
@@ -544,7 +536,7 @@ async function _burnInviteCode(code){
       headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
       body:JSON.stringify({used_count:max,used:true,used_at:new Date().toISOString(),rsvp_confirmed:true})
     });
-  }catch(err){console.warn('Burn code échoué :',err);}
+  }catch(err){}
 }
 
 async function incrementInviteCodeUsage(code){
@@ -562,7 +554,7 @@ async function incrementInviteCodeUsage(code){
       headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
       body:JSON.stringify({used_count:next,max_uses:max,used:next>=max,used_at:new Date().toISOString()})
     });
-  }catch(err){console.warn('Compteur code non mis à jour :',err);}
+  }catch(err){}
 }
 
 document.getElementById('rsvpForm').addEventListener('submit',async e=>{
@@ -591,8 +583,6 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   sessionStorage.clear();
   clearTimeout(inactivityTimer);
 });
-// ── Génération PDF via jsPDF pur (sans html2canvas) ──────────────────────────
-// Stockage des données courantes pour les PDF
 let _pdfData = {};
 
 function _storePdfData(data){
@@ -600,7 +590,6 @@ function _storePdfData(data){
 }
 
 function _getQRDataURL(){
-  // Récupère le canvas du QR code déjà rendu dans #qrBox
   const qrBox = document.getElementById('qrBox');
   if(!qrBox) return null;
   const canvas = qrBox.querySelector('canvas');
@@ -609,7 +598,6 @@ function _getQRDataURL(){
 }
 
 function _makePdfBase(){
-  // jsPDF est inclus via html2pdf.bundle, on l'accède via window.jspdf ou on crée via html2pdf
   // On utilise l'API jsPDF directement
   const { jsPDF } = window.jspdf || {};
   if(!jsPDF){
@@ -774,7 +762,6 @@ function downloadPDF(){
   y += 20;
   _drawHLine(doc, y, GOLD, W);
 
-  // QR Code
   y += 18;
   doc.setFont('helvetica','normal');
   doc.setFontSize(7);
