@@ -6,6 +6,7 @@
 <title>Lacache & Naomie - 25.07.2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- EmailJS : activez en remplaçant les IDs dans le script en bas -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -34,13 +35,14 @@ nav a{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18rem;text-tra
 #infos{background:var(--ivory)}.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem}.card{background:var(--white);border-left:3px solid var(--gold2);padding:1.5rem;box-shadow:0 8px 28px rgba(10,22,40,.06)}.card h3{font-family:'Cinzel';letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-size:.72rem;margin-bottom:.7rem}.card p{line-height:1.7;color:#45566f}#faq{background:var(--cream)}.faq-item{background:var(--white);margin:1rem 0;border-left:3px solid var(--gold2)}.faq-q{padding:1.15rem 1.5rem;font-family:'Cinzel';font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between}.faq-a{display:none;padding:0 1.5rem 1.2rem;color:#45566f;line-height:1.7}.faq-item.open .faq-a{display:block}
 /* RSVP */
 #rsvp{background:var(--ivory)}.rsvp-box{max-width:760px;margin:auto;background:white;padding:clamp(2rem,5vw,3.5rem);border:1px solid rgba(191,138,48,.25);box-shadow:0 12px 50px rgba(10,22,40,.08)}.rsvp-box h2{text-align:center;font-size:3.2rem}.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}label{font-family:'Cinzel';font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block;margin:.9rem 0 .35rem}input,select,textarea{width:100%;padding:.9rem 1rem;border:1px solid rgba(191,138,48,.28);background:var(--ivory);font-family:'Lato';outline:none}textarea{min-height:95px;resize:vertical}.full{grid-column:1/-1}.btn{border:none;background:var(--navy);color:var(--ivory);font-family:'Cinzel';letter-spacing:.2em;text-transform:uppercase;padding:1rem 1.4rem;cursor:pointer;margin-top:1rem}.btn.gold{background:var(--gold2);color:var(--navy)}#downloadPanel{display:none;text-align:center;margin-top:1.6rem;padding:1.3rem;background:var(--ivory);border:1px solid rgba(191,138,48,.25)}
-#printInvitation,#printQrPdf{position:absolute;left:-9999px;top:0;width:794px;background:#FAF7F0;color:#0A1628;padding:38px;font-family:'Cormorant Garamond'}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#BF8A30;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.6}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:24px auto}
+#printInvitation,#printQrPdf{position:fixed;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond';visibility:hidden}#printProgrammePdf{position:fixed;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond';visibility:hidden}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center;min-height:1030px}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#D4A84B;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.55}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:22px auto}.pdf-small-title{font-family:'Cinzel';letter-spacing:.28em;text-transform:uppercase;color:#9aa8bb;font-size:13px;margin-top:18px}.pdf-guest-name{font-size:30px!important;font-style:italic;color:#EDD38A}.pdf-program-row{display:grid;grid-template-columns:90px 1fr 210px;gap:10px;border-bottom:1px solid rgba(212,168,75,.22);padding:10px 0;text-align:left}.pdf-program-row b{color:#D4A84B;font-size:20px}.pdf-program-row span{font-family:'Cinzel';font-size:12px;letter-spacing:.12em;text-transform:uppercase}.pdf-note{font-size:14px!important;color:#9aa8bb;margin-top:18px}.pdf-theme{display:inline-block;margin-top:18px;background:#EDD38A;color:#0A1628;font-family:'Cinzel';letter-spacing:.22em;text-transform:uppercase;font-size:10px;padding:8px 14px}#printQr,#printQrOnly{margin:18px auto 0;display:flex;justify-content:center}
 @media(max-width:850px){nav{position:static}#hero{grid-template-columns:1fr;padding:2rem 1rem}.hero-img{height:auto;max-height:none}#lieux{grid-template-columns:1fr}.lieux-img{min-height:360px}.frow{grid-template-columns:1fr}.prog-item{grid-template-columns:80px 24px 1fr}}
 @media print{nav,.btn,#downloadPanel{display:none!important}body{background:white}}
 
 /* ACCÈS PRIVÉ - CODE INVITÉ */
 body.gate-locked{background:var(--navy);overflow:hidden}
-body.gate-locked nav,body.gate-locked section,body.gate-locked #printInvitation{display:none!important}
+body.gate-locked nav,body.gate-locked section{display:none!important}
+#printInvitation,#printQrPdf,#printProgrammePdf{visibility:hidden}
 #access-gate{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 30%,rgba(212,168,75,.08),transparent 35%),var(--navy);display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--ivory)}
 body:not(.gate-locked) #access-gate{display:none}
 .gate-box{width:min(900px,92vw);min-height:70vh;border:1px solid rgba(212,168,75,.65);position:relative;padding:clamp(2rem,6vw,5rem);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(255,255,255,.025);box-shadow:0 30px 90px rgba(0,0,0,.35)}
@@ -89,7 +91,7 @@ body:not(.gate-locked) #access-gate{display:none}
 .drink-radio,.drink-pill{display:flex!important;align-items:center;gap:.55rem;border:1px solid #d6c7a8;background:#fffdf8;padding:.85rem 1rem;color:var(--navy)!important;font-family:'Lato',sans-serif!important;font-size:.92rem!important;letter-spacing:0!important;text-transform:none!important;margin:0!important;cursor:pointer}
 .drink-radio input,.drink-pill input{width:auto!important;margin:0!important;padding:0!important}
 .drink-options{display:none;margin-top:.8rem}.drink-options.show{display:block}.drink-pills{display:flex;flex-wrap:wrap;gap:.7rem}.drink-pill{display:inline-flex!important}.drink-summary{margin-top:.75rem;font-size:.9rem;color:#536176;line-height:1.6}
-#qrBox{margin:1.4rem auto 0;display:none;justify-content:center}#printQr{margin:18px auto 0;display:flex;justify-content:center}.email-status{margin-top:.8rem;font-size:.92rem;color:#536176}#mailLink{display:none;margin-top:1rem;color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
+#qrBox{margin:1.4rem auto 0;display:none;justify-content:center}
 @media(max-width:620px){.drink-choice-row{grid-template-columns:1fr}}
 
 </style>
@@ -187,13 +189,10 @@ body:not(.gate-locked) #access-gate{display:none}
       <div class="success-icon">💌</div>
       <h3>Merci !</h3>
       <p>Lacache & Naomie sont touchés par votre réponse et se réjouissent de vous accueillir le 25 juillet à Lille 🥂<br>Votre confirmation a bien été prise en compte.</p>
-      <p class="rsvp-download-label">Téléchargez votre invitation personnalisée :</p>
+      <p class="rsvp-download-label">Téléchargez vos documents personnalisés :</p>
       <div id="qrBox"></div>
-      <p id="emailStatus" class="email-status"></p>
-      <a id="mailLink" href="#" target="_blank" rel="noopener">Ouvrir le mail pré-rempli</a>
-      <button class="btn gold" onclick="downloadPDF()">⬇ Télécharger la carte d’invitation PDF</button>
+      <button class="btn gold" onclick="downloadPDF()">⬇ Télécharger l’invitation PDF + QR code</button>
       <button class="btn" onclick="downloadProgrammePDF()">⬇ Télécharger le programme PDF</button>
-      <button class="btn" onclick="downloadQRCodePDF()">⬇ Télécharger le QR code PDF</button>
     </div>
   </div>
 </section>
@@ -203,8 +202,41 @@ body:not(.gate-locked) #access-gate{display:none}
   <div class="footer-line"></div>
   <p class="footer-quote">« Du virtuel jusqu’à l’autel -<br>nous avons traversé la distance, le doute et le temps.<br>Ce jour est notre récompense, et vous en êtes la lumière. »</p>
 </footer>
-<div id="printInvitation"><div class="pdf-card"><h1>Lacache & Naomie</h1><div class="pdf-date">25 · 07 · 2026</div><div class="pdf-line"></div><p>Invitation de mariage</p><p><b>Cérémonie civile :</b><br>Mairie de Lille - 10h00</p><p><b>Vin d’honneur, dîner & soirée :</b><br>124Bis Rue de l’Epideme, 59200 Tourcoing</p><p><b>Programme :</b><br>10h00 · Cérémonie civile<br>13h30 · Vin d’honneur<br>19h00 · Dîner & soirée dansante</p><div class="pdf-line"></div><p id="pdfGuest">Invité(e)</p><p id="pdfDrink">Boissons : à confirmer</p><div id="printQr"></div><p>Merci de présenter cette invitation avec QR code le jour J.</p></div></div>
+<div id="printInvitation"><div class="pdf-card">
+  <div class="pdf-small-title">Invitation personnelle</div>
+  <h1>Lacache<br>&<br>Naomie</h1>
+  <div class="pdf-date">Samedi · 25 Juillet 2026</div>
+  <div class="pdf-line"></div>
+  <p>Cette invitation est adressée à</p>
+  <p id="pdfGuest" class="pdf-guest-name">Invité(e)</p>
+  <p id="pdfCode">Code invité : —</p>
+  <div class="pdf-line"></div>
+  <div class="pdf-small-title">Programme de la journée</div>
+  <div class="pdf-program-row"><b>10h00</b><span>Cérémonie civile</span><em>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille</em></div>
+  <div class="pdf-program-row"><b>13h30</b><span>Vin d’honneur</span><em>Cocktail & retrouvailles</em></div>
+  <div class="pdf-program-row"><b>19h00</b><span>Dîner & soirée</span><em>124Bis Rue de l’Epideme<br>59200 Tourcoing</em></div>
+  <div class="pdf-line"></div>
+  <p id="pdfDrink">Boissons : à confirmer</p>
+  <p id="pdfDiet">Régime / allergies : non précisé</p>
+  <div class="pdf-small-title">QR code d’entrée le jour J</div>
+  <div id="printQr"></div>
+  <p class="pdf-note">À présenter à l’entrée avec une pièce d’identité correspondant au nom indiqué sur l’invitation.</p>
+  <div class="pdf-theme">Thème · Bleu marine · Or · Champagne · Blanc</div>
+</div></div>
 <div id="printQrPdf"><div class="pdf-card"><h1>QR code invitation</h1><div class="pdf-date">Lacache & Naomie · 25 · 07 · 2026</div><div class="pdf-line"></div><p id="qrPdfGuest">Invité(e)</p><div id="printQrOnly"></div><p>Ce QR code est personnel et lié à votre invitation.</p></div></div>
+
+<div id="printProgrammePdf"><div class="pdf-card">
+  <div class="pdf-small-title">Programme officiel</div>
+  <h1>Programme<br>de la journée</h1>
+  <div class="pdf-date">Samedi · 25 Juillet 2026</div>
+  <div class="pdf-line"></div>
+  <div class="pdf-program-row"><b>10h00</b><span>Cérémonie civile</span><em>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille<br>Merci d’arriver 15 minutes à l’avance.</em></div>
+  <div class="pdf-program-row"><b>13h30</b><span>Vin d’honneur</span><em>Cocktail, bulles et retrouvailles.</em></div>
+  <div class="pdf-program-row"><b>19h00</b><span>Dîner & soirée dansante</span><em>124Bis Rue de l’Epideme<br>59200 Tourcoing<br>Soirée jusqu’au bout de la nuit.</em></div>
+  <div class="pdf-line"></div>
+  <p><b>Tenue élégante souhaitée.</b><br>Couleurs : bleu marine, ardoise, or, champagne ou blanc.</p>
+  <p class="pdf-note">Merci de confirmer votre présence avant le 1er juin 2026.</p>
+</div></div>
 <script>
 // Protection anti-copie basique (ne bloque pas les captures écran, mais limite clic droit et raccourcis)
 document.addEventListener('contextmenu',e=>e.preventDefault());
@@ -213,26 +245,30 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['s','u','p',
 // SUPABASE : mêmes codes que le panel admin
 const SB_URL='https://mbtnqiotfbaagunpsvex.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1idG5xaW90ZmJhYWd1bnBzdmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyNzU0NTQsImV4cCI6MjA4Mjg1MTQ1NH0.waMcpWUh8-sXoRFtzloxDsAqXvmsiVkAXjMJicvHFKI';
-let guestNom='', guestEmail='', guestCode='';
+let guestNom='', guestEmail='', guestPhone='', guestCode='';
 
 function normalizeCode(v){return (v||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,'');}
 function unlockSite(invite){
+  resetInactivityTimer();
   guestNom = invite?.nom || invite?.invite || '';
   guestEmail = invite?.email || '';
   guestCode = normalizeCode(invite?.code || document.getElementById('gate-input')?.value || '');
+  guestPhone = invite?.phone || '';
   sessionStorage.setItem('gate_ok','1');
   sessionStorage.setItem('gate_nom',guestNom);
   sessionStorage.setItem('gate_email',guestEmail);
+  sessionStorage.setItem('gate_phone',guestPhone);
   sessionStorage.setItem('gate_code',guestCode);
   document.body.classList.remove('gate-locked');
   prefillRSVP();
 }
 function prefillRSVP(){
-  const parts=(guestNom||sessionStorage.getItem('gate_nom')||'').trim().split(/\s+/).filter(Boolean);
-  const prenom=document.getElementById('f-prenom'), nom=document.getElementById('f-nom'), email=document.getElementById('f-email');
-  if(prenom && parts.length) prenom.value=parts[0];
-  if(nom && parts.length>1) nom.value=parts.slice(1).join(' ');
-  if(email && (guestEmail||sessionStorage.getItem('gate_email'))) email.value=guestEmail||sessionStorage.getItem('gate_email');
+    const email = document.getElementById('f-email');
+  const phone = document.getElementById('f-phone');
+  if(email && (guestEmail||sessionStorage.getItem('gate_email')))
+    email.value = guestEmail||sessionStorage.getItem('gate_email');
+  if(phone && (guestPhone||sessionStorage.getItem('gate_phone')))
+    phone.value = guestPhone||sessionStorage.getItem('gate_phone');
 }
 async function checkGate(){
   const input=document.getElementById('gate-input');
@@ -252,12 +288,69 @@ async function checkGate(){
     const invite=rows[0];
     const usedCount = Number(invite.used_count ?? (invite.used ? 2 : 0));
     const maxUses = Number(invite.max_uses ?? 2);
-    if(usedCount >= maxUses){err.textContent='Ce code a déjà été utilisé 2 fois. Merci de nous contacter si besoin.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';return;}
+    if(usedCount >= maxUses){err.textContent='Ce code a déjà été utilisé le nombre de fois autorisé. Merci de nous contacter si besoin.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';return;}
+    // Incrémenter immédiatement à l'entrée (chaque passage au gate compte)
+    const next = Math.min(usedCount + 1, maxUses);
+    try{
+      await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code),{
+        method:'PATCH',
+        headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify({used_count:next,max_uses:maxUses,used:next>=maxUses,used_at:new Date().toISOString()})
+      });
+    }catch(patchErr){}
     ok.style.display='block'; ok.textContent='✓ Code validé. Bienvenue !';
     setTimeout(()=>unlockSite(invite),500);
-  }catch(e){console.error(e);err.textContent='Erreur réseau ou configuration. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';}
+  }catch(e){err.textContent='Erreur réseau ou configuration. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Entrer';}
 }
-window.addEventListener('DOMContentLoaded',()=>{if(sessionStorage.getItem('gate_ok')==='1'){guestNom=sessionStorage.getItem('gate_nom')||'';guestEmail=sessionStorage.getItem('gate_email')||'';guestCode=sessionStorage.getItem('gate_code')||'';document.body.classList.remove('gate-locked');prefillRSVP();}});
+window.addEventListener('DOMContentLoaded',async()=>{
+  const savedCode = sessionStorage.getItem('gate_code');
+  if(sessionStorage.getItem('gate_ok')==='1' && savedCode){
+    // Re-vérifier Supabase : si le code est épuisé, on bloque même la session
+    try{
+      const res=await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(savedCode)+'&limit=1',{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,Accept:'application/json'}});
+      const rows=await res.json().catch(()=>[]);
+      if(rows && rows.length){
+        const invite=rows[0];
+        const usedCount=Number(invite.used_count ?? (invite.used ? 2 : 0));
+        const maxUses=Number(invite.max_uses ?? 2);
+        if(usedCount >= maxUses){
+          // Code épuisé : on efface la session et on bloque
+          sessionStorage.clear();
+          const err=document.getElementById('gate-err');
+          if(err){err.textContent='Ce code a déjà été utilisé le nombre de fois autorisé.';err.style.display='block';}
+          return;
+        }
+      }
+    }catch(e){}
+    guestNom=sessionStorage.getItem('gate_nom')||'';
+    guestEmail=sessionStorage.getItem('gate_email')||'';
+    guestPhone=sessionStorage.getItem('gate_phone')||'';
+    guestCode=savedCode;
+    document.body.classList.remove('gate-locked');
+    prefillRSVP();
+    resetInactivityTimer();
+  }
+});
+
+const INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes en ms
+let inactivityTimer = null;
+
+function resetInactivityTimer(){
+  if(document.body.classList.contains('gate-locked')) return; // pas connecté, inutile
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(()=>{
+    sessionStorage.clear();
+    document.body.classList.add('gate-locked');
+    const err = document.getElementById('gate-err');
+    if(err){ err.textContent = "Session expirée après 5 min d'inactivité. Entrez à nouveau votre code."; err.style.display = 'block'; }
+    const input = document.getElementById('gate-input');
+    if(input) input.value = '';
+  }, INACTIVITY_LIMIT);
+}
+
+['mousemove','keydown','click','scroll','touchstart'].forEach(evt => {
+  document.addEventListener(evt, resetInactivityTimer, { passive: true });
+});
 
 function updateCountdown(){const target=new Date('2026-07-25T10:00:00').getTime();const now=Date.now();let d=Math.max(0,target-now);const days=Math.floor(d/(1000*60*60*24));d-=days*86400000;const hours=Math.floor(d/3600000);d-=hours*3600000;const minutes=Math.floor(d/60000);d-=minutes*60000;const seconds=Math.floor(d/1000);['days','hours','minutes','seconds'].forEach((id,i)=>{const vals=[days,hours,minutes,seconds];const el=document.getElementById(id);if(el)el.textContent=vals[i];});}
 setInterval(updateCountdown,1000);updateCountdown();
@@ -284,10 +377,15 @@ document.querySelectorAll('input[name="boissons"]').forEach(cb=>{
   });
 });
 
-// EmailJS : remplacez ces 3 valeurs par vos vrais identifiants EmailJS pour envoyer automatiquement.
-const EMAILJS_PUBLIC_KEY = '';
-const EMAILJS_SERVICE_ID = '';
-const EMAILJS_TEMPLATE_ID = '';
+// EmailJS : configuration des 2 emails automatiques
+const EMAILJS_PUBLIC_KEY = 'WqZvQ1reFTM1ISd3E';
+const EMAILJS_SERVICE_ID = 'service_9cilotm';
+const EMAILJS_INVITATION_TEMPLATE_ID = 'template_4n9w6sv'; 
+const EMAILJS_CONFIRMATION_TEMPLATE_ID = 'template_qepoc28'; 
+const EMAILJS_ADMIN_TEMPLATE_ID = ''; 
+const ADMIN_EMAIL = 'lacachenaomie@gmail.com';
+const FROM_NAME = 'Lacache & Naomie';
+const REPLY_TO = 'lacachenaomie@gmail.com';
 if(window.emailjs && EMAILJS_PUBLIC_KEY){ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }
 
 function getRSVPData(){
@@ -305,7 +403,8 @@ function getRSVPData(){
   const code = guestCode || sessionStorage.getItem('gate_code') || '';
   const full = (prenom+' '+nom).trim() || 'Invité(e)';
   const invitationUrl = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(code || full);
-  return {prenom, nom, full, email, phone, presence, diet, message, alcool, boissons: boissons.join(', '), code, invitationUrl};
+  const qrContent = 'MARIAGE LACACHE & NAOMIE | INVITE: '+full+' | CODE: '+(code||'')+' | DATE: 25/07/2026 | NB: 1 PERSONNE';
+  return {prenom, nom, full, email, phone, presence, diet, message, alcool, boissons: boissons.join(', '), code, invitationUrl, qrContent};
 }
 
 function renderQR(text){
@@ -320,36 +419,84 @@ function renderQR(text){
   });
 }
 
-async function sendConfirmationEmail(data){
-  const status = document.getElementById('emailStatus');
-  const mailLink = document.getElementById('mailLink');
-  const subject = 'Confirmation RSVP - Mariage Lacache & Naomie';
-  const body = `Bonjour ${data.full},\n\nVotre réponse a bien été enregistrée ! 🎉\n\nStatut : ${data.presence}\nNombre de personnes : 1\nBoissons : ${data.alcool === 'Oui' ? data.boissons : 'Sans alcool'}\nRégime / allergies : ${data.diet || 'Non précisé'}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMARIAGE · LACACHE & NAOMIE\nSamedi 25 Juillet 2026 · Lille\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nProgramme :\n- 10h00 - Cérémonie civile · Mairie de Lille\n- 13h30 - Vin d'honneur\n- 19h00 - Dîner & Soirée · 124Bis Rue de l’Epideme, 59200 Tourcoing\n\nTenue élégante souhaitée.\nCouleurs : Bleu marine · Or · Champagne · Blanc\n\n📄 Téléchargez votre invitation personnalisée :\n${data.invitationUrl}\n\nAvec tout notre amour,\nLacache & Naomie 💍`;
-  if(mailLink){
-    mailLink.href = `mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    mailLink.style.display='inline-block';
+function emailBaseParams(extra={}){
+  return {
+    from_name: FROM_NAME,
+    reply_to: REPLY_TO,
+    bcc_email: ADMIN_EMAIL,
+    ...extra
+  };
+}
+
+// Le template EmailJS doit avoir To Email = {{to_email}}
+async function sendInvitationEmail(invite){
+  if(!window.emailjs || !EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_INVITATION_TEMPLATE_ID) return;
+  const toEmail = invite.email || invite.to_email || '';
+  const toName = invite.nom || invite.name || invite.to_name || 'Invité(e)';
+  const inviteCode = invite.code || invite.invite_code || '';
+  const weddingUrl = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(inviteCode);
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_INVITATION_TEMPLATE_ID, emailBaseParams({
+      to_email: toEmail,
+      email: toEmail,
+      to_name: toName,
+      name: FROM_NAME,
+      invite_code: inviteCode,
+      wedding_url: weddingUrl,
+      invitation_url: weddingUrl
+    }));
+  }catch(err){
+    
   }
-  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID){
+}
+
+async function sendConfirmationEmail(data){
+    if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_CONFIRMATION_TEMPLATE_ID){
     try{
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONFIRMATION_TEMPLATE_ID, emailBaseParams({
         to_name: data.full,
         to_email: data.email,
+        email: data.email,
+        name: FROM_NAME,
         presence_label: data.presence,
-        nb_personnes: '1',
+        nb_personnes: '1 personne',
         alcool_label: data.alcool || 'Non renseigné',
         boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
         regime_alimentaire: data.diet || 'Non précisé',
         invite_code: data.code,
+        invite_name: data.full,
+        invite_email: data.email,
+        invite_phone: data.phone || '-',
+        message_invite: data.message || '-',
         invitation_url: data.invitationUrl,
-        wedding_url: window.location.href
-      });
-      if(status) status.textContent='Email automatique envoyé avec le QR code / lien de l’invitation.';
+        qr_content: data.qrContent,
+        wedding_url: window.location.origin + window.location.pathname,
+        ..._buildEmailPdfPayload(data)
+      }));
     }catch(err){
-      console.error(err);
-      if(status) status.textContent='Réponse enregistrée. EmailJS n’a pas pu envoyer le mail : utilisez le lien mail pré-rempli.';
+      
     }
-  }else{
-    if(status) status.textContent='Réponse enregistrée. Pour l’envoi automatique, renseignez vos IDs EmailJS dans le script. En attendant, le mail pré-rempli est disponible.';
+  }
+
+  if(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_ADMIN_TEMPLATE_ID){
+    try{
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE_ID, emailBaseParams({
+        to_email: ADMIN_EMAIL,
+        email: ADMIN_EMAIL,
+        to_name: FROM_NAME,
+        invite_name: data.full,
+        invite_email: data.email,
+        invite_phone: data.phone || '-',
+        presence_label: data.presence,
+        nb_personnes: '1 personne',
+        boissons_label: data.alcool === 'Oui' ? data.boissons : 'Sans alcool',
+        regime_alimentaire: data.diet || 'Non précisé',
+        message_invite: data.message || '-',
+        invite_code: data.code
+      }));
+    }catch(err){
+      
+    }
   }
 }
 
@@ -374,7 +521,23 @@ async function saveRSVPToSupabase(data){
         created_at:new Date().toISOString()
       })
     });
-  }catch(err){console.warn('RSVP Supabase non enregistré :',err);}
+  }catch(err){}
+}
+
+async function _burnInviteCode(code){
+  if(!code) return;
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code)+'&limit=1',{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,Accept:'application/json'}});
+    const rows=await res.json().catch(()=>[]);
+    if(!rows || !rows.length) return;
+    const invite=rows[0];
+    const max=Number(invite.max_uses ?? 2);
+    await fetch(SB_URL+'/rest/v1/invite_codes?code=ilike.'+encodeURIComponent(code),{
+      method:'PATCH',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({used_count:max,used:true,used_at:new Date().toISOString(),rsvp_confirmed:true})
+    });
+  }catch(err){}
 }
 
 async function incrementInviteCodeUsage(code){
@@ -392,7 +555,7 @@ async function incrementInviteCodeUsage(code){
       headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
       body:JSON.stringify({used_count:next,max_uses:max,used:next>=max,used_at:new Date().toISOString()})
     });
-  }catch(err){console.warn('Compteur code non mis à jour :',err);}
+  }catch(err){}
 }
 
 document.getElementById('rsvpForm').addEventListener('submit',async e=>{
@@ -404,18 +567,432 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
     return;
   }
   document.getElementById('downloadPanel').style.display='block';
-  const pg=document.getElementById('pdfGuest'); if(pg) pg.textContent='Invitation pour : '+data.full+' · Code : '+data.code;
+  _storePdfData(data);
+  const pg=document.getElementById('pdfGuest'); if(pg) pg.textContent=data.full;
+  const pc=document.getElementById('pdfCode'); if(pc) pc.textContent='Code invité : '+(data.code || '—')+' · Nombre de personnes : 1';
   const pd=document.getElementById('pdfDrink'); if(pd) pd.textContent='Boissons : '+(data.alcool === 'Oui' ? data.boissons : 'Sans alcool');
-  renderQR(data.invitationUrl);
+  const pdi=document.getElementById('pdfDiet'); if(pdi) pdi.textContent='Régime / allergies : '+(data.diet || 'non précisé');
+  renderQR(data.qrContent);
   const qg=document.getElementById('qrPdfGuest'); if(qg) qg.textContent='QR code pour : '+data.full+' · Code : '+data.code;
   await saveRSVPToSupabase(data);
-  await incrementInviteCodeUsage(data.code);
+  // Épuiser le code immédiatement après RSVP confirmé — plus d'accès possible
+  await _burnInviteCode(data.code);
   await sendConfirmationEmail(data);
   document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'center'});
+  // Vider la session : l'invité peut encore télécharger ses PDF sur cette page
+  // mais ne pourra plus revenir sur le site
+  sessionStorage.clear();
+  clearTimeout(inactivityTimer);
 });
-function downloadPDF(){const el=document.getElementById('printInvitation');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
-function downloadProgrammePDF(){const el=document.getElementById('programme');html2pdf().set({margin:10,filename:'Programme_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save();}
-function downloadQRCodePDF(){const el=document.getElementById('printQrPdf');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'QR_Code_Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
+let _pdfData = {};
+
+function _storePdfData(data){
+  _pdfData = data;
+}
+
+function _getQRDataURL(){
+  const qrBox = document.getElementById('qrBox');
+  if(!qrBox) return null;
+  const canvas = qrBox.querySelector('canvas');
+  if(!canvas) return null;
+  return canvas.toDataURL('image/png');
+}
+
+function _makePdfBase(){
+  // On utilise l'API jsPDF directement
+  const { jsPDF } = window.jspdf || {};
+  if(!jsPDF){
+    // Fallback : créer via html2pdf qui expose jsPDF
+    alert('jsPDF non disponible, rechargez la page.');
+    return null;
+  }
+  const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+  const W = doc.internal.pageSize.getWidth();   // 595.28
+  const H = doc.internal.pageSize.getHeight();  // 841.89
+  const NAVY   = [10, 22, 40];
+  const GOLD   = [212, 168, 75];
+  const GOLD3  = [237, 211, 138];
+  const IVORY  = [250, 247, 240];
+  const MUTED  = [154, 168, 187];
+  // Fond navy
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, W, H, 'F');
+  // Bordure or
+  doc.setDrawColor(...GOLD);
+  doc.setLineWidth(1.5);
+  doc.rect(20, 20, W-40, H-40, 'S');
+  return { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED };
+}
+
+function _drawHLine(doc, y, GOLD, W){
+  doc.setDrawColor(...GOLD);
+  doc.setLineWidth(0.5);
+  doc.line(W/2 - 90, y, W/2 + 90, y);
+  // losange central
+  doc.setFillColor(...GOLD);
+  doc.rect(W/2 - 4, y - 4, 8, 8, 'F');
+}
+
+function _buildInvitationDoc(){
+  const pd = _pdfData;
+  const base = _makePdfBase();
+  if(!base) return;
+  const { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED } = base;
+
+  let y = 55;
+  // Kicker
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(4);
+  doc.text('INVITATION PERSONNELLE', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 32;
+  // Noms
+  doc.setFont('times','italic');
+  doc.setFontSize(44);
+  doc.setTextColor(...IVORY);
+  doc.text('Lacache', W/2, y, {align:'center'});
+  y += 30;
+  doc.setFontSize(28);
+  doc.setTextColor(...GOLD);
+  doc.text('&', W/2, y, {align:'center'});
+  y += 36;
+  doc.setFontSize(44);
+  doc.setTextColor(...IVORY);
+  doc.text('Naomie', W/2, y, {align:'center'});
+
+  y += 22;
+  _drawHLine(doc, y, GOLD, W);
+
+  y += 22;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(3);
+  doc.text('CETTE INVITATION EST ADRESSÉE À', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 26;
+  doc.setFont('times','italic');
+  doc.setFontSize(28);
+  doc.setTextColor(...GOLD3);
+  doc.text(pd.full || 'Invité(e)', W/2, y, {align:'center'});
+
+  y += 16;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
+  doc.text('Code invité : '+(pd.code||'—')+' · 1 personne', W/2, y, {align:'center'});
+
+  y += 20;
+  _drawHLine(doc, y, GOLD, W);
+
+  // Date & lieu
+  y += 22;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...GOLD3);
+  doc.setCharSpace(3);
+  doc.text('SAMEDI · 25 JUILLET 2026', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+  y += 16;
+  doc.setFont('times','italic');
+  doc.setFontSize(13);
+  doc.setTextColor(...IVORY);
+  doc.text('Mairie de Lille · Latin Dance · Lille', W/2, y, {align:'center'});
+
+  y += 24;
+  _drawHLine(doc, y, GOLD, W);
+
+  // Programme
+  y += 20;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(3);
+  doc.text('PROGRAMME DE LA JOURNÉE', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  const prog = [
+    {h:'10h00', t:'CÉRÉMONIE CIVILE',  l:'Mairie de Lille\nPlace du Général de Gaulle\n59000 Lille'},
+    {h:'13h30', t:'VIN D\'HONNEUR',     l:'Cocktail & retrouvailles'},
+    {h:'19h00', t:'DÎNER & SOIRÉE',    l:'124Bis Rue de l\'Epideme\n59200 Tourcoing'},
+  ];
+
+  y += 14;
+  prog.forEach(p => {
+    // heure
+    doc.setFont('times','italic');
+    doc.setFontSize(18);
+    doc.setTextColor(...GOLD);
+    doc.text(p.h, 55, y);
+    // titre
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.setTextColor(...IVORY);
+    doc.setCharSpace(2);
+    doc.text(p.t, 155, y - 6);
+    doc.setCharSpace(0);
+    // lieu (multi-ligne)
+    doc.setFont('times','italic');
+    doc.setFontSize(10);
+    doc.setTextColor(...MUTED);
+    const lines = p.l.split('\n');
+    lines.forEach((ln, i) => {
+      doc.text(ln, 155, y + 6 + i * 13);
+    });
+    // trait séparateur
+    doc.setDrawColor(212,168,75,0.3);
+    doc.setLineWidth(0.3);
+    const rowH = Math.max(36, lines.length * 13 + 20);
+    y += rowH;
+    doc.line(55, y - 8, W - 55, y - 8);
+  });
+
+  y += 4;
+  // Boissons & régime
+  doc.setFont('times','italic');
+  doc.setFontSize(11);
+  doc.setTextColor(...MUTED);
+  doc.text('Boissons : '+(pd.alcool==='Oui' ? pd.boissons : 'Sans alcool'), W/2, y, {align:'center'});
+  y += 15;
+  doc.text('Régime / allergies : '+(pd.diet||'non précisé'), W/2, y, {align:'center'});
+
+  y += 20;
+  _drawHLine(doc, y, GOLD, W);
+
+  y += 18;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(3);
+  doc.text('VOTRE QR CODE D\'ENTRÉE LE JOUR J', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  const qrDataUrl = _getQRDataURL();
+  if(qrDataUrl){
+    const qrSize = 110;
+    doc.addImage(qrDataUrl, 'PNG', W/2 - qrSize/2, y + 8, qrSize, qrSize);
+    y += qrSize + 18;
+  } else {
+    y += 20;
+    doc.setFont('times','italic');
+    doc.setFontSize(10);
+    doc.setTextColor(...MUTED);
+    doc.text('[QR code non disponible]', W/2, y, {align:'center'});
+    y += 20;
+  }
+
+  // Thème
+  doc.setFillColor(...GOLD3);
+  const themeText = 'THÈME · BLEU MARINE · OR · CHAMPAGNE · BLANC';
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  doc.setCharSpace(2);
+  const tw = doc.getTextWidth(themeText) + 20;
+  doc.rect(W/2 - tw/2, y, tw, 18, 'F');
+  doc.setTextColor(...NAVY);
+  doc.text(themeText, W/2, y + 12, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 32;
+  // Note de bas
+  doc.setFont('times','italic');
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
+  doc.text('Tenue de soirée élégante · Confirmation avant le 1er juin 2026', W/2, y, {align:'center'});
+  y += 14;
+  doc.text('notre-grand-jour.online', W/2, y, {align:'center'});
+
+  return doc;
+}
+
+function _buildProgrammeDoc(){
+  const base = _makePdfBase();
+  if(!base) return;
+  const { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED } = base;
+
+  let y = 55;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.setCharSpace(4);
+  doc.text('PROGRAMME OFFICIEL', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 34;
+  doc.setFont('times','italic');
+  doc.setFontSize(40);
+  doc.setTextColor(...IVORY);
+  doc.text('Programme', W/2, y, {align:'center'});
+  y += 28;
+  doc.setFontSize(26);
+  doc.text('de la journée', W/2, y, {align:'center'});
+
+  y += 22;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...GOLD3);
+  doc.setCharSpace(3);
+  doc.text('SAMEDI · 25 JUILLET 2026', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+
+  y += 24;
+  _drawHLine(doc, y, GOLD, W);
+  y += 30;
+
+  const prog = [
+    {h:'10h00', t:'CÉRÉMONIE CIVILE',      l:'Mairie de Lille\nPlace du Général de Gaulle, 59000 Lille\nMerci d\'arriver 15 minutes à l\'avance.'},
+    {h:'13h30', t:'VIN D\'HONNEUR',         l:'Cocktail, bulles et retrouvailles.'},
+    {h:'19h00', t:'DÎNER & SOIRÉE DANSANTE',l:'124Bis Rue de l\'Epideme, 59200 Tourcoing\nSoirée jusqu\'au bout de la nuit.'},
+  ];
+
+  prog.forEach(p => {
+    doc.setFont('times','italic');
+    doc.setFontSize(22);
+    doc.setTextColor(...GOLD);
+    doc.text(p.h, 55, y);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...IVORY);
+    doc.setCharSpace(2);
+    doc.text(p.t, 155, y - 8);
+    doc.setCharSpace(0);
+    doc.setFont('times','italic');
+    doc.setFontSize(12);
+    doc.setTextColor(...MUTED);
+    const lines = p.l.split('\n');
+    lines.forEach((ln, i) => doc.text(ln, 155, y + 6 + i * 14));
+    doc.setDrawColor(212,168,75,0.3);
+    doc.setLineWidth(0.3);
+    const rowH = Math.max(44, lines.length * 14 + 24);
+    y += rowH;
+    doc.line(55, y - 10, W - 55, y - 10);
+    y += 8;
+  });
+
+  y += 10;
+  _drawHLine(doc, y, GOLD, W);
+  y += 24;
+
+  doc.setFont('times','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(...IVORY);
+  doc.text('Tenue élégante souhaitée.', W/2, y, {align:'center'});
+  y += 18;
+  doc.setFont('times','italic');
+  doc.setFontSize(12);
+  doc.setTextColor(...MUTED);
+  doc.text('Couleurs : bleu marine, ardoise, or, champagne ou blanc.', W/2, y, {align:'center'});
+  y += 18;
+  doc.text('Merci de confirmer votre présence avant le 1er juin 2026.', W/2, y, {align:'center'});
+
+  return doc;
+}
+
+function _buildQRCodeDoc(){
+  const pd = _pdfData;
+  const base = _makePdfBase();
+  if(!base) return;
+  const { doc, W, H, NAVY, GOLD, GOLD3, IVORY, MUTED } = base;
+
+  let y = 80;
+  doc.setFont('times','italic');
+  doc.setFontSize(36);
+  doc.setTextColor(...IVORY);
+  doc.text('QR code invitation', W/2, y, {align:'center'});
+  y += 26;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(10);
+  doc.setTextColor(...GOLD3);
+  doc.setCharSpace(2);
+  doc.text('LACACHE & NAOMIE · 25 · 07 · 2026', W/2, y, {align:'center'});
+  doc.setCharSpace(0);
+  y += 24;
+  _drawHLine(doc, y, GOLD, W);
+  y += 26;
+  doc.setFont('times','italic');
+  doc.setFontSize(16);
+  doc.setTextColor(...IVORY);
+  doc.text(pd.full || 'Invité(e)', W/2, y, {align:'center'});
+  y += 14;
+  doc.setFontSize(11);
+  doc.setTextColor(...MUTED);
+  doc.text('Code : '+(pd.code||'—'), W/2, y, {align:'center'});
+  y += 20;
+
+  const qrDataUrl = _getQRDataURL();
+  if(qrDataUrl){
+    const qrSize = 160;
+    doc.addImage(qrDataUrl, 'PNG', W/2 - qrSize/2, y, qrSize, qrSize);
+    y += qrSize + 20;
+  } else {
+    doc.setFont('times','italic');
+    doc.setFontSize(11);
+    doc.setTextColor(...MUTED);
+    doc.text('[QR code non disponible]', W/2, y + 20, {align:'center'});
+    y += 40;
+  }
+
+  doc.setFont('times','italic');
+  doc.setFontSize(11);
+  doc.setTextColor(...MUTED);
+  doc.text('Ce QR code est personnel et lié à votre invitation.', W/2, y, {align:'center'});
+  y += 14;
+  doc.text('À présenter à l\'entrée avec une pièce d\'identité.', W/2, y, {align:'center'});
+
+  return doc;
+}
+
+function _safeFileName(value){
+  return String(value || 'Invite').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'') || 'Invite';
+}
+
+function _docDataUri(doc){
+  if(!doc) return '';
+  return doc.output('datauristring');
+}
+
+function _docBase64(doc){
+  const dataUri = _docDataUri(doc);
+  return dataUri ? dataUri.split(',')[1] : '';
+}
+
+function _buildEmailPdfPayload(data){
+  const safe = _safeFileName(data.full || data.to_name || 'Invite');
+  const invitationDoc = _buildInvitationDoc();
+  const programmeDoc = _buildProgrammeDoc();
+  const qrDoc = _buildQRCodeDoc();
+  return {
+    invitation_pdf_base64: _docDataUri(invitationDoc),
+    invitation_pdf_content: _docBase64(invitationDoc),
+    invitation_filename: `Invitation_${safe}_Lacache_Naomie.pdf`,
+    programme_pdf_base64: _docDataUri(programmeDoc),
+    programme_pdf_content: _docBase64(programmeDoc),
+    programme_filename: `Programme_Lacache_Naomie.pdf`,
+    qr_pdf_base64: _docDataUri(qrDoc),
+    qr_pdf_content: _docBase64(qrDoc),
+    qr_filename: `QR_Code_${safe}.pdf`
+  };
+}
+
+function downloadPDF(){
+  const doc = _buildInvitationDoc();
+  if(doc) doc.save('Invitation_Lacache_Naomie.pdf');
+}
+
+function downloadProgrammePDF(){
+  const doc = _buildProgrammeDoc();
+  if(doc) doc.save('Programme_Lacache_Naomie.pdf');
+}
+
+function downloadQRCodePDF(){
+  const doc = _buildQRCodeDoc();
+  if(doc) doc.save('QR_Code_Invitation_Lacache_Naomie.pdf');
+}
+
 </script>
 </body>
 </html>
