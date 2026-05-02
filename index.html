@@ -500,7 +500,7 @@ async function sendConfirmationEmail(data){
 
 async function saveRSVPToSupabase(data){
   try{
-    await fetch(SB_URL+'/rest/v1/rsvps',{
+    const res=await fetch(SB_URL+'/rest/v1/rsvps',{
       method:'POST',
       headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
       body:JSON.stringify({
@@ -518,7 +518,13 @@ async function saveRSVPToSupabase(data){
         created_at:new Date().toISOString()
       })
     });
-  }catch(err){}
+    if(!res.ok){
+      const txt=await res.text();
+      alert('Erreur sauvegarde RSVP : '+txt);
+    }
+  }catch(err){
+    alert('Erreur réseau RSVP : '+err.message);
+  }
 }
 
 async function _burnInviteCode(code){
