@@ -34,13 +34,14 @@ nav a{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18rem;text-tra
 #infos{background:var(--ivory)}.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem}.card{background:var(--white);border-left:3px solid var(--gold2);padding:1.5rem;box-shadow:0 8px 28px rgba(10,22,40,.06)}.card h3{font-family:'Cinzel';letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-size:.72rem;margin-bottom:.7rem}.card p{line-height:1.7;color:#45566f}#faq{background:var(--cream)}.faq-item{background:var(--white);margin:1rem 0;border-left:3px solid var(--gold2)}.faq-q{padding:1.15rem 1.5rem;font-family:'Cinzel';font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between}.faq-a{display:none;padding:0 1.5rem 1.2rem;color:#45566f;line-height:1.7}.faq-item.open .faq-a{display:block}
 /* RSVP */
 #rsvp{background:var(--ivory)}.rsvp-box{max-width:760px;margin:auto;background:white;padding:clamp(2rem,5vw,3.5rem);border:1px solid rgba(191,138,48,.25);box-shadow:0 12px 50px rgba(10,22,40,.08)}.rsvp-box h2{text-align:center;font-size:3.2rem}.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}label{font-family:'Cinzel';font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block;margin:.9rem 0 .35rem}input,select,textarea{width:100%;padding:.9rem 1rem;border:1px solid rgba(191,138,48,.28);background:var(--ivory);font-family:'Lato';outline:none}textarea{min-height:95px;resize:vertical}.full{grid-column:1/-1}.btn{border:none;background:var(--navy);color:var(--ivory);font-family:'Cinzel';letter-spacing:.2em;text-transform:uppercase;padding:1rem 1.4rem;cursor:pointer;margin-top:1rem}.btn.gold{background:var(--gold2);color:var(--navy)}#downloadPanel{display:none;text-align:center;margin-top:1.6rem;padding:1.3rem;background:var(--ivory);border:1px solid rgba(191,138,48,.25)}
-#printInvitation,#printQrPdf{position:absolute;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond'}#printProgrammePdf{position:absolute;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond'}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center;min-height:1030px}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#D4A84B;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.55}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:22px auto}.pdf-small-title{font-family:'Cinzel';letter-spacing:.28em;text-transform:uppercase;color:#9aa8bb;font-size:13px;margin-top:18px}.pdf-guest-name{font-size:30px!important;font-style:italic;color:#EDD38A}.pdf-program-row{display:grid;grid-template-columns:90px 1fr 210px;gap:10px;border-bottom:1px solid rgba(212,168,75,.22);padding:10px 0;text-align:left}.pdf-program-row b{color:#D4A84B;font-size:20px}.pdf-program-row span{font-family:'Cinzel';font-size:12px;letter-spacing:.12em;text-transform:uppercase}.pdf-note{font-size:14px!important;color:#9aa8bb;margin-top:18px}.pdf-theme{display:inline-block;margin-top:18px;background:#EDD38A;color:#0A1628;font-family:'Cinzel';letter-spacing:.22em;text-transform:uppercase;font-size:10px;padding:8px 14px}#printQr,#printQrOnly{margin:18px auto 0;display:flex;justify-content:center}
+#printInvitation,#printQrPdf{position:fixed;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond';visibility:hidden}#printProgrammePdf{position:fixed;left:-9999px;top:0;width:794px;background:#0A1628;color:#FAF7F0;padding:34px;font-family:'Cormorant Garamond';visibility:hidden}.pdf-card{border:2px solid #D4A84B;padding:34px;text-align:center;min-height:1030px}.pdf-card h1{font-size:56px;font-style:italic;font-weight:300}.pdf-card .pdf-date{font-family:'Cinzel';letter-spacing:.25em;color:#D4A84B;margin:16px 0}.pdf-card p{font-size:18px;line-height:1.55}.pdf-line{height:1px;background:#D4A84B;width:180px;margin:22px auto}.pdf-small-title{font-family:'Cinzel';letter-spacing:.28em;text-transform:uppercase;color:#9aa8bb;font-size:13px;margin-top:18px}.pdf-guest-name{font-size:30px!important;font-style:italic;color:#EDD38A}.pdf-program-row{display:grid;grid-template-columns:90px 1fr 210px;gap:10px;border-bottom:1px solid rgba(212,168,75,.22);padding:10px 0;text-align:left}.pdf-program-row b{color:#D4A84B;font-size:20px}.pdf-program-row span{font-family:'Cinzel';font-size:12px;letter-spacing:.12em;text-transform:uppercase}.pdf-note{font-size:14px!important;color:#9aa8bb;margin-top:18px}.pdf-theme{display:inline-block;margin-top:18px;background:#EDD38A;color:#0A1628;font-family:'Cinzel';letter-spacing:.22em;text-transform:uppercase;font-size:10px;padding:8px 14px}#printQr,#printQrOnly{margin:18px auto 0;display:flex;justify-content:center}
 @media(max-width:850px){nav{position:static}#hero{grid-template-columns:1fr;padding:2rem 1rem}.hero-img{height:auto;max-height:none}#lieux{grid-template-columns:1fr}.lieux-img{min-height:360px}.frow{grid-template-columns:1fr}.prog-item{grid-template-columns:80px 24px 1fr}}
 @media print{nav,.btn,#downloadPanel{display:none!important}body{background:white}}
 
 /* ACCÈS PRIVÉ - CODE INVITÉ */
 body.gate-locked{background:var(--navy);overflow:hidden}
-body.gate-locked nav,body.gate-locked section,body.gate-locked #printInvitation{display:none!important}
+body.gate-locked nav,body.gate-locked section{display:none!important}
+#printInvitation,#printQrPdf,#printProgrammePdf{visibility:hidden}
 #access-gate{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 30%,rgba(212,168,75,.08),transparent 35%),var(--navy);display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--ivory)}
 body:not(.gate-locked) #access-gate{display:none}
 .gate-box{width:min(900px,92vw);min-height:70vh;border:1px solid rgba(212,168,75,.65);position:relative;padding:clamp(2rem,6vw,5rem);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(255,255,255,.025);box-shadow:0 30px 90px rgba(0,0,0,.35)}
@@ -503,9 +504,47 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   await sendConfirmationEmail(data);
   document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'center'});
 });
-function downloadPDF(){const el=document.getElementById('printInvitation');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
-function downloadProgrammePDF(){const el=document.getElementById('printProgrammePdf');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'Programme_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
-function downloadQRCodePDF(){const el=document.getElementById('printQrPdf');el.style.position='static';el.style.left='0';html2pdf().set({margin:0,filename:'QR_Code_Invitation_Lacache_Naomie.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'pt',format:'a4',orientation:'portrait'}}).from(el).save().then(()=>{el.style.position='absolute';el.style.left='-9999px';});}
+function _generatePDF(elId, filename) {
+  const el = document.getElementById(elId);
+  // Rendre visible hors écran de façon fiable pour html2canvas
+  const prev = {
+    position: el.style.position,
+    left: el.style.left,
+    top: el.style.top,
+    visibility: el.style.visibility,
+    zIndex: el.style.zIndex
+  };
+  el.style.position = 'fixed';
+  el.style.left = '-9999px';
+  el.style.top = '0';
+  el.style.visibility = 'visible';
+  el.style.zIndex = '-1';
+  el.style.display = 'block';
+
+  return html2pdf().set({
+    margin: 0,
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#0A1628',
+      windowWidth: 794
+    },
+    jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+  }).from(el).save().then(() => {
+    el.style.position = prev.position || 'absolute';
+    el.style.left = prev.left || '-9999px';
+    el.style.top = prev.top || '0';
+    el.style.visibility = 'hidden';
+    el.style.display = '';
+    el.style.zIndex = prev.zIndex || '';
+  });
+}
+function downloadPDF(){ _generatePDF('printInvitation','Invitation_Lacache_Naomie.pdf'); }
+function downloadProgrammePDF(){ _generatePDF('printProgrammePdf','Programme_Lacache_Naomie.pdf'); }
+function downloadQRCodePDF(){ _generatePDF('printQrPdf','QR_Code_Invitation_Lacache_Naomie.pdf'); }
 </script>
 </body>
 </html>
