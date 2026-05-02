@@ -139,7 +139,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <thead>
         <tr>
           <th>Code</th>
-          <th>Invité</th><th>Email</th>
+          <th>Invité</th><th>Email</th><th>Utilisations</th>
           <th>Statut</th>
           <th>Utilisé le</th>
           <th>Créé le</th>
@@ -202,7 +202,7 @@ async function genCodes(){
   for(let i=0;i<nb;i++){
     const code = genCode();
     newCodes.push(code);
-    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), email:email||null, used:false, created_at:new Date().toISOString() });
+    rows.push({ code, nom: nom+(nb>1?' ('+(i+1)+')':''), email:email||null, used:false, used_count:0, max_uses:2, created_at:new Date().toISOString() });
   }
 
   try {
@@ -254,10 +254,14 @@ function renderTable(codes){
       <td><span class="code-chip">${c.code.toUpperCase()}</span>
           <button class="copy-btn" style="margin-left:.4rem" onclick="navigator.clipboard.writeText('${c.code}').then(()=>this.textContent='✓')">Copier</button></td>
       <td>${c.nom||'—'}</td>
-      <td>${badge}</td>
+      <td style="font-size:.6rem;color:rgba(255,255,255,.5)">${c.email||'—'}</td>
+      <td>${badge} <span style="font-size:.5rem;color:rgba(255,255,255,.35)">${c.used_count||0}/${c.max_uses||2}</span></td>
       <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${usedAt}</td>
       <td style="font-size:.6rem;color:rgba(255,255,255,.4)">${createdAt}</td>
-      <td><button class="danger" style="font-size:.38rem;padding:.2rem .5rem" onclick="deleteCode('${c.code}')">Suppr.</button></td>
+      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="copy-btn" onclick="sendInviteEmail('${c.code}','${c.nom}','${c.email||''}')" style="color:#4ade80;border-color:rgba(74,222,128,.3)">✉ Envoyer</button>
+        <button class="danger" style="font-size:.38rem;padding:.2rem .5rem" onclick="deleteCode('${c.code}')">Suppr.</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -287,6 +291,46 @@ function exportCSV(){
   a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download = 'codes-invitation-lacache-naomie.csv';
   a.click();
+}
+
+// ── EmailJS config ───────────────────────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY = 'WqZvQ1reFTM1ISd3E';
+const EMAILJS_SERVICE_ID = 'service_9cilotm';
+const EMAILJS_INVITATION_TEMPLATE_ID = 'template_4n9w6sv';
+
+(function(){
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+  s.onload = () => emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  document.head.appendChild(s);
+})();
+
+async function sendInviteEmail(code, nom, email){
+  if(!email || email === 'null' || email === ''){
+    alert('Cet invité n\'a pas d\'email enregistré. Ajoutez son email d\'abord.');
+    return;
+  }
+  if(!confirm('Envoyer le code ' + code.toUpperCase() + ' à ' + email + ' ?')) return;
+  try{
+    const weddingUrl = 'https://notre-grand-jour.online?code=' + encodeURIComponent(code);
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_INVITATION_TEMPLATE_ID, {
+      from_name: 'Lacache & Naomie',
+      reply_to: 'lacachenaomie@gmail.com',
+      to_name: nom,
+      to_email: email,
+      email: email,
+      name: 'Lacache & Naomie',
+      invite_code: code.toUpperCase(),
+      wedding_url: weddingUrl,
+      invitation_url: weddingUrl
+    });
+    alert('✓ Mail envoyé à ' + email);
+    // Enregistrer l'email dans Supabase si pas encore fait
+    await sb('/invite_codes?code=eq.' + encodeURIComponent(code), 'PATCH', { email: email });
+  }catch(err){
+    console.error(err);
+    alert('Erreur envoi mail : ' + (err.text || err.message || JSON.stringify(err)));
+  }
 }
 
 document.getElementById('admin-pwd').focus();
