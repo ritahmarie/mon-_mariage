@@ -502,9 +502,20 @@ async function saveRSVPToSupabase(data){
   try{
     const res=await fetch(SB_URL+'/rest/v1/rsvps',{
       method:'POST',
-      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      headers:{
+        apikey:SB_KEY,
+        Authorization:'Bearer '+SB_KEY,
+        'Content-Type':'application/json',
+        Prefer:'return=minimal'
+      },
       body:JSON.stringify({
         invite_code:data.code,
+
+        // Colonnes obligatoires dans ta table Supabase
+        name:data.full || ((data.prenom || '') + ' ' + (data.nom || '')).trim(),
+        attendance:data.presence,
+
+        // Infos du formulaire
         prenom:data.prenom,
         nom:data.nom,
         email:data.email,
@@ -518,6 +529,7 @@ async function saveRSVPToSupabase(data){
         created_at:new Date().toISOString()
       })
     });
+
     if(!res.ok){
       const txt=await res.text();
       alert('Erreur sauvegarde RSVP : '+txt);
