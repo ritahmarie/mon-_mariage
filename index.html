@@ -513,7 +513,7 @@ async function saveRSVPToSupabase(data){
 
         // Colonnes obligatoires dans ta table Supabase
         name:data.full || ((data.prenom || '') + ' ' + (data.nom || '')).trim(),
-        attendance:data.presence === 'Oui' ? 'yes' : 'no',
+        attendance:data.presence === 'Je serai présent(e)' ? 'present' : 'absent',
 
         // Infos du formulaire
         prenom:data.prenom,
