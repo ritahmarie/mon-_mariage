@@ -25,7 +25,7 @@ body{font-family:Lato,sans-serif;background:var(--navy);color:var(--ivory);min-h
 .app{display:none}
 .header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(212,168,75,.2);flex-wrap:wrap;gap:12px}
 .header h1{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:36px;font-weight:300}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 24px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:16px 24px}
 .stat{background:rgba(255,255,255,.045);border:1px solid rgba(212,168,75,.2);padding:12px 16px}
 .num{font-family:"Cormorant Garamond",serif;font-size:30px;color:var(--gold)}
 .lab{font-family:Cinzel,serif;font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
@@ -77,6 +77,12 @@ body{font-family:Lato,sans-serif;background:var(--navy);color:var(--ivory);min-h
 .message-box{background:rgba(255,255,255,.04);padding:8px 10px;font-style:italic;font-size:.8rem;color:rgba(255,255,255,.6);border-left:2px solid rgba(212,168,75,.3);margin-bottom:10px}
 .card-actions{display:flex;gap:8px;flex-wrap:wrap}
 
+
+.card.absent{border-left:3px solid var(--red)}
+.card.pending{border-left:3px solid var(--orange)}
+.premium-summary{margin:0 24px 16px;padding:14px 16px;border:1px solid rgba(212,168,75,.18);background:rgba(255,255,255,.035);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:.82rem}
+.premium-summary strong{color:var(--gold2)}
+
 /* Vide */
 .empty-state{text-align:center;padding:48px;color:var(--muted);font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.2rem;grid-column:1/-1}
 
@@ -112,7 +118,9 @@ body{font-family:Lato,sans-serif;background:var(--navy);color:var(--ivory);min-h
 
   <div class="stats">
     <div class="stat"><div class="num" id="sTotal">0</div><div class="lab">Codes créés</div></div>
-    <div class="stat"><div class="num" id="sConfirmed">0</div><div class="lab">RSVP confirmés</div></div>
+    <div class="stat"><div class="num" id="sConfirmed">0</div><div class="lab">Réponses reçues</div></div>
+    <div class="stat"><div class="num" id="sPresent">0</div><div class="lab">Présents</div></div>
+    <div class="stat"><div class="num" id="sAbsent">0</div><div class="lab">Absents</div></div>
     <div class="stat"><div class="num" id="sScanned">0</div><div class="lab">Entrées validées</div></div>
     <div class="stat"><div class="num" id="sWaiting">0</div><div class="lab">En attente</div></div>
   </div>
@@ -142,6 +150,8 @@ body{font-family:Lato,sans-serif;background:var(--navy);color:var(--ivory);min-h
     <button class="filter-btn" onclick="setFilter('not_scanned',this)">Non scannés</button>
   </div>
 
+  <div class="premium-summary" id="premiumSummary">Chargement des réponses RSVP…</div>
+
   <!-- Cartes invités -->
   <div class="cards" id="cards"></div>
 </div>
@@ -160,11 +170,27 @@ function showErr(m){const e=document.getElementById('loginErr');e.textContent=m;
 async function sb(path,method='GET',body=null){const opts={method,headers:{apikey:CONFIG.sbKey,Authorization:'Bearer '+CONFIG.sbKey,'Content-Type':'application/json',Prefer:'return=representation'}};if(body)opts.body=JSON.stringify(body);const r=await fetch(CONFIG.sbUrl+'/rest/v1'+path,opts);if(r.status===204)return null;const txt=await r.text();const data=txt?JSON.parse(txt):null;if(!r.ok)throw new Error((data&&(data.message||data.hint))||txt||'Erreur Supabase '+r.status);return data}
 function login(){if(document.getElementById('pwd').value.trim()!==CONFIG.adminPwd){showErr('Mot de passe incorrect.');return}try{emailjs.init({publicKey:CONFIG.emailPublic})}catch(e){try{emailjs.init(CONFIG.emailPublic)}catch(_){}}document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadCodes()}
 async function loadCodes(){
+  // Version premium : on récupère toutes les colonnes pour rester compatible avec ta structure Supabase actuelle
   codes=await sb('/invite_codes?select=*&order=created_at.desc')||[];
-  rsvps=await sb('/rsvps?select=id,invite_code,prenom,nom,email,telephone,presence,nb_personnes,regime_alimentaire,alcool,boissons,message,created_at&order=created_at.desc')||[];
+  rsvps=await sb('/rsvps?select=*&order=created_at.desc')||[];
   updateStats();renderCards();
 }
-function updateStats(){const total=codes.length, confirmed=codes.filter(c=>!!c.rsvp_confirmed).length, scanned=codes.filter(c=>!!c.scanned_entry).length;document.getElementById('sTotal').textContent=total;document.getElementById('sConfirmed').textContent=confirmed;document.getElementById('sScanned').textContent=scanned;document.getElementById('sWaiting').textContent=total-confirmed}
+function updateStats(){
+  const total=codes.length;
+  const answered=codes.filter(c=>!!getRsvp(c.code)).length;
+  const present=codes.filter(c=>rsvpAttendance(getRsvp(c.code))==='present').length;
+  const absent=codes.filter(c=>rsvpAttendance(getRsvp(c.code))==='absent').length;
+  const scanned=codes.filter(c=>!!c.scanned_entry).length;
+  const waiting=Math.max(total-answered,0);
+  document.getElementById('sTotal').textContent=total;
+  document.getElementById('sConfirmed').textContent=answered;
+  document.getElementById('sPresent').textContent=present;
+  document.getElementById('sAbsent').textContent=absent;
+  document.getElementById('sScanned').textContent=scanned;
+  document.getElementById('sWaiting').textContent=waiting;
+  const box=document.getElementById('premiumSummary');
+  if(box){box.innerHTML=`<span><strong>${answered}</strong> réponse(s) reçue(s) sur <strong>${total}</strong> invitation(s)</span><span><strong>${present}</strong> présent(s) · <strong>${absent}</strong> absent(s) · <strong>${waiting}</strong> en attente</span>`;}
+}
 function genCode(){const words=['rose','lune','etoile','soleil','fleur','ciel','jardin','riviere','aube','nuage','amour','alliance'];return words[Math.floor(Math.random()*words.length)]+'-'+Math.floor(1000+Math.random()*9000)}
 function weddingUrl(code){return 'https://www.notre-grand-jour.online/?code='+encodeURIComponent(normCode(code))}
 async function sendInvitationMail(row){
@@ -224,19 +250,15 @@ function renderTable(){
 }
 async function resend(code){const row=codes.find(c=>normCode(c.code)===normCode(code));if(!row||!row.email)return alert('Email manquant.');const ok=await sendInvitationMail(row);alert(ok?'Invitation renvoyée.':'Erreur EmailJS. Vérifie ton template.')}
 function exportCSV(){
-  const rows=[['code','surnom_admin','vrai_prenom','vrai_nom','email','telephone','presence','allergie','message','usage','rsvp_confirmed','scanned_entry','created_at']];
+  const rows=[['code','surnom_admin','nom_reel','email','telephone','presence','nb_personnes','regime_allergies','boissons','message','usage','scanned_entry','created_at']];
   codes.forEach(c=>{
-    const r=rsvps.find(x=>{
-      const rc=normCode(x.invite_code||x.code||'');
-      const cc=normCode(c.code||'');
-      return rc===cc || rc.includes(cc) || cc.includes(rc);
-    });
-    rows.push([c.code,c.nom||'',r?.prenom||'',r?.nom||'',c.email||r?.email||'',r?.tel||r?.telephone||r?.phone||c.phone||'',r?.presence||'',r?.allergie||r?.regime_alimentaire||'',r?.message||'',`${c.used_count||0}/${c.max_uses||2}`,!!c.rsvp_confirmed,!!c.scanned_entry,c.created_at||'']);
+    const r=getRsvp(c.code);
+    rows.push([c.code,c.nom||'',rsvpName(r),rsvpEmail(r,c),rsvpPhone(r,c),rsvpAttendance(r),rsvpGuests(r),rsvpDiet(r),rsvpBoissons(r),r?.message||'',`${c.used_count||0}/${c.max_uses||2}`,!!c.scanned_entry,c.created_at||'']);
   });
-  const csv='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const csv='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='invites_mariage_complet.csv';a.click();
+  a.download='invites_mariage_premium.csv';a.click();
 }
 
 let currentFilter = 'all';
@@ -248,6 +270,19 @@ function setFilter(f, btn) {
   renderCards();
 }
 
+
+function rsvpAttendance(r){
+  const a=String(r?.attendance||r?.presence||'').trim().toLowerCase();
+  if(['present','yes','oui','je serai présent(e)','je serai present(e)','présent','present(e)'].includes(a)) return 'present';
+  if(['absent','no','non','je ne pourrai pas venir'].includes(a)) return 'absent';
+  return '';
+}
+function rsvpName(r){return (r?.name || ((r?.prenom||'')+' '+(r?.nom||'')).trim() || '').trim();}
+function rsvpEmail(r,c){return r?.email || c?.email || '—'}
+function rsvpPhone(r,c){return r?.telephone || r?.tel || r?.phone || c?.phone || '—'}
+function rsvpGuests(r){return r?.guests || r?.nb_personnes || r?.nb || 1}
+function rsvpDiet(r){return r?.diet || r?.regime_alimentaire || r?.allergie || '—'}
+function rsvpBoissons(r){return r?.boissons || r?.alcool || '—'}
 function renderCards() {
   const q = (document.getElementById('search')?.value || '').toLowerCase();
   const container = document.getElementById('cards');
@@ -255,80 +290,44 @@ function renderCards() {
 
   let list = codes.filter(c => {
     const r = getRsvp(c.code);
-    const vraiNom = r ? ((r.prenom||'') + ' ' + (r.nom||'')).trim() : '';
-    const searchStr = [c.code, c.nom||'', c.email||'', vraiNom].join(' ').toLowerCase();
+    const vraiNom = rsvpName(r);
+    const searchStr = [c.code, c.nom||'', c.email||'', vraiNom, r?.email||'', r?.message||''].join(' ').toLowerCase();
     if (q && !searchStr.includes(q)) return false;
-    if (currentFilter === 'confirmed') return !!c.rsvp_confirmed;
-    if (currentFilter === 'waiting') return !c.rsvp_confirmed;
+    if (currentFilter === 'confirmed') return !!r;
+    if (currentFilter === 'waiting') return !r;
     if (currentFilter === 'scanned') return !!c.scanned_entry;
-    if (currentFilter === 'not_scanned') return !c.scanned_entry && !!c.rsvp_confirmed;
+    if (currentFilter === 'not_scanned') return !c.scanned_entry && !!r;
     return true;
   });
 
-  if (!list.length) {
-    container.innerHTML = '<div class="empty-state">Aucun invité trouvé.</div>';
-    return;
-  }
+  if (!list.length) {container.innerHTML = '<div class="empty-state">Aucun invité trouvé.</div>';return;}
 
   container.innerHTML = list.map(c => {
     const r = getRsvp(c.code);
-    const vraiNom = r ? ((r.prenom||'') + ' ' + (r.nom||'')).trim() : '';
-    const email = c.email || r?.email || '—';
-    const tel = r ? (r.telephone||r.tel||r.phone||'—') : (c.phone||'—');
-    const presence = r ? (r.presence||'') : '';
-    const boissons = r ? (r.boissons||r.alcool||'—') : '—';
-    const regime = r ? (r.regime_alimentaire||r.allergie||r.diet||'—') : '—';
+    const vraiNom = rsvpName(r);
+    const email = rsvpEmail(r,c);
+    const tel = rsvpPhone(r,c);
+    const att = rsvpAttendance(r);
+    const presenceLabel = att==='present' ? 'Présent' : att==='absent' ? 'Absent' : '—';
+    const boissons = r ? rsvpBoissons(r) : '—';
+    const regime = r ? rsvpDiet(r) : '—';
     const message = r ? (r.message||'') : '';
-    const nb = r ? (r.nb_personnes||r.nb||r.guests||1) : 1;
-    const cardClass = c.scanned_entry ? 'card scanned' : c.rsvp_confirmed ? 'card confirmed' : 'card';
-    
-    const rsvpBadge = c.rsvp_confirmed 
-      ? '<span class="badge yes">✓ RSVP confirmé</span>'
-      : '<span class="badge wait">En attente</span>';
-    const scanBadge = c.scanned_entry
-      ? '<span class="badge scan">✦ Entrée validée</span>'
-      : '';
+    const nb = r ? rsvpGuests(r) : '—';
+    const cardClass = c.scanned_entry ? 'card scanned' : att==='present' ? 'card confirmed' : att==='absent' ? 'card absent' : 'card pending';
+    const rsvpBadge = att==='present' ? '<span class="badge yes">✓ Présent</span>' : att==='absent' ? '<span class="badge no">✕ Absent</span>' : '<span class="badge wait">En attente</span>';
+    const scanBadge = c.scanned_entry ? '<span class="badge scan">✦ Entrée validée</span>' : '';
     const usageBadge = `<span class="badge" style="color:var(--muted);border-color:rgba(154,168,187,.3)">${c.used_count||0}/${c.max_uses||2} accès</span>`;
 
     return `<div class="${cardClass}">
-      <div class="card-header">
-        <div>
-          <div class="card-code">${upper(c.code)}</div>
-          <div class="card-badges">${rsvpBadge}${scanBadge}${usageBadge}</div>
-        </div>
-        <button class="btn dark sm" onclick="resend('${normCode(c.code)}')">Renvoyer</button>
-      </div>
-
-      <div class="card-names">
-        <div class="surnom">Identifiant admin : <span>${c.nom||'—'}</span></div>
-        <div class="${vraiNom ? 'vrai-nom' : 'vrai-nom empty'}">${vraiNom || 'Pas encore rempli le formulaire'}</div>
-      </div>
-
+      <div class="card-header"><div><div class="card-code">${upper(c.code)}</div><div class="card-badges">${rsvpBadge}${scanBadge}${usageBadge}</div></div><button class="btn dark sm" onclick="resend('${normCode(c.code)}')">Renvoyer</button></div>
+      <div class="card-names"><div class="surnom">Identifiant admin : <span>${c.nom||'—'}</span></div><div class="${vraiNom ? 'vrai-nom' : 'vrai-nom empty'}">${vraiNom || 'Pas encore rempli le formulaire'}</div></div>
       <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Email</div>
-          <div class="info-value">${email}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Téléphone</div>
-          <div class="info-value">${tel}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Présence</div>
-          <div class="info-value">${presence || '—'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Nb personnes</div>
-          <div class="info-value">${nb}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Boissons</div>
-          <div class="info-value">${boissons}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Régime / allergies</div>
-          <div class="info-value">${regime}</div>
-        </div>
+        <div class="info-item"><div class="info-label">Email</div><div class="info-value">${email}</div></div>
+        <div class="info-item"><div class="info-label">Téléphone</div><div class="info-value">${tel}</div></div>
+        <div class="info-item"><div class="info-label">Présence</div><div class="info-value">${presenceLabel}</div></div>
+        <div class="info-item"><div class="info-label">Nb personnes</div><div class="info-value">${nb}</div></div>
+        <div class="info-item"><div class="info-label">Boissons</div><div class="info-value">${boissons}</div></div>
+        <div class="info-item"><div class="info-label">Régime / allergies</div><div class="info-value">${regime}</div></div>
       </div>
       ${message ? `<div class="message-box">"${message}"</div>` : ''}
     </div>`;
@@ -338,7 +337,11 @@ function renderCards() {
 function getRsvp(code) {
   if (!rsvps || !rsvps.length) return null;
   const c = normCode(code);
-  return rsvps.find(x => normCode(x.invite_code||'') === c || normCode(x.code||'') === c) || null;
+  let found = rsvps.find(x => normCode(x.invite_code||'') === c || normCode(x.code||'') === c);
+  if(found) return found;
+  const invite = codes.find(row => normCode(row.code)===c);
+  if(invite?.id){found = rsvps.find(x => String(x.invitation_id||'') === String(invite.id)); if(found) return found;}
+  return null;
 }
 
 // Remplacer renderTable par renderCards
