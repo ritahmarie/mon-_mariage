@@ -145,6 +145,8 @@ body{font-family:Lato,sans-serif;background:var(--navy);color:var(--ivory);min-h
   <div class="filters">
     <button class="filter-btn active" onclick="setFilter('all',this)">Tous</button>
     <button class="filter-btn" onclick="setFilter('confirmed',this)">RSVP confirmés</button>
+    <button class="filter-btn" onclick="setFilter('present',this)">Présents</button>
+    <button class="filter-btn" onclick="setFilter('absent',this)">Absents</button>
     <button class="filter-btn" onclick="setFilter('waiting',this)">En attente</button>
     <button class="filter-btn" onclick="setFilter('scanned',this)">Entrée validée</button>
     <button class="filter-btn" onclick="setFilter('not_scanned',this)">Non scannés</button>
@@ -294,6 +296,8 @@ function renderCards() {
     const searchStr = [c.code, c.nom||'', c.email||'', vraiNom, r?.email||'', r?.message||''].join(' ').toLowerCase();
     if (q && !searchStr.includes(q)) return false;
     if (currentFilter === 'confirmed') return !!r;
+    if (currentFilter === 'present') return rsvpAttendance(r) === 'present';
+    if (currentFilter === 'absent') return rsvpAttendance(r) === 'absent';
     if (currentFilter === 'waiting') return !r;
     if (currentFilter === 'scanned') return !!c.scanned_entry;
     if (currentFilter === 'not_scanned') return !c.scanned_entry && !!r;
