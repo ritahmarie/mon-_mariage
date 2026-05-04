@@ -307,6 +307,31 @@ td{
   .stats{grid-template-columns:1fr}
   .tabbtn{min-width:100%}
 }
+
+/* Premium mobile scan */
+.scanbox{position:relative}
+.flash-success{animation:flashSuccess .55s ease}
+.flash-error{animation:flashError .55s ease}
+@keyframes flashSuccess{0%{box-shadow:0 0 0 rgba(74,222,128,0)}50%{box-shadow:0 0 0 8px rgba(74,222,128,.25)}100%{box-shadow:0 0 0 rgba(74,222,128,0)}}
+@keyframes flashError{0%{box-shadow:0 0 0 rgba(248,113,113,0)}50%{box-shadow:0 0 0 8px rgba(248,113,113,.25)}100%{box-shadow:0 0 0 rgba(248,113,113,0)}}
+.result.success{background:linear-gradient(135deg,#ecfdf5,#ffffff)}
+.result.error{background:linear-gradient(135deg,#fef2f2,#ffffff)}
+.result.already{background:linear-gradient(135deg,#fffbeb,#ffffff)}
+@media(max-width:760px){
+  body{background:#071222}
+  .wrap{padding:12px}
+  .top{position:sticky;top:0;background:rgba(7,18,34,.98);z-index:20;padding:12px 0}
+  .scanbox{margin:12px 0;padding:14px;border-radius:14px}
+  .scanbox h2{font-size:30px!important}
+  #reader{min-height:260px;background:#000}
+  .result{margin:12px 0;padding:18px}
+  .result .icon{font-size:54px}
+  .result .name{font-size:32px}
+  .manual input{font-size:16px;text-align:center}
+  .log{margin:14px 0}
+  .logitem{font-size:.9rem}
+}
+
 </style>
 </head>
 
@@ -551,11 +576,39 @@ function renderTable(){
   }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:28px">Aucun invité.</td></tr>';
 }
 
+function vibrate(pattern){
+  if(navigator.vibrate) navigator.vibrate(pattern);
+}
+function beep(type){
+  try{
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = type === 'success' ? 880 : type === 'already' ? 520 : 220;
+    gain.gain.value = 0.08;
+    osc.start();
+    setTimeout(()=>{osc.stop();ctx.close();}, type === 'success' ? 140 : 220);
+  }catch(e){}
+}
+function scanFeedback(type){
+  const box=document.querySelector('.scanbox');
+  if(box){
+    box.classList.remove('flash-success','flash-error');
+    void box.offsetWidth;
+    box.classList.add(type==='success'?'flash-success':'flash-error');
+  }
+  if(type==='success'){vibrate([80]);beep('success');}
+  else if(type==='already'){vibrate([80,60,80]);beep('already');}
+  else{vibrate([160,80,160]);beep('error');}
+}
 function showResult(type,icon,name,detail,status){
   const box=document.getElementById('scanResult');
   box.className='result '+type;
   box.style.display='block';
-  box.innerHTML=`<div class="icon">${icon}</div><div class="name">${name||''}</div><div>${detail||''}</div><strong>${status||''}</strong>`;
+  box.innerHTML=`<div class="icon">${icon}</div><div class="name">${name||''}</div><div>${detail||''}</div><strong>${status||''}</strong>`;scanFeedback(type);
 }
 
 async function validateCode(raw){
