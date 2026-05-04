@@ -166,16 +166,23 @@ const CONFIG={
   emailPublic:'WqZvQ1reFTM1ISd3E', emailService:'service_9cilotm', tplInvitation:'template_4n9w6sv'
 };
 let codes=[];let rsvps=[];
+const FROM_NAME='Lacache & Naomie';
+const FROM_EMAIL='lacachenaomie@gmail.com';
 function normCode(c){return String(c||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function upper(c){return normCode(c).toUpperCase()}
 function showErr(m){const e=document.getElementById('loginErr');e.textContent=m;e.style.display='block'}
 async function sb(path,method='GET',body=null){const opts={method,headers:{apikey:CONFIG.sbKey,Authorization:'Bearer '+CONFIG.sbKey,'Content-Type':'application/json',Prefer:'return=representation'}};if(body)opts.body=JSON.stringify(body);const r=await fetch(CONFIG.sbUrl+'/rest/v1'+path,opts);if(r.status===204)return null;const txt=await r.text();const data=txt?JSON.parse(txt):null;if(!r.ok)throw new Error((data&&(data.message||data.hint))||txt||'Erreur Supabase '+r.status);return data}
 function login(){if(document.getElementById('pwd').value.trim()!==CONFIG.adminPwd){showErr('Mot de passe incorrect.');return}try{emailjs.init({publicKey:CONFIG.emailPublic})}catch(e){try{emailjs.init(CONFIG.emailPublic)}catch(_){}}document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadCodes()}
 async function loadCodes(){
-  // Version premium : on récupère toutes les colonnes pour rester compatible avec ta structure Supabase actuelle
-  codes=await sb('/invite_codes?select=*&order=created_at.desc')||[];
-  rsvps=await sb('/rsvps?select=*&order=created_at.desc')||[];
-  updateStats();renderCards();
+  try{
+    codes=await sb('/invite_codes?select=*&order=created_at.desc')||[];
+    rsvps=await sb('/rsvps?select=*&order=created_at.desc')||[];
+    updateStats();
+    renderCards();
+  }catch(e){
+    alert('Erreur actualisation : '+e.message);
+    console.error(e);
+  }
 }
 function updateStats(){
   const total=codes.length;
@@ -208,8 +215,10 @@ async function sendInvitationMail(row){
       invitation_url:weddingUrl(row.code),
       qr_content:encodeURIComponent(upper(row.code)),
       qr_raw_content:upper(row.code),
-      from_name:'Lacache & Naomie',
-      reply_to:'lacachenaomie@gmail.com'
+      from_name:FROM_NAME,
+      name:FROM_NAME,
+      from_email:FROM_EMAIL,
+      reply_to:FROM_EMAIL
     });
     await sb('/invite_codes?code=eq.'+encodeURIComponent(normCode(row.code)),'PATCH',{invitation_sent_at:new Date().toISOString()}).catch(()=>{});
     return true;
