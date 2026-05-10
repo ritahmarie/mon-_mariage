@@ -201,7 +201,7 @@ body:not(.gate-locked) #access-gate{display:none}
     <h2>Tout ce qu’il faut savoir</h2>
     <div class="dv"><span class="dvl"></span><span class="dvd"></span><span class="dvl"></span></div>
     <div class="info-grid-final">
-      <article class="info-card-final"><div class="info-emoji">📍</div><h3>Cérémonie civile</h3><p>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille - 10h00</p></article>
+      <article class="info-card-final"><div class="info-emoji">📍</div><h3>Cérémonie civile</h3><p>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille - 10H45</p></article>
       <article class="info-card-final"><div class="info-emoji">🎶</div><h3>Soirée & dîner</h3><p>124 Bis Rue de l’Epideme<br>59200 Tourcoing<br>Dîner à 19h00<br>Soirée jusqu’au bout de la nuit</p></article>
       <article class="info-card-final"><div class="info-emoji">👗</div><h3>Tenue</h3><p>Tenue de soirée élégante.<br><strong>Bleu marine, ardoise, or, champagne ou blanc.</strong></p></article>
       <article class="info-card-final"><div class="info-emoji">🚗</div><h3>Transport</h3><p>Métro Mairie de Lille (Ligne 2)<br>Parking sur place<br>Covoiturage bienvenu</p></article>
@@ -273,7 +273,7 @@ body:not(.gate-locked) #access-gate{display:none}
   <p id="pdfCode">Code invité : —</p>
   <div class="pdf-line"></div>
   <div class="pdf-small-title">Programme de la journée</div>
-  <div class="pdf-program-row"><b>10h00</b><div><span>Cérémonie civile</span><em>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille</em><a class="pdf-map-link" href="https://maps.google.com/?q=Mairie+de+Lille,+Place+du+General+de+Gaulle,+59000+Lille" target="_blank">📍 Voir sur Maps</a></div></div>
+  <div class="pdf-program-row"><b>10H45</b><div><span>Cérémonie civile</span><em>Mairie de Lille<br>Place du Général de Gaulle<br>59000 Lille</em><a class="pdf-map-link" href="https://maps.google.com/?q=Mairie+de+Lille,+Place+du+General+de+Gaulle,+59000+Lille" target="_blank">📍 Voir sur Maps</a></div></div>
   <div class="pdf-program-row"><b>13h30</b><div><span>Vin d’honneur</span><em>Cocktail & retrouvailles<br>124 Bis Rue de l’Épidème<br>59200 Tourcoing</em><a class="pdf-map-link" href="https://maps.google.com/?q=124+Bis+Rue+de+l+Epideme,+59200+Tourcoing" target="_blank">📍 Voir sur Maps</a></div></div>
   <div class="pdf-program-row"><b>19h00</b><div><span>Dîner & soirée</span><em>124 Bis Rue de l’Épidème<br>59200 Tourcoing</em><a class="pdf-map-link" href="https://maps.google.com/?q=124+Bis+Rue+de+l+Epideme,+59200+Tourcoing" target="_blank">📍 Voir sur Maps</a></div></div>
   <div class="pdf-line"></div>
@@ -765,7 +765,7 @@ function _buildInvitationDoc(){
   const mapMairie = 'https://www.google.com/maps/search/?api=1&query=Mairie+de+Lille+Place+du+General+de+Gaulle+59000+Lille';
   const mapTourcoing = 'https://www.google.com/maps/search/?api=1&query=124+Bis+Rue+de+l+Epideme+59200+Tourcoing';
   const prog = [
-    {h:'10h00', t:'CÉRÉMONIE CIVILE',  l:['Mairie de Lille','Place du Général de Gaulle, 59000 Lille'], url: mapMairie},
+    {h:'10H45', t:'CÉRÉMONIE CIVILE',  l:['Mairie de Lille','Place du Général de Gaulle, 59000 Lille'], url: mapMairie},
     {h:'13h30', t:'VIN D\'HONNEUR',     l:['Cocktail & retrouvailles','124 Bis Rue de l’Épidème, 59200 Tourcoing'], url: mapTourcoing},
     {h:'19h00', t:'DÎNER & SOIRÉE',    l:['124 Bis Rue de l’Épidème, 59200 Tourcoing'], url: mapTourcoing},
   ];
@@ -965,7 +965,7 @@ function _buildProgrammeDoc(){
   lineGem(y);
   y += 36;
 
-  y = row(y, '10h00', 'CEREMONIE CIVILE', [
+  y = row(y, '10H45', 'CEREMONIE CIVILE', [
     'Mairie de Lille',
     'Place du Général de Gaulle, 59000 Lille',
     'Merci d\'arriver 15 minutes à l\'avance.'
